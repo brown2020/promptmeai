@@ -4,11 +4,11 @@ import { useChatStore } from "@/zustand/useChatStore";
 import { useEffect, useRef } from "react";
 
 interface ModelChatProps {
-  model: string;
+  model: { label: string; value: string };
 }
 
 export const ModelChat: React.FC<ModelChatProps> = ({ model }) => {
-  const messages = useChatStore((state) => state.messages[model] || []);
+  const messages = useChatStore((state) => state.messages[model.value] || []);
   const messageEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -19,11 +19,11 @@ export const ModelChat: React.FC<ModelChatProps> = ({ model }) => {
 
   return (
     <div className="flex flex-col w-full max-w-md py-8 mx-auto space-y-4">
-      <h2 className="text-xl font-bold mb-4">{model}</h2>
+      <h2 className="text-xl font-bold mb-4">{model.label}</h2>
       <div className="space-y-4 overflow-auto">
         {messages.map((m, i) => (
           <div key={i} className="whitespace-pre-wrap">
-            {m.role === "user" ? "User: " : `AI (${model}): `}
+            {m.role === "user" ? "User: " : `AI: `}
             {m.content as string}
           </div>
         ))}

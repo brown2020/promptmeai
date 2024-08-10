@@ -19,10 +19,10 @@ export default function ChatCompare() {
 
     MODELNAMES.forEach((model) => {
       // Add the user message to the conversation
-      addMessage(model, newUserMessage);
+      addMessage(model.value, newUserMessage);
 
       // Get assistant response for each model
-      getAssistantResponse(model, newUserMessage);
+      getAssistantResponse(model.value, newUserMessage);
     });
 
     setInput("");
@@ -50,7 +50,7 @@ export default function ChatCompare() {
     <div className="flex flex-col w-full max-w-6xl py-24 mx-auto space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
         {MODELNAMES.map((model) => (
-          <ModelChat key={model} model={model} />
+          <ModelChat key={model.value} model={model} />
         ))}
       </div>
 
