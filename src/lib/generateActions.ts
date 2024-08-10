@@ -22,8 +22,9 @@ async function getModel(modelName: string) {
       return mistral("mistral-large-latest");
     case "claude-3-5-sonnet":
       return anthropic("claude-3-5-sonnet-20240620");
-    case "llama-v3p1-405b-instruct":
+    case "llama-v3p1-405b":
       return fireworks("accounts/fireworks/models/llama-v3p1-405b-instruct");
+
     default:
       throw new Error(`Unsupported model name: ${modelName}`);
   }
@@ -47,7 +48,7 @@ export async function continueConversation(
 async function generateResponse(
   systemPrompt: string,
   userPrompt: string,
-  modelName: string
+  modelName: string = "gpt-4o"
 ) {
   const model = await getModel(modelName);
 
