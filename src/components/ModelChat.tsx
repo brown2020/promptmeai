@@ -1,39 +1,15 @@
 "use client";
 
-import { type CoreMessage } from "ai";
-import { useState, useEffect, useRef } from "react";
-import { readStreamableValue } from "ai/rsc";
-import { continueConversation } from "@/lib/generateActions";
+import { useChatStore } from "@/zustand/useChatStore";
+import { useEffect, useRef } from "react";
 
 interface ModelChatProps {
   model: string;
-  userMessage: CoreMessage | null;
 }
 
-export const ModelChat: React.FC<ModelChatProps> = ({ model, userMessage }) => {
-  const [messages, setMessages] = useState<CoreMessage[]>([]);
+export const ModelChat: React.FC<ModelChatProps> = ({ model }) => {
+  const messages = useChatStore((state) => state.messages[model] || []);
   const messageEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const getAssistantResponse = async (newMessages: CoreMessage[]) => {
-      const result = await continueConversation(newMessages, model);
-      for await (const content of readStreamableValue(result)) {
-        setMessages((prevMessages) => [
-          ...newMessages,
-          {
-            role: "assistant",
-            content: content as string,
-          },
-        ]);
-      }
-    };
-
-    if (userMessage) {
-      const newMessages: CoreMessage[] = [...messages, userMessage];
-      setMessages(newMessages);
-      getAssistantResponse(newMessages);
-    }
-  }, [userMessage]);
 
   useEffect(() => {
     if (messageEndRef.current) {
