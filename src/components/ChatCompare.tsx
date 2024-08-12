@@ -47,8 +47,8 @@ export default function ChatCompare() {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-6xl py-24 mx-auto space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+    <div className="flex flex-col w-full h-full p-5 mx-auto space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pb-12">
         {MODELNAMES.map((model) => (
           <ModelChat key={model.value} model={model} />
         ))}
@@ -56,7 +56,7 @@ export default function ChatCompare() {
 
       <form
         onSubmit={handleSubmit}
-        className="fixed bottom-0 w-full max-w-4xl p-4 bg-white"
+        className="fixed bottom-5 left-0 w-full px-5 bg-white"
       >
         <input
           className="w-full p-2 border border-gray-300 rounded shadow-xl"
