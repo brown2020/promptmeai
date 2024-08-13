@@ -1,4 +1,3 @@
-````markdown
 # PromptMeAI
 
 PromptMeAI is an AI-powered platform that allows users to interact with multiple AI models simultaneously. The application is designed for those who want to compare the outputs of various models side-by-side in real-time. Additionally, PromptMeAI includes a payment system for purchasing credits, enabling access to premium features and user profile management.
@@ -35,7 +34,6 @@ PromptMeAI is an AI-powered platform that allows users to interact with multiple
    git clone https://github.com/yourusername/promptmeai.git
    cd promptmeai
    ```
-````
 
 2. **Install dependencies:**
 
@@ -129,7 +127,3 @@ Contributions are welcome! Please feel free to open an issue or submit a pull re
 ## License
 
 This project is licensed under the MIT License.
-
-```
-
-```
