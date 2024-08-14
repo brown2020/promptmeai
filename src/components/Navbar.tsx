@@ -43,7 +43,7 @@ export default function Navbar({}: Props) {
             displayName: user.fullName,
             photoURL: user.imageUrl,
           });
-          await setAuthDetails({
+          setAuthDetails({
             uid: user.id,
             firebaseUid: userCredentials.user.uid,
             authEmail: user.emailAddresses[0].emailAddress,
@@ -54,12 +54,12 @@ export default function Navbar({}: Props) {
           });
         } catch (error) {
           console.error("Error signing in with custom token:", error);
-          await clearAuthDetails();
+          clearAuthDetails();
         }
       } else {
         console.log("User is not signed in with Clerk");
         await firebaseSignOut(auth);
-        await clearAuthDetails();
+        clearAuthDetails();
       }
     };
 

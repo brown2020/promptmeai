@@ -15,7 +15,7 @@ export default function HomePage({}: Props) {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-5">
       <div className="bg-white shadow-md rounded-lg p-8 max-w-md w-full">
-        <div className="text-2xl font-bold mb-4 text-center">ADRBot.ai</div>
+        <div className="text-2xl font-bold mb-4 text-center">Prompt.me</div>
         <div className="flex flex-col items-center mb-4">
           {/* User Avatar */}
           {photoUrl ? (
