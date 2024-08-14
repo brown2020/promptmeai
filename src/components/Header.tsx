@@ -20,7 +20,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 
 type Props = {};
-export default function Navbar({}: Props) {
+export default function Header({}: Props) {
   const { getToken, userId, isSignedIn } = useAuth();
   const { user } = useUser();
   const setAuthDetails = useAuthStore((state) => state.setAuthDetails);
@@ -68,7 +68,9 @@ export default function Navbar({}: Props) {
 
   return (
     <div className="flex justify-between flex-shrink-0 gap-3 px-4 h-14 items-center bg-blue-400 text-white sticky top-0 z-50">
-      <Link href="/">Prompt.me</Link>
+      <Link href="/" className="font-medium text-xl">
+        Prompt.me
+      </Link>
 
       <div className="flex gap-2">
         <SignedOut>

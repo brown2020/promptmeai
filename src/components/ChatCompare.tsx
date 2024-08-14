@@ -47,17 +47,16 @@ export default function ChatCompare() {
   };
 
   return (
-    <div className="flex flex-col w-full h-full p-5 mx-auto space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pb-12">
-        {MODELNAMES.map((model) => (
-          <ModelChat key={model.value} model={model} />
-        ))}
+    <div className="flex flex-col w-full h-full mx-auto space-y-5">
+      <div className="flex-1 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+          {MODELNAMES.map((model) => (
+            <ModelChat key={model.value} model={model} />
+          ))}
+        </div>
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="fixed bottom-5 left-0 w-full px-5 bg-white"
-      >
+      <form onSubmit={handleSubmit} className="w-full px-5 fixed bottom-5">
         <input
           className="w-full p-2 border border-gray-300 rounded shadow-xl"
           value={input}
