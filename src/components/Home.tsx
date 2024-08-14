@@ -20,7 +20,15 @@ export default function Home({}: Props) {
         <SignedIn>
           <div className="flex flex-col items-center gap-3">
             <div className="w-20 h-20 rounded-full overflow-hidden">
-              <Image src={photoUrl} width={256} height={256} alt={"user"} />
+              {photoUrl && (
+                <Image
+                  src={photoUrl}
+                  width={256}
+                  height={256}
+                  alt={"user"}
+                  priority
+                />
+              )}
             </div>
             <div>{fullName}</div>
 
@@ -42,7 +50,7 @@ export default function Home({}: Props) {
           <div className="flex justify-center">
             {firebaseUid && (
               <div className="p-2 bg-blue-500 text-white rounded-md w-32 text-center">
-                <Link href="/chat-compare">Chat Compare</Link>
+                <Link href="/dashboard">Dashboard</Link>
               </div>
             )}
           </div>
