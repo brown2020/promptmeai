@@ -45,7 +45,7 @@ export async function continueConversation(
   return stream.value;
 }
 
-async function generateResponse(
+export async function generateResponse(
   systemPrompt: string,
   userPrompt: string,
   modelName: string = "gpt-4o"
