@@ -17,7 +17,7 @@
     "@stripe/react-stripe-js": "^2.8.0",
     "@stripe/stripe-js": "^4.3.0",
     "ai": "^3.3.7",
-    "firebase": "^10.12.5",
+    "firebase": "^10.13.0",
     "firebase-admin": "^12.3.1",
     "next": "14.2.5",
     "react": "^18",
