@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ModelChat } from "./ModelChat";
 import { type CoreMessage } from "ai";
 import { MODELNAMES } from "@/constants/modelNames";
-import { continueConversation } from "@/lib/generateActions";
+import { continueConversation } from "@/actions/generateActions";
 import { readStreamableValue } from "ai/rsc";
 import { useChatStore } from "@/zustand/useChatStore";
 

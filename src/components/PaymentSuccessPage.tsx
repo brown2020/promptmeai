@@ -5,7 +5,7 @@ import { usePaymentsStore } from "@/zustand/usePaymentsStore";
 import useProfileStore from "@/zustand/useProfileStore";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { validatePaymentIntent } from "@/lib/paymentActions";
+import { validatePaymentIntent } from "@/actions/paymentActions";
 
 type Props = {
   payment_intent: string;
