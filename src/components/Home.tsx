@@ -50,7 +50,7 @@ export default function Home({}: Props) {
           <div className="flex justify-center">
             {firebaseUid && (
               <div className="p-2 bg-blue-500 text-white rounded-md w-32 text-center">
-                <Link href="/dashboard">Dashboard</Link>
+                <Link href="/chat-compare">Chat Compare</Link>
               </div>
             )}
           </div>
