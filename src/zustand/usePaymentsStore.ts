@@ -7,7 +7,6 @@ import {
   getDocs,
   Timestamp,
 } from "firebase/firestore";
-
 import { useAuthStore } from "./useAuthStore";
 import toast from "react-hot-toast";
 import { db } from "@/firebase/firebaseClient";
@@ -25,7 +24,9 @@ interface PaymentsStoreState {
   paymentsError: string | null;
   fetchPayments: () => Promise<void>;
   addPayment: (payment: Omit<PaymentType, "createdAt">) => Promise<void>;
+  checkIfPaymentProcessed: (paymentId: string) => Promise<PaymentType | null>;
 }
+
 export const usePaymentsStore = create<PaymentsStoreState>((set, get) => ({
   payments: [],
   paymentsLoading: false,
@@ -116,5 +117,24 @@ export const usePaymentsStore = create<PaymentsStoreState>((set, get) => ({
       console.error("Error adding payment:", error);
       set({ paymentsError: error.message, paymentsLoading: false });
     }
+  },
+
+  checkIfPaymentProcessed: async (paymentId) => {
+    const uid = useAuthStore.getState().uid;
+    if (!uid) return null;
+
+    const paymentsRef = collection(db, "users", uid, "payments");
+    const q = query(
+      paymentsRef,
+      where("id", "==", paymentId),
+      where("status", "==", "succeeded")
+    );
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      return querySnapshot.docs[0].data() as PaymentType;
+    }
+
+    return null;
   },
 }));

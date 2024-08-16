@@ -21,6 +21,9 @@ export default function PaymentSuccessPage({ payment_intent }: Props) {
   const [status, setStatus] = useState("");
 
   const addPayment = usePaymentsStore((state) => state.addPayment);
+  const checkIfPaymentProcessed = usePaymentsStore(
+    (state) => state.checkIfPaymentProcessed
+  );
   const addCredits = useProfileStore((state) => state.addCredits);
 
   const uid = useAuthStore((state) => state.uid);
@@ -39,8 +42,27 @@ export default function PaymentSuccessPage({ payment_intent }: Props) {
         console.log("Payment validation result:", data);
 
         if (data.status === "succeeded") {
+          // Check if payment is already processed
+          const existingPayment = await checkIfPaymentProcessed(data.id);
+          if (existingPayment) {
+            setMessage("Payment has already been processed.");
+
+            // Convert Timestamp to milliseconds before setting state
+            if (existingPayment.createdAt) {
+              setCreated(existingPayment.createdAt.toMillis());
+            } else {
+              setCreated(0); // Fallback if createdAt is null
+            }
+
+            setId(existingPayment.id);
+            setAmount(existingPayment.amount);
+            setStatus(existingPayment.status);
+            setLoading(false);
+            return;
+          }
+
           setMessage("Payment successful");
-          setCreated(data.created);
+          setCreated(data.created * 1000); // Assuming `data.created` is a UNIX timestamp in seconds
           setId(data.id);
           setAmount(data.amount);
           setStatus(data.status);
@@ -70,29 +92,32 @@ export default function PaymentSuccessPage({ payment_intent }: Props) {
     };
 
     if (uid) handlePaymentSuccess();
-  }, [payment_intent, addPayment, addCredits, uid]);
+  }, [payment_intent, addPayment, checkIfPaymentProcessed, addCredits, uid]);
 
   return (
-    <main className="max-w-6xl w-full mx-auto p-10 text-white text-center border m-10 rounded-md bg-gradient-to-tr from-blue-500 to-purple-500">
+    <main className="max-w-6xl flex flex-col gap-2.5 mx-auto p-10 text-black text-center border m-10 rounded-md border-black">
       {loading ? (
         <div>validating...</div>
       ) : id ? (
         <div className="mb-10">
           <h1 className="text-4xl font-extrabold mb-2">Thank you!</h1>
           <h2 className="text-2xl">You successfully purchased credits</h2>
-          <div className="bg-white p-2 rounded-md text-purple-500 mt-5 text-4xl font-bold">
+          <div className="bg-white p-2 rounded-md my-5 text-4xl font-bold mx-auto">
             ${amount / 100}
           </div>
           <div>Uid: {uid}</div>
           <div>Id: {id}</div>
-          <div>Created: {new Date(created * 1000).toLocaleString()}</div>
+          <div>Created: {new Date(created).toLocaleString()}</div>
           <div>Status: {status}</div>
         </div>
       ) : (
         <div>{message}</div>
       )}
 
-      <Link href="/account" className="btn-primary">
+      <Link
+        href="/account"
+        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:opacity-50"
+      >
         View Account
       </Link>
     </main>
