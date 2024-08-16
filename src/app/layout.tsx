@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import Header from "@/components/Header";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Prompt.me",
@@ -22,6 +23,7 @@ export default function RootLayout({
             <div className="flex-1">{children}</div>
           </div>
         </body>
+        <Toaster position="top-right" />
       </html>
     </ClerkProvider>
   );
