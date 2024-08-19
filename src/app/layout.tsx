@@ -22,8 +22,8 @@ export default function RootLayout({
           <div className="flex flex-col h-full flex-1 bg-slate-200 overflow-y-auto pt-4 px-4">
             <div className="flex-1">{children}</div>
           </div>
+          <Toaster position="top-right" />
         </body>
-        <Toaster position="top-right" />
       </html>
     </ClerkProvider>
   );
