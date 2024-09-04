@@ -77,8 +77,9 @@ export default function ChatCompare() {
     model: string,
     userMessage: CoreMessage
   ) => {
+    const currentMessages = messages.map(m => m.userMessage).filter(Boolean);
     const result = await continueConversation(
-      [userMessage],
+      [...currentMessages, userMessage],
       model
     );
     for await (const content of readStreamableValue(result)) {
