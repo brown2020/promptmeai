@@ -22,16 +22,13 @@ export default function ChatCompare() {
       addMessage(model.value, newUserMessage);
 
       // Get assistant response for each model
-      getAssistantResponse(model.value, newUserMessage);
+      getAssistantResponse(model.value);
     });
 
     setInput("");
   };
 
-  const getAssistantResponse = async (
-    model: string,
-    userMessage: CoreMessage
-  ) => {
+  const getAssistantResponse = async (model: string) => {
     const currentMessages = useChatStore.getState().messages[model] || [];
 
     const result = await continueConversation(currentMessages, model);
