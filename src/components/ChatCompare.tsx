@@ -8,7 +8,12 @@ import { readStreamableValue } from "ai/rsc";
 import { useChatStore } from "@/zustand/useChatStore";
 import { useUser } from "@clerk/nextjs";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
-import { getAllChatDetails, getChat, saveChat, updateChat } from "@/services/chatService";
+import {
+  getAllChatDetails,
+  getChat,
+  saveChat,
+  updateChat,
+} from "@/services/chatService";
 import Spinner from "./Spinner";
 import { ModelChat } from "./ModelChat";
 
@@ -16,8 +21,10 @@ export default function ChatCompare() {
   const [input, setInput] = useState("");
   const { user } = useUser();
 
-  const { messages, addMessage, setMessages, isLoading, setIsLoading } = useChatStore((state) => state);
-  const { activeChatId, isLoadingChat, setActiveChatId, setChats } = useChatSideBarStore((state) => state);
+  const { messages, addMessage, setMessages, isLoading, setIsLoading } =
+    useChatStore((state) => state);
+  const { activeChatId, isLoadingChat, setActiveChatId, setChats } =
+    useChatSideBarStore((state) => state);
 
   useEffect(() => {
     const getAllChatsInfo = async () => {
@@ -25,23 +32,23 @@ export default function ChatCompare() {
         const chatDetails = await getAllChatDetails(user?.id);
         setChats(chatDetails);
       }
-    }
-    getAllChatsInfo()
-  }, [user?.id, activeChatId]);
+    };
+    getAllChatsInfo();
+  }, [user?.id, activeChatId, setChats]);
 
   useEffect(() => {
     const getChatDetail = async () => {
       if (user?.id && activeChatId) {
-        const filterChat = await getChat(user?.id, activeChatId || '');
+        const filterChat = await getChat(user?.id, activeChatId || "");
         if (filterChat) {
           setMessages(JSON.parse(filterChat.chat));
         }
       }
       setIsLoading?.(false);
-    }
+    };
 
     getChatDetail();
-  }, [activeChatId])
+  }, [activeChatId, setIsLoading, setMessages, user?.id]);
 
   const saveChatFunction = async (messages: any) => {
     if (activeChatId) {
@@ -77,15 +84,15 @@ export default function ChatCompare() {
     model: string,
     userMessage: CoreMessage
   ) => {
-    const currentMessages: CoreMessage[] = []
-    messages.forEach(message => {
+    const currentMessages: CoreMessage[] = [];
+    messages.forEach((message) => {
       if (message.userMessage) {
         currentMessages.push(message.userMessage);
       }
-      if(message.responses[model]) {
+      if (message.responses[model]) {
         currentMessages.push(message.responses[model]);
       }
-    })
+    });
     const result = await continueConversation(
       [...currentMessages, userMessage],
       model
@@ -109,7 +116,10 @@ export default function ChatCompare() {
               <ModelChat />
             </div>
           </div>
-          <form onSubmit={handleSubmit} className="fixed bottom-1 z-10 w-4/5 px-5 border-t border-gray-200 ">
+          <form
+            onSubmit={handleSubmit}
+            className="fixed bottom-1 z-10 w-4/5 px-5 border-t border-gray-200 "
+          >
             <input
               className="w-full p-2 border border-gray-300 rounded shadow-xl"
               value={input}
