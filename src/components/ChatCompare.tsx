@@ -10,11 +10,11 @@ import { useUser } from "@clerk/nextjs";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { getAllChatDetails, getChat, saveChat, updateChat } from "@/services/chatService";
 import Spinner from "./Spinner";
-import MarkdownComponent from "./MarkdownComponent";
+import { ModelChat } from "./ModelChat";
 
 export default function ChatCompare() {
   const [input, setInput] = useState("");
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { user } = useUser();
 
   const { messages, addMessage, setMessages, isLoading, setIsLoading } = useChatStore((state) => state);
   const { activeChatId, isLoadingChat, setActiveChatId, setChats } = useChatSideBarStore((state) => state);
@@ -77,7 +77,15 @@ export default function ChatCompare() {
     model: string,
     userMessage: CoreMessage
   ) => {
-    const currentMessages = messages.map(m => m.userMessage).filter(Boolean);
+    const currentMessages: CoreMessage[] = []
+    messages.forEach(message => {
+      if (message.userMessage) {
+        currentMessages.push(message.userMessage);
+      }
+      if(message.responses[model]) {
+        currentMessages.push(message.responses[model]);
+      }
+    })
     const result = await continueConversation(
       [...currentMessages, userMessage],
       model
@@ -98,32 +106,7 @@ export default function ChatCompare() {
         <>
           <div className="flex-1 overflow-auto p-4 mb-10">
             <div className="space-y-4">
-              {messages.map((message, index) => (
-                <div key={index} className="border-b pb-4">
-                  <div className="flex flex-col items-end">
-                    <div className="w-max mb-2 border rounded-lg bg-blue-400 p-2 shadow-sm">
-                      <div className="text-left text-white">
-                        {typeof message.userMessage.content === 'string'
-                          ? message.userMessage.content
-                          : JSON.stringify(message.userMessage.content)}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-2 mt-2">
-                    {MODELNAMES.map((model) => {
-                      const response = message.responses[model.value];
-                      return response ? (
-                        <div key={model.value} className="p-2 border rounded-lg bg-gray-100 shadow-sm">
-                          <div className="font-semibold text-gray-700">{model.label}:</div>
-                          <div className="mt-2 text-gray-600 pt-2 px-10">
-                            <MarkdownComponent markdownText={response.content as string} />
-                          </div>
-                        </div>
-                      ) : null;
-                    })}
-                  </div>
-                </div>
-              ))}
+              <ModelChat />
             </div>
           </div>
           <form onSubmit={handleSubmit} className="fixed bottom-1 z-10 w-4/5 px-5 border-t border-gray-200 ">
