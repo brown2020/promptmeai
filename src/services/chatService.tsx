@@ -10,6 +10,7 @@ import {
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
+
 const COLLECTION_NAME = "promptme_chats";
 
 export type Message = {
@@ -17,90 +18,149 @@ export type Message = {
   responses: Record<string, CoreMessage>;
 };
 
-export async function saveChat(user: any, messages: Message[]) {
+// Helper function to serialize messages
+const serializeMessages = (messages: Message[]): string | null => {
   try {
-    const chatName = messages[0]?.userMessage?.content || 'Default Chat Name';
-    const chatRef = await addDoc(collection(db, COLLECTION_NAME, user.id, "chat"), {
-      userId: user.id,
-      fullName: user.fullName,
-      timestamp: serverTimestamp(),
-      chat: JSON.stringify(messages),
-      name: chatName
-    });
-    return chatRef.id ?? "";
+    return JSON.stringify(messages);
   } catch (error) {
-    console.log(error);
+    console.error("Failed to serialize messages", error);
+    return null;
+  }
+};
+
+// Helper function to handle Firestore errors
+const handleFirestoreError = (error: unknown, message: string): void => {
+  if (error instanceof Error) {
+    console.error(`${message}: ${error.message}`);
+  } else {
+    console.error(`${message}: An unexpected error occurred`);
+  }
+};
+
+// Function to save a new chat
+export async function saveChat(
+  userId: string,
+  fullName: string,
+  messages: Message[]
+): Promise<string | undefined> {
+  const chatData = serializeMessages(messages);
+  if (!chatData) return;
+
+  const chatName = messages[0]?.userMessage?.content || "Default Chat Name";
+
+  try {
+    const chatRef = await addDoc(
+      collection(db, COLLECTION_NAME, userId, "chat"),
+      {
+        userId,
+        fullName,
+        timestamp: serverTimestamp(),
+        chat: chatData,
+        name: chatName,
+      }
+    );
+    return chatRef.id;
+  } catch (error) {
+    handleFirestoreError(error, "Error saving chat");
   }
 }
 
-export async function updateChat(user: any, chatId: string, messages: Message[]) {
+// Function to update an existing chat
+export async function updateChat(
+  userId: string,
+  chatId: string,
+  messages: Message[]
+): Promise<void> {
+  const chatData = serializeMessages(messages);
+  if (!chatData) return;
+
   try {
-    await updateDoc(doc(db, COLLECTION_NAME, user.id, "chat", chatId), {
+    await updateDoc(doc(db, COLLECTION_NAME, userId, "chat", chatId), {
       docId: chatId,
       timestamp: serverTimestamp(),
-      chat: JSON.stringify(messages),
+      chat: chatData,
     });
-
   } catch (error) {
-    console.log(error);
+    handleFirestoreError(error, "Error updating chat");
   }
 }
 
-export async function getChat(userId: string, chatId: string) {
+// Function to get a chat by ID
+export async function getChat(
+  userId: string,
+  chatId: string
+): Promise<{ chat: Message[] } | null> {
   try {
-    const chatRef = doc(db, COLLECTION_NAME, userId, 'chat', chatId);
-
+    const chatRef = doc(db, COLLECTION_NAME, userId, "chat", chatId);
     const docSnap = await getDoc(chatRef);
+
     if (docSnap.exists()) {
-      return docSnap.data();
+      const chatData = docSnap.data().chat;
+      try {
+        const parsedMessages: Message[] = JSON.parse(chatData);
+        return { ...docSnap.data(), chat: parsedMessages };
+      } catch (error) {
+        handleFirestoreError(error, "Failed to parse chat data");
+        return null;
+      }
     } else {
       console.warn(`No chat found with ID: ${chatId}`);
       return null;
     }
   } catch (error) {
-    console.error('Error getting chat:', error);
+    handleFirestoreError(error, "Error getting chat");
     return null;
   }
 }
 
-export async function getAllChatDetails(userId: string) {
+// Function to get all chat details
+export async function getAllChatDetails(
+  userId: string
+): Promise<Array<{ id: string; name: string }>> {
   try {
-    const chatsRef = collection(db, COLLECTION_NAME, userId, 'chat');
-
+    const chatsRef = collection(db, COLLECTION_NAME, userId, "chat");
     const querySnapshot = await getDocs(chatsRef);
 
-    const chatDetails = querySnapshot.docs.map((doc) => ({
+    return querySnapshot.docs.map((doc) => ({
       id: doc.id,
-      name: doc.data().name || 'Unnamed Chat'
+      name: doc.data().name || "Unnamed Chat",
     }));
-
-    return chatDetails;
   } catch (error) {
-    console.error('Error getting chat details:', error);
+    handleFirestoreError(error, "Error getting chat details");
     return [];
   }
 }
 
-export async function updateChatName(user: any, chatId: string, name: string) {
+// Function to update chat name
+export async function updateChatName(
+  userId: string,
+  chatId: string,
+  name: string
+): Promise<boolean> {
   try {
-    await updateDoc(doc(db, COLLECTION_NAME, user.id, "chat", chatId), {
+    await updateDoc(doc(db, COLLECTION_NAME, userId, "chat", chatId), {
       docId: chatId,
       timestamp: serverTimestamp(),
       name: name,
     });
     return true;
   } catch (error) {
-    console.log(error);
+    handleFirestoreError(error, "Error updating chat name");
+    return false;
   }
 }
 
-export async function deleteChat(user: any, chatId: string): Promise<boolean> {
+// Function to delete a chat
+export async function deleteChat(
+  userId: string,
+  chatId: string
+): Promise<boolean> {
   try {
-    const chatDocRef = doc(db, COLLECTION_NAME, user.id, "chat", chatId);
+    const chatDocRef = doc(db, COLLECTION_NAME, userId, "chat", chatId);
     await deleteDoc(chatDocRef);
     return true;
   } catch (error) {
-    console.error("Error deleting chat: ", error);
+    handleFirestoreError(error, "Error deleting chat");
     return false;
   }
 }

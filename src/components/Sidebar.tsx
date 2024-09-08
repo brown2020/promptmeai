@@ -5,7 +5,7 @@ import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { useChatStore } from "@/zustand/useChatStore";
 import { useUser } from "@clerk/nextjs";
 import React, { useEffect, useRef, useState } from "react";
-import Spinner from "./Spinner";
+import { ClipLoader } from "react-spinners";
 
 const Sidebar = () => {
   const { activeChatId, chats, isLoadingChat, setActiveChatId, setChats } =
@@ -59,9 +59,9 @@ const Sidebar = () => {
   };
 
   const handleSaveName = async () => {
-    if (editDialog?.id) {
+    if (editDialog?.id && user?.id) {
       const chatUpdated = await updateChatName(
-        user,
+        user.id,
         editDialog?.id || "",
         editDialog?.name || ""
       );
@@ -79,8 +79,8 @@ const Sidebar = () => {
   };
 
   const handleDeleteChat = async () => {
-    if (deleteDialog?.id) {
-      const chatDeleted = await deleteChat(user, deleteDialog?.id || "");
+    if (deleteDialog?.id && user?.id) {
+      const chatDeleted = await deleteChat(user.id, deleteDialog?.id || "");
       if (chatDeleted) {
         setDeleteDialog({ name: undefined, id: "", open: false });
         setChats(chats.filter((chat) => chat.id !== deleteDialog?.id));
@@ -156,7 +156,7 @@ const Sidebar = () => {
                 </li>
               ))
             ) : (
-              <Spinner />
+              <ClipLoader size={30} color="#ffffff" />
             )}
           </ul>
         </div>

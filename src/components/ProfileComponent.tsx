@@ -4,10 +4,7 @@ import Link from "next/link";
 
 import useProfileStore from "@/zustand/useProfileStore";
 
-type Props = {
-  event?: string;
-};
-export default function ProfileComponent({ event = "" }: Props) {
+export default function ProfileComponent() {
   const profile = useProfileStore((state) => state.profile);
 
   return (

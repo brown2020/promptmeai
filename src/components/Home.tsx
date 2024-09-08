@@ -5,8 +5,7 @@ import { SignedIn, SignedOut } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 
-type Props = {};
-export default function Home({}: Props) {
+export default function Home() {
   const uid = useAuthStore((state) => state.uid);
   const photoUrl = useAuthStore((state) => state.authPhotoUrl);
   const firebaseUid = useAuthStore((state) => state.firebaseUid);

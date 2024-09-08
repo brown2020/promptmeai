@@ -1,7 +1,7 @@
 import ChatCompare from "@/components/ChatCompare";
 import Sidebar from "@/components/Sidebar";
 
-export default function Page() {
+export default function ChatComparePage() {
   return (
     <div className="flex h-full overflow-hidden">
       <Sidebar />

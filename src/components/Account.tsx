@@ -1,7 +1,5 @@
 "use client";
 
-import { useAuthStore } from "@/zustand/useAuthStore";
-
 import ProfileComponent from "./ProfileComponent";
 import PaymentsPage from "./PaymentsPage";
 import AuthDataDisplay from "./AuthDataDisplay";

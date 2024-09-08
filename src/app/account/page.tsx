@@ -1,5 +1,5 @@
-import AccountPage from "@/components/AccountPage";
+import Account from "@/components/Account";
 
-export default function Account() {
-  return <AccountPage />;
+export default function AccountPage() {
+  return <Account />;
 }

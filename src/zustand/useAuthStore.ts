@@ -47,7 +47,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   ...defaultAuthState,
 
   setAuthDetails: async (details: Partial<AuthState>) => {
-    const { setAuthDetails, clearAuthDetails, ...oldState } = get();
+    const { ...oldState } = get();
     const newState = { ...oldState, ...details };
     set(newState);
     await updateUserDetailsInFirestore(newState, get().uid);
@@ -62,11 +62,17 @@ async function updateUserDetailsInFirestore(
 ) {
   if (uid) {
     const userRef = doc(db, `users/${uid}`);
-    console.log("Updating auth details in Firestore:", details);
+
+    // Remove any fields that are functions
+    const filteredDetails = Object.fromEntries(
+      Object.entries(details).filter((entry) => typeof entry[1] !== "function")
+    );
+
+    console.log("Updating auth details in Firestore:", filteredDetails);
     try {
       await setDoc(
         userRef,
-        { ...details, lastSignIn: serverTimestamp() },
+        { ...filteredDetails, lastSignIn: serverTimestamp() },
         { merge: true }
       );
       console.log("Auth details updated successfully in Firestore.");

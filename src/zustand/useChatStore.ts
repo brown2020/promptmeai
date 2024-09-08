@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { type CoreMessage } from 'ai';
+import { create } from "zustand";
+import { type CoreMessage } from "ai";
 
 export type Message = {
   userMessage: CoreMessage;
@@ -7,47 +7,62 @@ export type Message = {
 };
 
 type ChatStore = {
-  messages: Message[]; // Store messages by model name
-  addMessage: (userMessage: CoreMessage) => void; // Function to add a single message
-  addResponse: (model: string, response: CoreMessage) => void; // Function to set AI responses
-  setMessages: (messages: Message[]) => void;  // Function to set multiple messages
-  isLoading?: boolean;
-  setIsLoading?: (isLoading: boolean) => void;
+  messages: Message[];
+  addMessage: (userMessage: CoreMessage) => void;
+  addResponse: (model: string, response: CoreMessage) => void;
+  setMessages: (
+    messages: Message[] | ((prevMessages: Message[]) => Message[])
+  ) => void;
+  isLoading: boolean;
+  setIsLoading: (isLoading: boolean) => void;
 };
 
 export const useChatStore = create<ChatStore>((set) => ({
   messages: [],
   isLoading: false,
+
+  // Function to add a new user message
   addMessage: (userMessage) =>
     set((state) => ({
       messages: [
         ...state.messages,
         {
           userMessage,
-          responses: {}, 
+          responses: {},
         },
       ],
     })),
+
+  // Function to add a response from a model
   addResponse: (model, response) =>
     set((state) => {
-      const messages = [...state.messages];
-      const lastMessage = messages[messages.length - 1];
+      const lastMessageIndex = state.messages.length - 1;
+      if (lastMessageIndex < 0) return state; // Ensure there is at least one message
 
-      if (lastMessage) {
-        lastMessage.responses[model] = response;
-      }
-      return { messages };
+      const updatedMessages = [...state.messages];
+      updatedMessages[lastMessageIndex] = {
+        ...updatedMessages[lastMessageIndex],
+        responses: {
+          ...updatedMessages[lastMessageIndex].responses,
+          [model]: response,
+        },
+      };
+
+      return { messages: updatedMessages };
     }),
 
-  // Function to set an entire array of messages
-  setMessages: (messages) => {
-    set(() => ({
-      messages,
-    }));
-  },
-  setIsLoading: (isLoading) =>
-
+  // Function to set multiple messages or update messages using a function
+  setMessages: (messagesOrUpdater) =>
     set((state) => ({
+      messages:
+        typeof messagesOrUpdater === "function"
+          ? messagesOrUpdater(state.messages)
+          : messagesOrUpdater,
+    })),
+
+  // Function to set the loading state
+  setIsLoading: (isLoading) =>
+    set(() => ({
       isLoading,
     })),
 }));
