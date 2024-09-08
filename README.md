@@ -31,7 +31,7 @@ PromptMeAI is an AI-powered platform that allows users to interact with multiple
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/promptmeai.git
+   git clone https://github.com/brown2020/promptmeai.git
    cd promptmeai
    ```
 
