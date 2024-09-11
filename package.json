@@ -13,10 +13,10 @@
     "@ai-sdk/google": "^0.0.47",
     "@ai-sdk/mistral": "^0.0.39",
     "@ai-sdk/openai": "^0.0.58",
-    "@clerk/nextjs": "^5.4.1",
+    "@clerk/nextjs": "^5.5.2",
     "@stripe/react-stripe-js": "^2.8.0",
     "@stripe/stripe-js": "^4.4.0",
-    "ai": "^3.3.32",
+    "ai": "^3.3.33",
     "firebase": "^10.13.1",
     "firebase-admin": "^12.4.0",
     "next": "^14.2.9",
@@ -35,7 +35,7 @@
     "eslint": "^8",
     "eslint-config-next": "^14.2.9",
     "postcss": "^8.4.45",
-    "tailwindcss": "^3.4.10",
+    "tailwindcss": "^3.4.11",
     "typescript": "^5.6.2"
   }
 }
