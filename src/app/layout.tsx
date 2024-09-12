@@ -19,8 +19,8 @@ export default function RootLayout({
       <html lang="en" className="h-full">
         <body className="flex flex-col h-full">
           <Header />
-          <div className="flex flex-col h-full flex-1 bg-slate-200 overflow-y-auto pt-4 px-4">
-            <div className="flex-1">{children}</div>
+          <div className="flex flex-col h-full flex-1 bg-slate-200">
+            {children}
           </div>
           <Toaster position="top-right" />
         </body>
