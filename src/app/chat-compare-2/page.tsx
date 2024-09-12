@@ -78,6 +78,19 @@ const ChatCompare = () => {
                               </a>
                             </div>
                           </li>
+                          <li className="relative z-[15]">
+                            <div className="no-draggable group relative rounded-lg active:opacity-90 hover:bg-sidebar-surface-secondary">
+                              <a
+                                className="flex items-center gap-2 p-2"
+                                href="#"
+                              >
+                                <div className="relative grow overflow-hidden whitespace-nowrap">
+                                  Refactor PromptMeAI Features Long Text
+                                  <div className="absolute bottom-0 top-0 to-transparent ltr:right-0 ltr:bg-gradient-to-l rtl:left-0 rtl:bg-gradient-to-r from-token-sidebar-surface-primary from-token-sidebar-surface-primary can-hover:group-hover:from-token-sidebar-surface-secondary w-8 from-0% can-hover:group-hover:w-10 can-hover:group-hover:from-60%"></div>
+                                </div>
+                              </a>
+                            </div>
+                          </li>
                         </ol>
                       </div>
                     </div>
@@ -87,6 +100,58 @@ const ChatCompare = () => {
             </div>
           </div>
         </div>
+      </div>
+      {/* Content */}
+      <div className="relative flex h-full max-w-full flex-1 flex-col overflow-hidden">
+        <main className="relative h-full w-full flex-1 overflow-auto transition-width">
+          <div
+            role="presentation"
+            className="composer-parent flex h-full flex-col focus-visible:outline-0"
+          >
+            <div className="flex-1 overflow-hidden">
+              <div className="relative h-full">
+                <div className="flex h-full flex-col items-center justify-center text-text-primary">
+                  <div className="text-base py-[18px] px-3 m-auto w-full md:px-5 lg:px-1 xl:px-5">
+                    <div className="mx-auto gap-4 text-base md:gap-5 lg:gap-6 md:max-w-3xl lg:max-w-[40rem] xl:max-w-[48rem]">
+                      <div className="text-center">
+                        <div className="mb-7 inline-flex justify-center text-2xl font-semibold leading-9">
+                          <h1>What can I help with?</h1>
+                        </div>
+                      </div>
+                      <div className="w-full">
+                        <form className="w-full">
+                          <div className="relative flex h-full max-w-full flex-1 flex-col">
+                            <div className="group relative flex w-full items-center">
+                              <div className="flex w-full flex-col gap-1.5 rounded-[26px] p-1.5 transition-colors bg-[#f4f4f4] dark:bg-token-main-surface-secondary">
+                                <div className="flex items-end gap-1.5 md:gap-2">
+                                  <div className="flex min-w-0 flex-1 flex-col">
+                                    <div className="_prosemirror-parent_kgrdp_1 text-token-text-primary max-h-[25dvh] overflow-auto default-browser">
+                                      <div
+                                        className="ProseMirror"
+                                        id="prompt-textarea"
+                                      >
+                                        <p
+                                          data-placeholder="Message ChatGPT"
+                                          className="placeholder"
+                                        >
+                                          <br className="ProseMirror-trailingBreak" />
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
       </div>
     </div>
   );
