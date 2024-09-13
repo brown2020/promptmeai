@@ -2,10 +2,15 @@ import { BiLogoReact } from "react-icons/bi";
 import { BsThreeDots } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
 import { HiOutlinePlus } from "react-icons/hi";
-import { IoBookmark, IoSearch } from "react-icons/io5";
+import { ImMagicWand } from "react-icons/im";
+import { IoBookmark, IoMicOutline, IoSearch } from "react-icons/io5";
 import { LuListFilter, LuSun } from "react-icons/lu";
 import { MdNightlightRound } from "react-icons/md";
-import { PiChatsCircle, PiChatsCircleFill } from "react-icons/pi";
+import {
+  PiChatsCircle,
+  PiChatsCircleFill,
+  PiPaperPlaneTilt,
+} from "react-icons/pi";
 import { RiListSettingsFill, RiLogoutBoxRLine } from "react-icons/ri";
 
 const ChatPage = () => {
@@ -139,6 +144,32 @@ const ChatPage = () => {
             </div>
             <div className="h-[32px] w-[32px] rounded-lg cursor-pointer bg-[#EFEFEF] flex justify-center items-center">
               <BsThreeDots size={16} color="#1E1F22" />
+            </div>
+          </div>
+        </div>
+        {/* main chat detail section */}
+        <div className="bg-[#F5F5F5] h-full w-[calc(100% + 32px)] rounded-lg ml-[-16px] flex justify-center px-[24px]">
+          {/* wrapper */}
+          <div className="h-full w-full max-w-[736px] flex flex-col gap-[24px] justify-between items-center pb-[24px] ">
+            {/* Chat detail section */}
+            <div className="h-full w-full bg-slate-400 overflow-y-auto"></div>
+            {/* Chat input section */}
+            <div className="self-end w-full max-w-[720px] h-[56px] flex-shrink-0 flex gap-[16px] justify-center items-center">
+              <div className="w-full bg-white rounded-xl shadow p-[12px] flex gap-[12px] items-center">
+                <div className="flex items-center justify-center h-[32px] w-[32px] bg-[#E7E9F0] rounded-lg cursor-pointer flex-shrink-0">
+                  <ImMagicWand size={14} />
+                </div>
+                <input
+                  className="w-full text-[14px] text-[#A0A7BB] outline-none"
+                  placeholder="Ask questions, or type '/' for commands"
+                />
+                <div className="flex items-center justify-center h-[32px] w-[32px] rounded-lg cursor-pointer flex-shrink-0">
+                  <PiPaperPlaneTilt size={18} color="#ABABAB" />
+                </div>
+              </div>
+              <div className="cursor-pointer w-[56px] h-[56px] flex-shrink-0 bg-white rounded-xl flex justify-center items-center shadow">
+                <IoMicOutline size={24} color="#ABABAB" />
+              </div>
             </div>
           </div>
         </div>
