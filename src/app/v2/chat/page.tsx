@@ -1,6 +1,7 @@
 import { BiLogoReact } from "react-icons/bi";
 import { BsThreeDots } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
+import { GiBrainTentacle } from "react-icons/gi";
 import { HiOutlinePlus } from "react-icons/hi";
 import { ImMagicWand } from "react-icons/im";
 import { IoBookmark, IoMicOutline, IoSearch } from "react-icons/io5";
@@ -150,9 +151,180 @@ const ChatPage = () => {
         {/* main chat detail section */}
         <div className="bg-[#F5F5F5] h-full w-[calc(100% + 32px)] rounded-lg ml-[-16px] flex justify-center px-[24px]">
           {/* wrapper */}
-          <div className="h-full w-full max-w-[736px] flex flex-col gap-[24px] justify-between items-center pb-[24px] ">
+          <div className="h-full w-full max-w-[736px] flex flex-col gap-[24px] justify-between items-center py-[24px] ">
             {/* Chat detail section */}
-            <div className="h-full w-full bg-slate-400 overflow-y-auto"></div>
+            <div className="h-full w-full overflow-y-auto flex flex-col gap-[24px]">
+              {/* Self chat card*/}
+              <div className="relative flex flex-col gap-[4px] ml-[16px]">
+                {/* ProfileIcon */}
+                <div className="absolute top-[8px] left-[-16px]">
+                  <div className="bg-[#F9F9F9] rounded-lg w-[32px] h-[32px] flex justify-center items-center shadow">
+                    <CgProfile className="text-[#255148]" size={16} />
+                  </div>
+                </div>
+                <div className="flex gap-[8px] items-center text-[#1E1F22] ml-[24px]">
+                  <span className="text-[12px] font-bold ">You</span>
+                  <span className="text-[10px]">24 Sep - 11:30 PM</span>
+                </div>
+                <div className="min-h-[40px] w-fit bg-white rounded-lg py-[12px] px-[24px] flex items-center">
+                  <div className="text-[14px] text-[#1E1F22]">
+                    How do you define usability testing in UX design?
+                  </div>
+                </div>
+              </div>
+
+              {/* Open AI response */}
+              <div className="relative flex flex-col gap-[4px] ml-[16px]">
+                {/* AiIcon */}
+                <div className="absolute top-[8px] left-[-16px]">
+                  <div className="bg-[#14A27F] rounded-lg w-[32px] h-[32px] flex justify-center items-center shadow">
+                    <GiBrainTentacle color="white" size={16} />
+                  </div>
+                </div>
+                <div className="flex gap-[8px] items-center text-[#1E1F22] ml-[24px]">
+                  <span className="text-[12px] font-bold ">GPT-4 Omni</span>
+                  <span className="text-[10px]">24 Sep - 11:30 PM</span>
+                </div>
+                <div className="min-h-[40px] w-fit bg-[#14A27F]/[0.15] rounded-lg py-[12px] px-[24px] flex items-center">
+                  <div className="text-[14px] text-[#1E1F22]">
+                    Sure! Here are three different versions of 404 error
+                    messages for an ecommerce clothing website: Uh-oh! It looks
+                    like the page you're looking for isn't here. Please check
+                    the URL and try again or return to the homepage to continue
+                    shopping. 2. Whoops! We can't seem to find the page you're
+                    looking for. Please double-check the URL or use our search
+                    bar to find what you need. You can also browse our
+                    collection of stylish clothes and accessories. 3. Sorry, the
+                    page you're trying to access isn't available. It's possible
+                    that the item has sold out or the page has been removed.
+                    Please click back to return to the previous page or head
+                    over to our homepage to explore more.
+                  </div>
+                </div>
+              </div>
+
+              {/* Gemini AI response */}
+              <div className="relative flex flex-col gap-[4px] ml-[16px]">
+                {/* AiIcon */}
+                <div className="absolute top-[8px] left-[-16px]">
+                  <div className="bg-[#FF6F61] rounded-lg w-[32px] h-[32px] flex justify-center items-center shadow">
+                    <GiBrainTentacle color="white" size={16} />
+                  </div>
+                </div>
+                <div className="flex gap-[8px] items-center text-[#1E1F22] ml-[24px]">
+                  <span className="text-[12px] font-bold ">Gemini 1.5 Pro</span>
+                  <span className="text-[10px]">24 Sep - 11:30 PM</span>
+                </div>
+                <div className="min-h-[40px] w-fit bg-[#FF6F61]/[0.15] rounded-lg py-[12px] px-[24px] flex items-center">
+                  <div className="text-[14px] text-[#1E1F22]">
+                    Sure! Here are three different versions of 404 error
+                    messages for an ecommerce clothing website: Uh-oh! It looks
+                    like the page you're looking for isn't here. Please check
+                    the URL and try again or return to the homepage to continue
+                    shopping. 2. Whoops! We can't seem to find the page you're
+                    looking for. Please double-check the URL or use our search
+                    bar to find what you need. You can also browse our
+                    collection of stylish clothes and accessories. 3. Sorry, the
+                    page you're trying to access isn't available. It's possible
+                    that the item has sold out or the page has been removed.
+                    Please click back to return to the previous page or head
+                    over to our homepage to explore more.
+                  </div>
+                </div>
+              </div>
+
+              {/* Mistral AI response */}
+              <div className="relative flex flex-col gap-[4px] ml-[16px]">
+                {/* AiIcon */}
+                <div className="absolute top-[8px] left-[-16px]">
+                  <div className="bg-[#3498DB] rounded-lg w-[32px] h-[32px] flex justify-center items-center shadow">
+                    <GiBrainTentacle color="white" size={16} />
+                  </div>
+                </div>
+                <div className="flex gap-[8px] items-center text-[#1E1F22] ml-[24px]">
+                  <span className="text-[12px] font-bold ">Mistral Large</span>
+                  <span className="text-[10px]">24 Sep - 11:30 PM</span>
+                </div>
+                <div className="min-h-[40px] w-fit bg-[#3498DB]/[0.15] rounded-lg py-[12px] px-[24px] flex items-center">
+                  <div className="text-[14px] text-[#1E1F22]">
+                    Sure! Here are three different versions of 404 error
+                    messages for an ecommerce clothing website: Uh-oh! It looks
+                    like the page you're looking for isn't here. Please check
+                    the URL and try again or return to the homepage to continue
+                    shopping. 2. Whoops! We can't seem to find the page you're
+                    looking for. Please double-check the URL or use our search
+                    bar to find what you need. You can also browse our
+                    collection of stylish clothes and accessories. 3. Sorry, the
+                    page you're trying to access isn't available. It's possible
+                    that the item has sold out or the page has been removed.
+                    Please click back to return to the previous page or head
+                    over to our homepage to explore more.
+                  </div>
+                </div>
+              </div>
+
+              {/* Claude AI response */}
+              <div className="relative flex flex-col gap-[4px] ml-[16px]">
+                {/* AiIcon */}
+                <div className="absolute top-[8px] left-[-16px]">
+                  <div className="bg-[#F39C12] rounded-lg w-[32px] h-[32px] flex justify-center items-center shadow">
+                    <GiBrainTentacle color="white" size={16} />
+                  </div>
+                </div>
+                <div className="flex gap-[8px] items-center text-[#1E1F22] ml-[24px]">
+                  <span className="text-[12px] font-bold ">
+                    Claude 3.5 Sonnet
+                  </span>
+                  <span className="text-[10px]">24 Sep - 11:30 PM</span>
+                </div>
+                <div className="min-h-[40px] w-fit bg-[#F39C12]/[0.15] rounded-lg py-[12px] px-[24px] flex items-center">
+                  <div className="text-[14px] text-[#1E1F22]">
+                    Sure! Here are three different versions of 404 error
+                    messages for an ecommerce clothing website: Uh-oh! It looks
+                    like the page you're looking for isn't here. Please check
+                    the URL and try again or return to the homepage to continue
+                    shopping. 2. Whoops! We can't seem to find the page you're
+                    looking for. Please double-check the URL or use our search
+                    bar to find what you need. You can also browse our
+                    collection of stylish clothes and accessories. 3. Sorry, the
+                    page you're trying to access isn't available. It's possible
+                    that the item has sold out or the page has been removed.
+                    Please click back to return to the previous page or head
+                    over to our homepage to explore more.
+                  </div>
+                </div>
+              </div>
+
+              {/* LLaMA 3.1 405B AI response */}
+              <div className="relative flex flex-col gap-[4px] ml-[16px]">
+                {/* AiIcon */}
+                <div className="absolute top-[8px] left-[-16px]">
+                  <div className="bg-[#8E44AD] rounded-lg w-[32px] h-[32px] flex justify-center items-center shadow">
+                    <GiBrainTentacle color="white" size={16} />
+                  </div>
+                </div>
+                <div className="flex gap-[8px] items-center text-[#1E1F22] ml-[24px]">
+                  <span className="text-[12px] font-bold ">LLaMA 3.1 405B</span>
+                  <span className="text-[10px]">24 Sep - 11:30 PM</span>
+                </div>
+                <div className="min-h-[40px] w-fit bg-[#8E44AD]/[0.15] rounded-lg py-[12px] px-[24px] flex items-center">
+                  <div className="text-[14px] text-[#1E1F22]">
+                    Sure! Here are three different versions of 404 error
+                    messages for an ecommerce clothing website: Uh-oh! It looks
+                    like the page you're looking for isn't here. Please check
+                    the URL and try again or return to the homepage to continue
+                    shopping. 2. Whoops! We can't seem to find the page you're
+                    looking for. Please double-check the URL or use our search
+                    bar to find what you need. You can also browse our
+                    collection of stylish clothes and accessories. 3. Sorry, the
+                    page you're trying to access isn't available. It's possible
+                    that the item has sold out or the page has been removed.
+                    Please click back to return to the previous page or head
+                    over to our homepage to explore more.
+                  </div>
+                </div>
+              </div>
+            </div>
             {/* Chat input section */}
             <div className="self-end w-full max-w-[720px] h-[56px] flex-shrink-0 flex gap-[16px] justify-center items-center">
               <div className="w-full bg-white rounded-xl shadow p-[12px] flex gap-[12px] items-center">
