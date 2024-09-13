@@ -115,7 +115,7 @@ export default function PaymentSuccessPage({ payment_intent }: Props) {
       )}
 
       <Link
-        href="/account"
+        href="/v1/account"
         className="px-4 py-2 bg-blue-500 text-white rounded-md hover:opacity-50"
       >
         View Account

@@ -76,8 +76,8 @@ export default function Header() {
           <SignInButton />
         </SignedOut>
         <SignedIn>
-          <Link href="/chat-compare">Chat Compare</Link>
-          <Link href="/account">Account</Link>
+          <Link href="/v1/chat-compare">Chat Compare</Link>
+          <Link href="/v1/account">Account</Link>
           <UserButton />
         </SignedIn>
       </div>

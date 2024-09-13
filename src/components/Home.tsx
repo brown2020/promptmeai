@@ -49,7 +49,7 @@ export default function Home() {
           <div className="flex justify-center">
             {firebaseUid && (
               <div className="p-2 bg-blue-500 text-white rounded-md w-32 text-center">
-                <Link href="/chat-compare">Chat Compare</Link>
+                <Link href="/v1/chat-compare">Chat Compare</Link>
               </div>
             )}
           </div>
