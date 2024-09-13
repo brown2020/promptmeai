@@ -1,6 +1,9 @@
 import { BiLogoReact } from "react-icons/bi";
+import { BsThreeDots } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
-import { LuSun } from "react-icons/lu";
+import { HiOutlinePlus } from "react-icons/hi";
+import { IoSearch } from "react-icons/io5";
+import { LuListFilter, LuSun } from "react-icons/lu";
 import { MdNightlightRound } from "react-icons/md";
 import { PiChatsCircle } from "react-icons/pi";
 import { RiListSettingsFill, RiLogoutBoxRLine } from "react-icons/ri";
@@ -49,11 +52,15 @@ const ChatPage = () => {
       {/* My chat section */}
       <div className="w-[320px] bg-white p-[15px] flex flex-col gap-[16px]">
         {/* Top section */}
-        <div className="flex justify-between gap-[10px]">
-          <h2>My Chats</h2>
+        <div className="flex justify-between items-center gap-[10px]">
+          <h2 className="text-[20px] font-bold">My Chats</h2>
           <div className="flex gap-[10px]">
-            <div>Plus Icon</div>
-            <div>Options Icon</div>
+            <div className="w-[32px] h-[32px] flex-shrink-0 flex items-center justify-center bg-[#23C69E] rounded-lg cursor-pointer">
+              <HiOutlinePlus size={18} color="white" />
+            </div>
+            <div className="w-[32px] h-[32px] flex-shrink-0 flex items-center justify-center bg-[#EFEFEF] rounded-lg cursor-pointer">
+              <BsThreeDots size={18} color="#3B3B3B" />
+            </div>
           </div>
         </div>
         {/* Tab section */}
@@ -74,7 +81,20 @@ const ChatPage = () => {
           </button>
         </div>
         {/* Search section */}
-        <div></div>
+        <div className="flex gap-[10px]">
+          {/* Input search */}
+          <div className="flex gap-[8px] items-center bg-[#D6D6D6]/[0.10] rounded-lg h-[40px] w-full p-[10px] shadow">
+            <IoSearch size={18} color="#575B65" />
+            <input
+              placeholder="Search..."
+              className="bg-transparent border-none outline-none text-[14px] text-[#575B65] w-full"
+            />
+          </div>
+          {/* filter button */}
+          <div className="flex flex-shrink-0 justify-center items-center bg-[#EFEFEF] h-[40px] w-[40px] rounded shadow cursor-pointer">
+            <LuListFilter size={20} color="#14B48D" />
+          </div>
+        </div>
       </div>
     </div>
   );
