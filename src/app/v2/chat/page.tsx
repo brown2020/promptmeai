@@ -2,10 +2,10 @@ import { BiLogoReact } from "react-icons/bi";
 import { BsThreeDots } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
 import { HiOutlinePlus } from "react-icons/hi";
-import { IoSearch } from "react-icons/io5";
+import { IoBookmark, IoSearch } from "react-icons/io5";
 import { LuListFilter, LuSun } from "react-icons/lu";
 import { MdNightlightRound } from "react-icons/md";
-import { PiChatsCircle } from "react-icons/pi";
+import { PiChatsCircle, PiChatsCircleFill } from "react-icons/pi";
 import { RiListSettingsFill, RiLogoutBoxRLine } from "react-icons/ri";
 
 const ChatPage = () => {
@@ -66,15 +66,15 @@ const ChatPage = () => {
         {/* Tab section */}
         <div className="bg-[#EEE] rounded-xl border-[0.6px] border-[#E2E2E2] h-[48px] flex gap-[10px] flex-shrink-0 p-[4px]">
           <button className="bg-white text-[#14B48D] rounded-lg w-[140px] flex gap-[6px] h-full items-center justify-center shadow-lg">
-            <div>icon</div>
-            <span className="uppercase text-[10px] font-semibold">Chats</span>
+            <PiChatsCircleFill size={14} color="#14B48D" />
+            <span className="uppercase text-[12px] font-semibold">Chats</span>
             <span className="rounded bg-[#14B48D]/[0.15] px-[4px] py-[2px] text-[10px] font-semibold">
               24
             </span>
           </button>
           <button className="w-[140px] text-[#3B3B3B] flex gap-[6px] h-full items-center justify-center">
-            <div>icon</div>
-            <div className="uppercase text-[10px] font-semibold">Saved</div>
+            <IoBookmark size={14} color="#3B3B3B" />
+            <div className="uppercase text-[12px] font-semibold">Saved</div>
             <div className="rounded bg-[#3B3B3B]/[0.11] px-[4px] py-[2px] text-[10px] font-semibold">
               10
             </div>
