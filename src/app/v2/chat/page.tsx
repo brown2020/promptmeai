@@ -95,6 +95,35 @@ const ChatPage = () => {
             <LuListFilter size={20} color="#14B48D" />
           </div>
         </div>
+        {/* Chat list section */}
+        <div className="flex flex-col flex-shrink-0 gap-[8px]">
+          {/* Chat active */}
+          <div className="flex flex-col gap-[6px] bg-[#E3FEF7] py-[11px] px-[18px] rounded-lg w-full cursor-pointer">
+            <div className="flex items-center justify-between gap-[8px] ">
+              <h4 className="text-[14px] font-semibold text-[#1E1F22]">
+                Warning Messages Samples
+              </h4>
+              <span className="text-[10px] text-[#9F9F9F]">Now</span>
+            </div>
+            <div className="text-[12px] text-[#6D717C] h-42">
+              Some 15 billion years ago the universe emerged from a hot, dense
+              sea of...
+            </div>
+          </div>
+          {/* Normal chat */}
+          <div className="flex flex-col gap-[6px] py-[11px] px-[18px] rounded-lg w-full cursor-pointer">
+            <div className="flex items-center justify-between gap-[8px] ">
+              <h4 className="text-[14px] font-semibold text-[#1E1F22]">
+                Competitive Analysis research
+              </h4>
+              <span className="text-[10px] text-[#9F9F9F]">Thu</span>
+            </div>
+            <div className="text-[12px] text-[#6D717C] h-42">
+              A competitive analysis of restaurant delivery mobile applications
+              reveals key insights ...
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
