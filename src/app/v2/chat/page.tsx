@@ -1,59 +1,17 @@
-import { BiLogoReact } from "react-icons/bi";
+import LeftPanel from "@/components/v2/LeftPanel";
 import { BsThreeDots } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
 import { GiBrainTentacle } from "react-icons/gi";
 import { HiOutlinePlus } from "react-icons/hi";
 import { ImMagicWand } from "react-icons/im";
 import { IoBookmark, IoMicOutline, IoSearch } from "react-icons/io5";
-import { LuListFilter, LuSun } from "react-icons/lu";
-import { MdNightlightRound } from "react-icons/md";
-import {
-  PiChatsCircle,
-  PiChatsCircleFill,
-  PiPaperPlaneTilt,
-} from "react-icons/pi";
-import { RiListSettingsFill, RiLogoutBoxRLine } from "react-icons/ri";
+import { LuListFilter } from "react-icons/lu";
+import { PiChatsCircleFill, PiPaperPlaneTilt } from "react-icons/pi";
 
 const ChatPage = () => {
   return (
     <div className="flex h-screen w-screen">
-      {/* Left panel */}
-      <div className="flex flex-col justify-between items-center w-[64px] flex-shrink-0 bg-white border-r border-[#EAEAEA] p-[16px]">
-        {/* Top section */}
-        <div className="flex flex-col gap-[64px] justify-center items-center">
-          <div className="w-[32px] h-[32px] bg-[#909090] flex justify-center items-center rounded-lg">
-            <BiLogoReact className="text-white" size={26} />
-          </div>
-          <div className="flex flex-col gap-[24px] justify-center items-center">
-            <div className="bg-[#10A37F] rounded-lg w-[32px] h-[32px] flex justify-center items-center shadow-xl">
-              <PiChatsCircle size={18} className="text-white" />
-            </div>
-            <div className="bg-[#F9F9F9] rounded-lg w-[32px] h-[32px] flex justify-center items-center shadow-xl">
-              <RiListSettingsFill className="text-[#255148]" size={18} />
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom section */}
-        <div className="flex flex-col gap-[25px] justify-center items-center">
-          <div className="bg-[#F9F9F9] rounded-lg w-[32px] h-[32px] flex justify-center items-center shadow-xl">
-            <CgProfile className="text-[#255148]" size={16} />
-          </div>
-          <div className="bg-[#F9F9F9] rounded-lg w-[32px] h-[32px] flex justify-center items-center shadow-xl">
-            <RiLogoutBoxRLine className="text-[#255148]" size={16} />
-          </div>
-
-          <div className="h-[1px] w-full bg-[#EFEFEF]" />
-          <div className="h-[60px] w-[32px] bg-[#E2E2E2] rounded-xl flex flex-col justify-center items-center gap-[5px]">
-            <button className="w-[20px] h-[20px] flex justify-center items-center">
-              <MdNightlightRound size={12} />
-            </button>
-            <button className="w-[20px] h-[20px] flex justify-center items-center bg-[#FFF] rounded-lg drop-shadow">
-              <LuSun size={12} />
-            </button>
-          </div>
-        </div>
-      </div>
+      <LeftPanel />
 
       {/* My chat section */}
       <div className="w-[320px] bg-white p-[15px] flex flex-col gap-[16px]">
