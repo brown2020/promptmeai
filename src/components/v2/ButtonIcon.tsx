@@ -1,12 +1,14 @@
 import { cn } from "@/utils/tailwind";
 import { PropsWithChildren } from "react";
 import { IconType } from "react-icons/lib";
+import { ClassNameValue } from "tailwind-merge";
 
 type ButtonIconProps = {
   icon: IconType;
   type?: "default" | "primary" | "secondary";
   isActive?: boolean;
   iconSize?: number;
+  className?: ClassNameValue;
 } & PropsWithChildren;
 
 const ButtonIcon = ({
@@ -14,6 +16,7 @@ const ButtonIcon = ({
   type = "default",
   isActive = false,
   iconSize = 18,
+  className,
 }: ButtonIconProps) => {
   return (
     <div
@@ -23,7 +26,8 @@ const ButtonIcon = ({
           "bg-[#10A37F]": isActive,
           "bg-[#23C69E]": type === "primary",
           "bg-[#EFEFEF]": type === "secondary",
-        }
+        },
+        className
       )}
     >
       <Icon
