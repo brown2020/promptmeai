@@ -1,10 +1,10 @@
 import { CgProfile } from "react-icons/cg";
 import { PiChatsCircle } from "react-icons/pi";
 import { RiListSettingsFill, RiLogoutBoxRLine } from "react-icons/ri";
-import Logo from "./Logo";
-import ButtonIcon from "./ButtonIcon";
-import Divider from "./Divider";
-import ThemeSwitcher from "./ThemeSwitcher";
+import Logo from "@/components/v2/Logo";
+import ButtonIcon from "@/components/v2/ButtonIcon";
+import Divider from "@/components/v2/Divider";
+import ThemeSwitcher from "@/components/v2/ThemeSwitcher";
 
 const LeftPanel = () => {
   return (

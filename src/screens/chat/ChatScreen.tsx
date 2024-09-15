@@ -1,4 +1,4 @@
-import LeftPanel from "@/components/v2/LeftPanel";
+import LeftPanel from "@/layouts/LeftPanel";
 import { BsThreeDots } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
 import { GiBrainTentacle } from "react-icons/gi";
