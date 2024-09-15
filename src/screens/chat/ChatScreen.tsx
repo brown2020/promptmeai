@@ -1,14 +1,13 @@
-import LeftPanel from "@/layouts/LeftPanel";
 import MyChatSection from "./sections/MyChatSection";
 import ChatDetailSection from "./sections/ChatDetailSection";
+import { Fragment } from "react";
 
 const ChatScreen = () => {
   return (
-    <div className="flex h-screen w-screen">
-      <LeftPanel />
+    <Fragment>
       <MyChatSection />
       <ChatDetailSection />
-    </div>
+    </Fragment>
   );
 };
 
