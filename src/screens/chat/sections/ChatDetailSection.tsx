@@ -5,14 +5,16 @@ import { ImMagicWand } from "react-icons/im";
 import { IoMicOutline, IoSearch } from "react-icons/io5";
 import { PiPaperPlaneTilt } from "react-icons/pi";
 
-const ChatDetailSection = () => {
+type ChatDetailSectionProps = {
+  title: string;
+};
+
+const ChatDetailSection = ({ title }: ChatDetailSectionProps) => {
   return (
     <div className="w-full h-full p-[16px] flex flex-col gap-[16px]">
       {/* Top section */}
       <div className="flex justify-between items-center">
-        <h3 className="text-[20px] font-bold text-[#1E1F22]">
-          Warning Messages Samples
-        </h3>
+        <h3 className="text-[20px] font-bold text-[#1E1F22]">{title}</h3>
         <div className="flex gap-[8px]">
           <div className="h-[32px] w-[32px] rounded-lg cursor-pointer bg-[#EFEFEF] flex justify-center items-center">
             <IoSearch size={16} color="#1E1F22" />

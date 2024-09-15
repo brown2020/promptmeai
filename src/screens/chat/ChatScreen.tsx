@@ -6,7 +6,7 @@ const ChatScreen = () => {
   return (
     <Fragment>
       <MyChatSection />
-      <ChatDetailSection />
+      <ChatDetailSection title="Warning Messages Samples" />
     </Fragment>
   );
 };
