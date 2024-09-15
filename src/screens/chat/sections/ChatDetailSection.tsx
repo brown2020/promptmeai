@@ -4,6 +4,7 @@ import { GiBrainTentacle } from "react-icons/gi";
 import { ImMagicWand } from "react-icons/im";
 import { IoMicOutline, IoSearch } from "react-icons/io5";
 import { PiPaperPlaneTilt } from "react-icons/pi";
+import ChatDetailController from "../components/ChatDetailController";
 
 type ChatDetailSectionProps = {
   title: string;
@@ -15,14 +16,7 @@ const ChatDetailSection = ({ title }: ChatDetailSectionProps) => {
       {/* Top section */}
       <div className="flex justify-between items-center">
         <h3 className="text-[20px] font-bold text-[#1E1F22]">{title}</h3>
-        <div className="flex gap-[8px]">
-          <div className="h-[32px] w-[32px] rounded-lg cursor-pointer bg-[#EFEFEF] flex justify-center items-center">
-            <IoSearch size={16} color="#1E1F22" />
-          </div>
-          <div className="h-[32px] w-[32px] rounded-lg cursor-pointer bg-[#EFEFEF] flex justify-center items-center">
-            <BsThreeDots size={16} color="#1E1F22" />
-          </div>
-        </div>
+        <ChatDetailController />
       </div>
       {/* main chat detail section */}
       <div className="bg-[#F5F5F5] h-[calc(100%-48px)] w-[calc(100% + 32px)] rounded-lg ml-[-16px] flex justify-center px-[24px]">
