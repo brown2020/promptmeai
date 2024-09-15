@@ -1,10 +1,9 @@
-import { BsThreeDots } from "react-icons/bs";
-import { CgProfile } from "react-icons/cg";
 import { GiBrainTentacle } from "react-icons/gi";
 import { ImMagicWand } from "react-icons/im";
-import { IoMicOutline, IoSearch } from "react-icons/io5";
+import { IoMicOutline } from "react-icons/io5";
 import { PiPaperPlaneTilt } from "react-icons/pi";
 import ChatDetailController from "../components/ChatDetailController";
+import ChatProfileIcon from "../components/ChatProfileIcon";
 
 type ChatDetailSectionProps = {
   title: string;
@@ -27,11 +26,7 @@ const ChatDetailSection = ({ title }: ChatDetailSectionProps) => {
             {/* Self chat card*/}
             <div className="relative flex flex-col gap-[4px] ml-[16px] self-end">
               {/* ProfileIcon */}
-              <div className="absolute top-[8px] left-[-16px]">
-                <div className="bg-[#F9F9F9] rounded-lg w-[32px] h-[32px] flex justify-center items-center shadow">
-                  <CgProfile className="text-[#255148]" size={16} />
-                </div>
-              </div>
+              <ChatProfileIcon />
               <div className="flex gap-[8px] items-center text-[#1E1F22] ml-[24px]">
                 <span className="text-[12px] font-bold ">You</span>
                 <span className="text-[10px]">24 Sep - 11:30 PM</span>
