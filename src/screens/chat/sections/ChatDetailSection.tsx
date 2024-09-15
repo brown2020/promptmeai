@@ -1,9 +1,8 @@
-import { GiBrainTentacle } from "react-icons/gi";
 import { ImMagicWand } from "react-icons/im";
 import { IoMicOutline } from "react-icons/io5";
 import { PiPaperPlaneTilt } from "react-icons/pi";
 import ChatDetailController from "../components/ChatDetailController";
-import ChatProfileIcon from "../components/ChatProfileIcon";
+import ChatResponseCard from "../components/ChatResponseCard";
 
 type ChatDetailSectionProps = {
   title: string;
@@ -23,36 +22,18 @@ const ChatDetailSection = ({ title }: ChatDetailSectionProps) => {
         <div className="h-full w-full max-w-[736px] flex flex-col gap-[24px] justify-between items-center py-[24px] ">
           {/* Chat detail section */}
           <div className="h-full w-full overflow-y-auto flex flex-col gap-[24px] pr-[8px] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500">
-            {/* Self chat card*/}
-            <div className="relative flex flex-col gap-[4px] ml-[16px] self-end">
-              {/* ProfileIcon */}
-              <ChatProfileIcon />
-              <div className="flex gap-[8px] items-center text-[#1E1F22] ml-[24px]">
-                <span className="text-[12px] font-bold ">You</span>
-                <span className="text-[10px]">24 Sep - 11:30 PM</span>
-              </div>
-              <div className="min-h-[40px] w-fit bg-white rounded-lg py-[12px] px-[24px] flex items-center">
-                <div className="text-[14px] text-[#1E1F22]">
-                  How do you define usability testing in UX design?
-                </div>
-              </div>
-            </div>
+            <ChatResponseCard
+              type="self"
+              date="24 Sep - 11:30 PM"
+              response="How do you define usability testing in UX design?"
+            />
 
             {/* Open AI response */}
-            <div className="relative flex flex-col gap-[4px] ml-[16px]">
-              {/* AiIcon */}
-              <div className="absolute top-[8px] left-[-16px]">
-                <div className="bg-[#14A27F] rounded-lg w-[32px] h-[32px] flex justify-center items-center shadow">
-                  <GiBrainTentacle color="white" size={16} />
-                </div>
-              </div>
-              <div className="flex gap-[8px] items-center text-[#1E1F22] ml-[24px]">
-                <span className="text-[12px] font-bold ">GPT-4 Omni</span>
-                <span className="text-[10px]">24 Sep - 11:30 PM</span>
-              </div>
-              <div className="min-h-[40px] w-fit bg-[#14A27F]/[0.15] rounded-lg py-[12px] px-[24px] flex items-center">
-                <div className="text-[14px] text-[#1E1F22]">
-                  Sure! Here are three different versions of 404 error messages
+            <ChatResponseCard
+              type="ai"
+              aiModel="gpt"
+              date="24 Sep - 11:30 PM"
+              response="Sure! Here are three different versions of 404 error messages
                   for an ecommerce clothing website: Uh-oh! It looks like the
                   page you're looking for isn't here. Please check the URL and
                   try again or return to the homepage to continue shopping. 2.
@@ -63,26 +44,15 @@ const ChatDetailSection = ({ title }: ChatDetailSectionProps) => {
                   access isn't available. It's possible that the item has sold
                   out or the page has been removed. Please click back to return
                   to the previous page or head over to our homepage to explore
-                  more.
-                </div>
-              </div>
-            </div>
+                  more."
+            />
 
             {/* Gemini AI response */}
-            <div className="relative flex flex-col gap-[4px] ml-[16px]">
-              {/* AiIcon */}
-              <div className="absolute top-[8px] left-[-16px]">
-                <div className="bg-[#FF6F61] rounded-lg w-[32px] h-[32px] flex justify-center items-center shadow">
-                  <GiBrainTentacle color="white" size={16} />
-                </div>
-              </div>
-              <div className="flex gap-[8px] items-center text-[#1E1F22] ml-[24px]">
-                <span className="text-[12px] font-bold ">Gemini 1.5 Pro</span>
-                <span className="text-[10px]">24 Sep - 11:30 PM</span>
-              </div>
-              <div className="min-h-[40px] w-fit bg-[#FF6F61]/[0.15] rounded-lg py-[12px] px-[24px] flex items-center">
-                <div className="text-[14px] text-[#1E1F22]">
-                  Sure! Here are three different versions of 404 error messages
+            <ChatResponseCard
+              type="ai"
+              aiModel="gemini"
+              date="24 Sep - 11:30 PM"
+              response="Sure! Here are three different versions of 404 error messages
                   for an ecommerce clothing website: Uh-oh! It looks like the
                   page you're looking for isn't here. Please check the URL and
                   try again or return to the homepage to continue shopping. 2.
@@ -93,26 +63,15 @@ const ChatDetailSection = ({ title }: ChatDetailSectionProps) => {
                   access isn't available. It's possible that the item has sold
                   out or the page has been removed. Please click back to return
                   to the previous page or head over to our homepage to explore
-                  more.
-                </div>
-              </div>
-            </div>
+                  more."
+            />
 
             {/* Mistral AI response */}
-            <div className="relative flex flex-col gap-[4px] ml-[16px]">
-              {/* AiIcon */}
-              <div className="absolute top-[8px] left-[-16px]">
-                <div className="bg-[#3498DB] rounded-lg w-[32px] h-[32px] flex justify-center items-center shadow">
-                  <GiBrainTentacle color="white" size={16} />
-                </div>
-              </div>
-              <div className="flex gap-[8px] items-center text-[#1E1F22] ml-[24px]">
-                <span className="text-[12px] font-bold ">Mistral Large</span>
-                <span className="text-[10px]">24 Sep - 11:30 PM</span>
-              </div>
-              <div className="min-h-[40px] w-fit bg-[#3498DB]/[0.15] rounded-lg py-[12px] px-[24px] flex items-center">
-                <div className="text-[14px] text-[#1E1F22]">
-                  Sure! Here are three different versions of 404 error messages
+            <ChatResponseCard
+              type="ai"
+              aiModel="mistral"
+              date="24 Sep - 11:30 PM"
+              response="Sure! Here are three different versions of 404 error messages
                   for an ecommerce clothing website: Uh-oh! It looks like the
                   page you're looking for isn't here. Please check the URL and
                   try again or return to the homepage to continue shopping. 2.
@@ -123,28 +82,15 @@ const ChatDetailSection = ({ title }: ChatDetailSectionProps) => {
                   access isn't available. It's possible that the item has sold
                   out or the page has been removed. Please click back to return
                   to the previous page or head over to our homepage to explore
-                  more.
-                </div>
-              </div>
-            </div>
+                  more."
+            />
 
             {/* Claude AI response */}
-            <div className="relative flex flex-col gap-[4px] ml-[16px]">
-              {/* AiIcon */}
-              <div className="absolute top-[8px] left-[-16px]">
-                <div className="bg-[#F39C12] rounded-lg w-[32px] h-[32px] flex justify-center items-center shadow">
-                  <GiBrainTentacle color="white" size={16} />
-                </div>
-              </div>
-              <div className="flex gap-[8px] items-center text-[#1E1F22] ml-[24px]">
-                <span className="text-[12px] font-bold ">
-                  Claude 3.5 Sonnet
-                </span>
-                <span className="text-[10px]">24 Sep - 11:30 PM</span>
-              </div>
-              <div className="min-h-[40px] w-fit bg-[#F39C12]/[0.15] rounded-lg py-[12px] px-[24px] flex items-center">
-                <div className="text-[14px] text-[#1E1F22]">
-                  Sure! Here are three different versions of 404 error messages
+            <ChatResponseCard
+              type="ai"
+              aiModel="claude"
+              date="24 Sep - 11:30 PM"
+              response="Sure! Here are three different versions of 404 error messages
                   for an ecommerce clothing website: Uh-oh! It looks like the
                   page you're looking for isn't here. Please check the URL and
                   try again or return to the homepage to continue shopping. 2.
@@ -155,26 +101,15 @@ const ChatDetailSection = ({ title }: ChatDetailSectionProps) => {
                   access isn't available. It's possible that the item has sold
                   out or the page has been removed. Please click back to return
                   to the previous page or head over to our homepage to explore
-                  more.
-                </div>
-              </div>
-            </div>
+                  more."
+            />
 
             {/* LLaMA 3.1 405B AI response */}
-            <div className="relative flex flex-col gap-[4px] ml-[16px]">
-              {/* AiIcon */}
-              <div className="absolute top-[8px] left-[-16px]">
-                <div className="bg-[#8E44AD] rounded-lg w-[32px] h-[32px] flex justify-center items-center shadow">
-                  <GiBrainTentacle color="white" size={16} />
-                </div>
-              </div>
-              <div className="flex gap-[8px] items-center text-[#1E1F22] ml-[24px]">
-                <span className="text-[12px] font-bold ">LLaMA 3.1 405B</span>
-                <span className="text-[10px]">24 Sep - 11:30 PM</span>
-              </div>
-              <div className="min-h-[40px] w-fit bg-[#8E44AD]/[0.15] rounded-lg py-[12px] px-[24px] flex items-center">
-                <div className="text-[14px] text-[#1E1F22]">
-                  Sure! Here are three different versions of 404 error messages
+            <ChatResponseCard
+              type="ai"
+              aiModel="llama"
+              date="24 Sep - 11:30 PM"
+              response="Sure! Here are three different versions of 404 error messages
                   for an ecommerce clothing website: Uh-oh! It looks like the
                   page you're looking for isn't here. Please check the URL and
                   try again or return to the homepage to continue shopping. 2.
@@ -185,10 +120,8 @@ const ChatDetailSection = ({ title }: ChatDetailSectionProps) => {
                   access isn't available. It's possible that the item has sold
                   out or the page has been removed. Please click back to return
                   to the previous page or head over to our homepage to explore
-                  more.
-                </div>
-              </div>
-            </div>
+                  more."
+            />
           </div>
           {/* Chat input section */}
           <div className="self-end w-full max-w-[720px] h-[56px] flex-shrink-0 flex gap-[16px] justify-center items-center">
