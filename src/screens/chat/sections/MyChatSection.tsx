@@ -1,9 +1,9 @@
+import ButtonIcon from "@/components/v2/ButtonIcon";
 import { BsThreeDots } from "react-icons/bs";
 import { HiOutlinePlus } from "react-icons/hi";
-import ButtonIcon from "./ButtonIcon";
-import ChatTabs from "./ChatTabs";
-import SearchInput from "./SearchInput";
-import ChatList from "./ChatList";
+import ChatTabs from "../components/ChatTabs";
+import SearchInput from "../components/SearchInput";
+import ChatList from "../components/ChatList";
 
 const MyChatSection = () => {
   return (

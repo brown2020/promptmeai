@@ -1,6 +1,6 @@
+import ButtonIcon from "@/components/v2/ButtonIcon";
 import { IoSearch } from "react-icons/io5";
 import { LuListFilter } from "react-icons/lu";
-import ButtonIcon from "./ButtonIcon";
 
 const SearchInput = () => {
   return (
