@@ -1,6 +1,7 @@
 import { AiModels } from "@/types/ai";
 import ChatProfileIcon from "./ChatProfileIcon";
 import ChatAiIcon from "./ChatAiIcon";
+import { cn } from "@/utils/tailwind";
 
 type ChatResponseCardProps = {
   type: "self" | "ai";
@@ -43,7 +44,18 @@ const ChatResponseCard = ({
         </span>
         <span className="text-[10px]">{date}</span>
       </div>
-      <div className="min-h-[40px] w-fit bg-white rounded-lg py-[12px] px-[24px] flex items-center">
+      <div
+        className={cn(
+          "min-h-[40px] w-fit bg-white rounded-lg py-[12px] px-[24px] flex items-center",
+          {
+            "bg-[#14A27F]/[0.15]": aiModel === "gpt",
+            "bg-[#FF6F61]/[0.15]": aiModel === "gemini",
+            "bg-[#3498DB]/[0.15]": aiModel === "mistral",
+            "bg-[#F39C12]/[0.15]": aiModel === "claude",
+            "bg-[#8E44AD]/[0.15]": aiModel === "llama",
+          }
+        )}
+      >
         <div className="text-[14px] text-[#1E1F22]">{response}</div>
       </div>
     </div>
