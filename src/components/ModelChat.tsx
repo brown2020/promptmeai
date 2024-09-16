@@ -1,6 +1,6 @@
 "use client";
 
-import { MODELNAMES } from "@/constants/modelNames";
+import { MODEL_NAMES } from "@/constants/modelNames";
 import { useChatStore } from "@/zustand/useChatStore";
 import { useEffect, useRef } from "react";
 import Markdown from "react-markdown";
@@ -27,7 +27,7 @@ export const ModelChat: React.FC = () => {
         </div>
       </div>
       <div className="space-y-2 mt-2">
-        {MODELNAMES.map((model) => {
+        {MODEL_NAMES.map((model) => {
           const response = message.responses[model.value];
           return response ? (
             <div

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { type CoreMessage } from "ai";
-import { MODELNAMES } from "@/constants/modelNames";
+import { MODEL_NAMES } from "@/constants/modelNames";
 import { continueConversation } from "@/actions/generateActions";
 import { readStreamableValue } from "ai/rsc";
 import { useChatStore } from "@/zustand/useChatStore";
@@ -139,7 +139,7 @@ export default function ChatCompare() {
 
     try {
       await Promise.all(
-        MODELNAMES.map((model) =>
+        MODEL_NAMES.map((model) =>
           getAssistantResponse(model.value, newUserMessage)
         )
       );
