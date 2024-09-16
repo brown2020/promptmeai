@@ -1,8 +1,6 @@
-import { ImMagicWand } from "react-icons/im";
-import { IoMicOutline } from "react-icons/io5";
-import { PiPaperPlaneTilt } from "react-icons/pi";
 import ChatDetailController from "../components/ChatDetailController";
 import ChatResponseCard from "../components/ChatResponseCard";
+import ChatInput from "../components/ChatInput";
 
 type ChatDetailSectionProps = {
   title: string;
@@ -16,9 +14,9 @@ const ChatDetailSection = ({ title }: ChatDetailSectionProps) => {
         <h3 className="text-[20px] font-bold text-[#1E1F22]">{title}</h3>
         <ChatDetailController />
       </div>
-      {/* main chat detail section */}
+      {/* Main chat detail section */}
       <div className="bg-[#F5F5F5] h-[calc(100%-48px)] w-[calc(100% + 32px)] rounded-lg ml-[-16px] flex justify-center px-[24px]">
-        {/* wrapper */}
+        {/* Wrapper */}
         <div className="h-full w-full max-w-[736px] flex flex-col gap-[24px] justify-between items-center py-[24px] ">
           {/* Chat detail section */}
           <div className="h-full w-full overflow-y-auto flex flex-col gap-[24px] pr-[8px] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500">
@@ -124,23 +122,7 @@ const ChatDetailSection = ({ title }: ChatDetailSectionProps) => {
             />
           </div>
           {/* Chat input section */}
-          <div className="self-end w-full max-w-[720px] h-[56px] flex-shrink-0 flex gap-[16px] justify-center items-center">
-            <div className="w-full bg-white rounded-xl shadow p-[12px] flex gap-[12px] items-center">
-              <div className="flex items-center justify-center h-[32px] w-[32px] bg-[#E7E9F0] rounded-lg cursor-pointer flex-shrink-0">
-                <ImMagicWand size={14} />
-              </div>
-              <input
-                className="w-full text-[14px] text-[#A0A7BB] outline-none"
-                placeholder="Ask questions, or type '/' for commands"
-              />
-              <div className="flex items-center justify-center h-[32px] w-[32px] rounded-lg cursor-pointer flex-shrink-0">
-                <PiPaperPlaneTilt size={18} color="#ABABAB" />
-              </div>
-            </div>
-            <div className="cursor-pointer w-[56px] h-[56px] flex-shrink-0 bg-white rounded-xl flex justify-center items-center shadow">
-              <IoMicOutline size={24} color="#ABABAB" />
-            </div>
-          </div>
+          <ChatInput />
         </div>
       </div>
     </div>
