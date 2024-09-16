@@ -32,7 +32,11 @@ const ChatResponseCard = ({
   response,
 }: ChatResponseCardProps) => {
   return (
-    <div className="relative flex flex-col gap-[4px] ml-[16px] self-end">
+    <div
+      className={cn("relative flex flex-col gap-[4px] ml-[16px]", {
+        "self-end": type === "self",
+      })}
+    >
       {type === "ai" && aiModel ? (
         <ChatAiIcon aiModel={aiModel} />
       ) : (
