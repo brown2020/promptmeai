@@ -1,4 +1,5 @@
 import { db } from "@/firebase/firebaseClient";
+import { ChatDetail } from "@/types/chat";
 import { CoreMessage } from "ai";
 import {
   addDoc,
@@ -114,9 +115,7 @@ export async function getChat(
 }
 
 // Function to get all chat details
-export async function getAllChatDetails(
-  userId: string
-): Promise<Array<{ id: string; name: string }>> {
+export async function getAllChatDetails(userId: string): Promise<ChatDetail[]> {
   try {
     const chatsRef = collection(db, COLLECTION_NAME, userId, "chat");
     const querySnapshot = await getDocs(chatsRef);
@@ -124,6 +123,7 @@ export async function getAllChatDetails(
     return querySnapshot.docs.map((doc) => ({
       id: doc.id,
       name: doc.data().name || "Unnamed Chat",
+      timestamp: doc.data().timestamp,
     }));
   } catch (error) {
     handleFirestoreError(error, "Error getting chat details");
