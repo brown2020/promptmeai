@@ -11,16 +11,14 @@ const ChatDetailSection = () => {
   const [title, setTitle] = useState<string>("");
 
   useEffect(() => {
-    if (activeChatId) {
-      setTitle(chats.find((chat) => chat.id === activeChatId)?.name || "");
-    }
+    setTitle(chats.find((chat) => chat.id === activeChatId)?.name || "");
   }, [activeChatId, chats]);
 
   return (
     <div className="w-full h-full p-[16px] flex flex-col gap-[16px]">
       {/* Top section */}
       <div className="flex justify-between items-center">
-        <h3 className="text-[20px] text-ellipsis text-[#1E1F22]">{title}</h3>
+        <h3 className="text-[18px] text-ellipsis text-[#1E1F22]">{title}</h3>
         <ChatDetailController />
       </div>
       {/* Main chat detail section */}

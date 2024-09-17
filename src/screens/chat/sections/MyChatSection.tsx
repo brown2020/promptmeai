@@ -9,10 +9,14 @@ import { useEffect } from "react";
 import { getAllChatDetails } from "@/services/chatService";
 import { useUser } from "@clerk/nextjs";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
+import { useChatStore } from "@/zustand/useChatStore";
 
 const MyChatSection = () => {
   const { user } = useUser();
-  const { chats, setChats } = useChatSideBarStore((state) => state);
+  const { chats, setChats, setActiveChatId } = useChatSideBarStore(
+    (state) => state
+  );
+  const { setMessages } = useChatStore((state) => state);
 
   useEffect(() => {
     const getAllChatsInfo = async (userId: string) => {
@@ -29,14 +33,17 @@ const MyChatSection = () => {
     }
   }, [setChats, user?.id]);
 
+  const addNewChat = () => {
+    setActiveChatId("");
+    setMessages([]);
+  };
+
   return (
     <div className="w-[320px] bg-white p-[15px] flex flex-col gap-[16px]">
       {/* Top section */}
       <div className="flex justify-between items-center gap-[10px]">
         <h2 className="text-[20px] font-bold">My Chats</h2>
-        <div className="flex gap-[10px]">
-          <ButtonIcon icon={HiOutlinePlus} type="primary" />
-        </div>
+        <ButtonIcon icon={HiOutlinePlus} type="primary" onClick={addNewChat} />
       </div>
 
       <ChatTabs />

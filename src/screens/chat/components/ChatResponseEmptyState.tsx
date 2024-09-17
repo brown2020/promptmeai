@@ -38,7 +38,7 @@ const ChatResponseEmptyState = () => {
           transition: { duration: 0.5, delay: 0.4 },
         }}
       >
-        Can I help you with anything?
+        What can I help with?
       </motion.span>
     </div>
   );

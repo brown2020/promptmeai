@@ -9,6 +9,7 @@ type ButtonIconProps = {
   isActive?: boolean;
   iconSize?: number;
   className?: ClassNameValue;
+  onClick?: () => void;
 } & PropsWithChildren;
 
 const ButtonIcon = ({
@@ -17,6 +18,7 @@ const ButtonIcon = ({
   isActive = false,
   iconSize = 18,
   className,
+  ...props
 }: ButtonIconProps) => {
   return (
     <div
@@ -29,6 +31,7 @@ const ButtonIcon = ({
         },
         className
       )}
+      {...props}
     >
       <Icon
         className={cn("text-[#255148]", {
