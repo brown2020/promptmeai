@@ -1,5 +1,5 @@
 import { ChatDetail } from "@/types/chat";
-import { groupChatByDate, sortByDateDesc } from "@/utils/date";
+import { groupChatByDate, sortByDateDesc } from "@/utils/chat";
 import ChatGroupedList from "./ChatGroupedList";
 
 type ChatListProps = {
