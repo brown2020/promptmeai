@@ -2,9 +2,9 @@
 
 import ButtonIcon from "@/components/v2/ButtonIcon";
 import { HiOutlinePlus } from "react-icons/hi";
-import ChatTabs from "../components/ChatTabs";
-import SearchInput from "../components/SearchInput";
-import ChatList from "../components/ChatList";
+import ChatTabs from "./components/ChatTabs";
+import SearchInput from "./components/SearchInput";
+import ChatList from "./components/ChatList";
 import { useEffect } from "react";
 import { getAllChatDetails } from "@/services/chatService";
 import { useUser } from "@clerk/nextjs";

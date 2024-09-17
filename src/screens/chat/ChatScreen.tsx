@@ -1,4 +1,4 @@
-import MyChatSection from "./sections/MyChatSection";
+import MyChatSection from "./sections/my-chat";
 import ChatDetailSection from "./sections/ChatDetailSection";
 import { Fragment } from "react";
 
