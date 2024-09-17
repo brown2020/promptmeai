@@ -24,7 +24,7 @@ const ChatCard = ({ id, title }: ChatCardProps) => {
       onClick={() => setActiveChatId(id)}
     >
       <div className="flex items-center justify-between gap-[8px]">
-        <h4 className="text-[14px] font-semibold text-[#1E1F22] whitespace-nowrap overflow-hidden text-ellipsis">
+        <h4 className="text-[14px] text-[#1E1F22] whitespace-nowrap overflow-hidden text-ellipsis">
           {title}
         </h4>
       </div>

@@ -7,7 +7,7 @@ type ChatListProps = {
 
 const ChatList = ({ chatList }: ChatListProps) => {
   return (
-    <div className="flex flex-col flex-shrink-0 gap-[8px]">
+    <div className="flex flex-col flex-shrink-0 gap-[4px]">
       {chatList.map((chat) => (
         <ChatCard key={chat.id} id={chat.id} title={chat.name} />
       ))}

@@ -1,26 +1,24 @@
 "use client";
 
 import ButtonIcon from "@/components/v2/ButtonIcon";
-import { BsThreeDots } from "react-icons/bs";
 import { HiOutlinePlus } from "react-icons/hi";
 import ChatTabs from "../components/ChatTabs";
 import SearchInput from "../components/SearchInput";
 import ChatList from "../components/ChatList";
-import { useEffect, useState } from "react";
-import { ChatDetail } from "@/types/chat";
+import { useEffect } from "react";
 import { getAllChatDetails } from "@/services/chatService";
 import { useUser } from "@clerk/nextjs";
+import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 
 const MyChatSection = () => {
   const { user } = useUser();
-
-  const [chatList, setChatList] = useState<ChatDetail[]>([]);
+  const { chats, setChats } = useChatSideBarStore((state) => state);
 
   useEffect(() => {
     const getAllChatsInfo = async (userId: string) => {
       try {
         const chatDetails = await getAllChatDetails(userId);
-        setChatList(chatDetails);
+        setChats(chatDetails);
       } catch (error) {
         console.error("Error fetching all chat details: ", error);
       }
@@ -29,7 +27,7 @@ const MyChatSection = () => {
     if (user?.id) {
       getAllChatsInfo(user.id);
     }
-  }, [user?.id]);
+  }, [setChats, user?.id]);
 
   return (
     <div className="w-[320px] bg-white p-[15px] flex flex-col gap-[16px]">
@@ -41,12 +39,9 @@ const MyChatSection = () => {
         </div>
       </div>
 
-      {/* Tab section */}
       <ChatTabs />
-      {/* Search section */}
       <SearchInput />
-      {/* Chat list section */}
-      <ChatList chatList={chatList} />
+      <ChatList chatList={chats} />
     </div>
   );
 };
