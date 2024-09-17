@@ -6,14 +6,12 @@ import ChatProfileIcon from "./ChatProfileIcon";
 type ChatResponseCardProps = {
   type: "self" | "ai";
   aiModel?: string;
-  date: string;
   content: string;
 };
 
 const ChatResponseCard = ({
   type,
   aiModel,
-  date,
   content,
 }: ChatResponseCardProps) => {
   return (
@@ -29,7 +27,6 @@ const ChatResponseCard = ({
       )}
       <div className="flex gap-[8px] items-center text-[#1E1F22] ml-[24px]">
         <span className="text-[12px] font-bold ">{aiModel || "You"}</span>
-        <span className="text-[10px]">{date}</span>
       </div>
       <div
         className={cn(

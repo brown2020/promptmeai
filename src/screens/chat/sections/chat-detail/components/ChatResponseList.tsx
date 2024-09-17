@@ -36,7 +36,6 @@ const ChatResponseList = () => {
           <Fragment key={i}>
             <ChatResponseCard
               type="self"
-              date="now"
               content={message.userMessage.content as string}
             />
 
@@ -49,7 +48,6 @@ const ChatResponseList = () => {
                   key={model.value}
                   type="ai"
                   aiModel={model.label}
-                  date="Now"
                   content={response.content as string}
                 />
               );
