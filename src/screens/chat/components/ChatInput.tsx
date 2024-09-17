@@ -8,9 +8,7 @@ import { useChatStore } from "@/zustand/useChatStore";
 import { useUser } from "@clerk/nextjs";
 import { CoreMessage } from "ai";
 import { readStreamableValue } from "ai/rsc";
-import { useCallback, useState } from "react";
-import { ImMagicWand } from "react-icons/im";
-import { IoMicOutline } from "react-icons/io5";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { PiPaperPlaneTilt } from "react-icons/pi";
 
 const ChatInput = () => {
@@ -19,8 +17,15 @@ const ChatInput = () => {
   const { activeChatId, setActiveChatId } = useChatSideBarStore(
     (state) => state
   );
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const [input, setInput] = useState<string>("");
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus(); // Automatically focus the input
+    }
+  }, []);
 
   const getAssistantResponse = useCallback(
     async (model: string, userMessage: CoreMessage) => {
@@ -96,6 +101,7 @@ const ChatInput = () => {
     <div className="self-end w-full max-w-[720px] h-[56px] flex-shrink-0 flex gap-[16px] justify-center items-center">
       <div className="w-full bg-white rounded-xl shadow px-[16px] py-[12px] flex gap-[12px] items-center">
         <input
+          ref={inputRef}
           className="w-full text-[14px] text-[#A0A7BB] outline-none"
           placeholder="Type your question here..."
           value={input}
