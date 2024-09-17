@@ -1,5 +1,5 @@
 import { ChatDetail } from "@/types/chat";
-import { groupChatByDate, sortByDateDesc } from "@/utils/chat";
+import { groupChatByDate, sortChatByDateDesc } from "@/utils/chat";
 import ChatGroupedList from "./ChatGroupedList";
 
 type ChatListProps = {
@@ -7,7 +7,7 @@ type ChatListProps = {
 };
 
 const ChatList = ({ chatList }: ChatListProps) => {
-  const chatSortedDesc = sortByDateDesc(chatList);
+  const chatSortedDesc = sortChatByDateDesc(chatList);
   const groupedData = groupChatByDate(chatSortedDesc);
 
   return (

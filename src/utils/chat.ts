@@ -9,7 +9,16 @@ type ChatGroups = {
   previousMonths: Record<string, ChatDetail[]>;
 };
 
-export const sortByDateDesc = (list: ChatDetail[]) => {
+export const searchChatByName = (
+  data: ChatDetail[],
+  searchTerm: string
+): ChatDetail[] => {
+  return data.filter((chat) =>
+    chat.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+};
+
+export const sortChatByDateDesc = (list: ChatDetail[]) => {
   return list.sort((a, b) =>
     moment(b.timestamp.toDate()).diff(moment(a.timestamp.toDate()))
   );
