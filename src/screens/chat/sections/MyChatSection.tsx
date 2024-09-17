@@ -38,7 +38,6 @@ const MyChatSection = () => {
         <h2 className="text-[20px] font-bold">My Chats</h2>
         <div className="flex gap-[10px]">
           <ButtonIcon icon={HiOutlinePlus} type="primary" />
-          <ButtonIcon icon={BsThreeDots} type="secondary" />
         </div>
       </div>
 
