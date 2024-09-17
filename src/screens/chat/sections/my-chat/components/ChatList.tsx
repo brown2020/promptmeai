@@ -1,16 +1,38 @@
 import { ChatDetail } from "@/types/chat";
-import ChatCard from "./ChatCard";
+import { groupChatByDate, sortByDateDesc } from "@/utils/date";
+import ChatGroupedList from "./ChatGroupedList";
 
 type ChatListProps = {
   chatList: ChatDetail[];
 };
 
 const ChatList = ({ chatList }: ChatListProps) => {
+  const chatSortedDesc = sortByDateDesc(chatList);
+  const groupedData = groupChatByDate(chatSortedDesc);
+
   return (
-    <div className="flex flex-col flex-shrink-0 gap-[4px]">
-      {chatList.map((chat) => (
-        <ChatCard key={chat.id} id={chat.id} title={chat.name} />
-      ))}
+    <div className="flex flex-col gap-[8px]">
+      {groupedData.today.length > 0 && (
+        <ChatGroupedList groupName="Today" chatList={groupedData.today} />
+      )}
+      {groupedData.yesterday.length > 0 && (
+        <ChatGroupedList
+          groupName="Yesterday"
+          chatList={groupedData.yesterday}
+        />
+      )}
+      {groupedData.previous7Days.length > 0 && (
+        <ChatGroupedList
+          groupName="Previous 7 Days"
+          chatList={groupedData.previous7Days}
+        />
+      )}
+      {groupedData.previous30Days.length > 0 && (
+        <ChatGroupedList
+          groupName="Previous 30 Days"
+          chatList={groupedData.previous30Days}
+        />
+      )}
     </div>
   );
 };

@@ -9,6 +9,12 @@ type ChatGroups = {
   previousMonths: Record<string, ChatDetail[]>;
 };
 
+export const sortByDateDesc = (list: ChatDetail[]) => {
+  return list.sort((a, b) =>
+    moment(b.timestamp.toDate()).diff(moment(a.timestamp.toDate()))
+  );
+};
+
 export const groupChatByDate = (data: ChatDetail[]): ChatGroups => {
   const today = moment();
   const yesterday = moment().subtract(1, "days");
