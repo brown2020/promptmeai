@@ -2,12 +2,12 @@
 
 import { useChatStore } from "@/zustand/useChatStore";
 import ChatResponseEmptyState from "./ChatResponseEmptyState";
-import ChatResponseCard from "./ChatResponseCard";
 import { Fragment, useEffect } from "react";
 import { MODEL_NAMES } from "@/constants/modelNames";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { useUser } from "@clerk/nextjs";
 import { getChat } from "@/services/chatService";
+import ChatResponseCard from "./ChatResponseCard";
 
 const ChatResponseList = () => {
   const { user } = useUser();

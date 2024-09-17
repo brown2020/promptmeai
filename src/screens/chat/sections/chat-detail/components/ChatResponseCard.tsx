@@ -1,7 +1,7 @@
-import ChatProfileIcon from "./ChatProfileIcon";
-import ChatAiIcon from "./ChatAiIcon";
 import { cn } from "@/utils/tailwind";
 import MarkdownRenderer from "@/components/v2/MarkdownRenderer";
+import ChatAiIcon from "./ChatAiIcon";
+import ChatProfileIcon from "./ChatProfileIcon";
 
 type ChatResponseCardProps = {
   type: "self" | "ai";

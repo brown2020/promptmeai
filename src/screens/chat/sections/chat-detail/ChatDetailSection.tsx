@@ -1,10 +1,10 @@
 "use client";
 
-import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
-import ChatDetailController from "../components/ChatDetailController";
-import ChatInput from "../components/ChatInput";
-import ChatResponseList from "../components/ChatResponseList";
 import { useEffect, useState } from "react";
+import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
+import ChatDetailController from "./components/ChatDetailController";
+import ChatInput from "./components/ChatInput";
+import ChatResponseList from "./components/ChatResponseList";
 
 const ChatDetailSection = () => {
   const { activeChatId, chats } = useChatSideBarStore((state) => state);
