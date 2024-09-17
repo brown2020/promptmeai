@@ -45,23 +45,16 @@ const ChatInput = () => {
   );
 
   const saveChatFunction = useCallback(
-    async (coreMessages: CoreMessage[]) => {
+    async (messages: Message[]) => {
       if (user?.id) {
-        const formattedMessages: Message[] = coreMessages.map(
-          (coreMessage) => ({
-            userMessage: coreMessage,
-            responses: {},
-          })
-        );
-
         try {
           if (activeChatId) {
-            await updateChat(user.id, activeChatId, formattedMessages);
+            await updateChat(user.id, activeChatId, messages);
           } else {
             const chatId = await saveChat(
               user.id,
               user.fullName || "",
-              formattedMessages
+              messages
             );
             if (chatId) {
               setActiveChatId(chatId);
@@ -89,9 +82,9 @@ const ChatInput = () => {
         )
       );
 
-      const updatedMessages: CoreMessage[] = useChatStore
+      const updatedMessages: Message[] = useChatStore
         .getState()
-        .messages.map((msg) => msg.userMessage);
+        .messages.map((msg) => msg);
 
       await saveChatFunction(updatedMessages);
     } catch (error) {
