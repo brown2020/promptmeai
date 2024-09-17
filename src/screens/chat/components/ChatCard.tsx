@@ -1,13 +1,18 @@
 import { cn } from "@/utils/tailwind";
+import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 
 type ChatCardProps = {
+  id: string;
   title: string;
-  description: string;
-  time: string;
-  isActive?: boolean;
 };
 
-const ChatCard = ({ title, description, time, isActive }: ChatCardProps) => {
+const ChatCard = ({ id, title }: ChatCardProps) => {
+  const { setActiveChatId, activeChatId } = useChatSideBarStore(
+    (state) => state
+  );
+
+  const isActive = activeChatId === id;
+
   return (
     <div
       className={cn(
@@ -16,12 +21,11 @@ const ChatCard = ({ title, description, time, isActive }: ChatCardProps) => {
           "bg-[#23C69E]/[0.15]": isActive,
         }
       )}
+      onClick={() => setActiveChatId(id)}
     >
       <div className="flex items-center justify-between gap-[8px] ">
         <h4 className="text-[14px] font-semibold text-[#1E1F22]">{title}</h4>
-        <span className="text-[10px] text-[#9F9F9F]">{time}</span>
       </div>
-      <div className="text-[12px] text-[#6D717C] h-42">{description}</div>
     </div>
   );
 };
