@@ -94,23 +94,17 @@ const ChatInput = () => {
 
   return (
     <div className="self-end w-full max-w-[720px] h-[56px] flex-shrink-0 flex gap-[16px] justify-center items-center">
-      <div className="w-full bg-white rounded-xl shadow p-[12px] flex gap-[12px] items-center">
-        <div className="flex items-center justify-center h-[32px] w-[32px] bg-[#E7E9F0] rounded-lg cursor-pointer flex-shrink-0">
-          <ImMagicWand size={14} />
-        </div>
+      <div className="w-full bg-white rounded-xl shadow px-[16px] py-[12px] flex gap-[12px] items-center">
         <input
           className="w-full text-[14px] text-[#A0A7BB] outline-none"
-          placeholder="Ask questions, or type '/' for commands"
+          placeholder="Type your question here..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && submitHandler()}
         />
-        <div className="flex items-center justify-center h-[32px] w-[32px] rounded-lg cursor-pointer flex-shrink-0">
+        <div className="flex items-center justify-center h-[32px] w-[32px] rounded-lg cursor-pointer flex-shrink-0 mr-[-4px]">
           <PiPaperPlaneTilt size={18} color="#ABABAB" />
         </div>
-      </div>
-      <div className="cursor-pointer w-[56px] h-[56px] flex-shrink-0 bg-white rounded-xl flex justify-center items-center shadow">
-        <IoMicOutline size={24} color="#ABABAB" />
       </div>
     </div>
   );
