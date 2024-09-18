@@ -1,3 +1,4 @@
 import useTypingEffect from "./useTypingEffect";
+import useIsClient from "./useIsClient";
 
-export { useTypingEffect };
+export { useTypingEffect, useIsClient };
