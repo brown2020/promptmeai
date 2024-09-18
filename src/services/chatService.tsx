@@ -43,7 +43,7 @@ export async function saveChat(
   userId: string,
   fullName: string,
   messages: Message[]
-): Promise<string | undefined> {
+): Promise<ChatDetail | undefined> {
   const chatData = serializeMessages(messages);
   if (!chatData) return;
 
@@ -60,7 +60,19 @@ export async function saveChat(
         name: chatName,
       }
     );
-    return chatRef.id;
+
+    // Get the document object after adding it
+    const docSnap = await getDoc(chatRef);
+
+    if (docSnap.exists()) {
+      const chatDetail: ChatDetail = {
+        id: docSnap.id,
+        name: docSnap.data().name,
+        timestamp: docSnap.data().timestamp,
+      };
+
+      return chatDetail;
+    }
   } catch (error) {
     handleFirestoreError(error, "Error saving chat");
   }
