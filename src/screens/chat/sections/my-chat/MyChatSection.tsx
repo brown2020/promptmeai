@@ -7,19 +7,19 @@ import SearchInput from "./components/SearchInput";
 import ChatList from "./components/ChatList";
 import { useEffect } from "react";
 import { getAllChatDetails } from "@/services/chatService";
-import { useUser } from "@clerk/nextjs";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { useChatStore } from "@/zustand/useChatStore";
+import { useAuthStore } from "@/zustand/useAuthStore";
 
 const MyChatSection = () => {
-  const { user } = useUser();
+  const { uid, firebaseUid } = useAuthStore((state) => state);
   const { chats, setChats, setActiveChatId } = useChatSideBarStore(
     (state) => state
   );
   const { setMessages } = useChatStore((state) => state);
 
   useEffect(() => {
-    const getAllChatsInfo = async (userId: string) => {
+    const getAllChatList = async (userId: string) => {
       try {
         const chatDetails = await getAllChatDetails(userId);
         setChats(chatDetails);
@@ -28,10 +28,10 @@ const MyChatSection = () => {
       }
     };
 
-    if (user?.id) {
-      getAllChatsInfo(user.id);
+    if (uid && firebaseUid) {
+      getAllChatList(uid);
     }
-  }, [setChats, user?.id]);
+  }, [firebaseUid, setChats, uid]);
 
   const addNewChat = () => {
     setActiveChatId("");
