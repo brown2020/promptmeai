@@ -63,7 +63,7 @@ const ChatInput = () => {
             );
             if (chatData?.id) {
               addChat(chatData);
-              setActiveChatId(chatData.id);
+              setActiveChatId(chatData.id, true);
             }
           }
         } catch (error) {
