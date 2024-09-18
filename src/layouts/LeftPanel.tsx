@@ -1,10 +1,10 @@
-import { CgProfile } from "react-icons/cg";
 import { PiChatsCircle } from "react-icons/pi";
-import { RiListSettingsFill, RiLogoutBoxRLine } from "react-icons/ri";
+import { RiListSettingsFill } from "react-icons/ri";
 import Logo from "@/components/v2/Logo";
 import ButtonIcon from "@/components/v2/ButtonIcon";
 import Divider from "@/components/v2/Divider";
 import ThemeSwitcher from "@/components/v2/ThemeSwitcher";
+import UserProfileButton from "@/components/v2/UserProfileButton";
 
 const LeftPanel = () => {
   return (
@@ -20,8 +20,7 @@ const LeftPanel = () => {
 
       {/* Bottom section */}
       <div className="flex flex-col gap-[25px] justify-center items-center">
-        <ButtonIcon icon={CgProfile} />
-        <ButtonIcon icon={RiLogoutBoxRLine} />
+        <UserProfileButton />
 
         <Divider />
         <ThemeSwitcher />
