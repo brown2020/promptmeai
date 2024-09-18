@@ -4,18 +4,12 @@ import { SignedOut } from "@clerk/clerk-react";
 import { SignInButton } from "@clerk/nextjs";
 import { motion } from "framer-motion";
 import { GiBrainTentacle } from "react-icons/gi";
-import { useEffect, useState } from "react";
+import { useIsClient } from "@/hooks";
 
 const HomeScreen = () => {
-  const [isMounted, setIsMounted] = useState(false);
+  const isClient = useIsClient();
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return null;
-  }
+  if (!isClient) return;
 
   return (
     <div className="h-screen w-screen flex justify-center items-center">
