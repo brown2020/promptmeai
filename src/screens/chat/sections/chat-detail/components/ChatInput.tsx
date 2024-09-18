@@ -14,7 +14,7 @@ import { PiPaperPlaneTilt } from "react-icons/pi";
 const ChatInput = () => {
   const { user } = useUser();
   const { messages, addMessage } = useChatStore((state) => state);
-  const { activeChatId, setActiveChatId } = useChatSideBarStore(
+  const { addChat, activeChatId, setActiveChatId } = useChatSideBarStore(
     (state) => state
   );
   const inputRef = useRef<HTMLInputElement>(null);
@@ -56,13 +56,14 @@ const ChatInput = () => {
           if (activeChatId) {
             await updateChat(user.id, activeChatId, messages);
           } else {
-            const chatId = await saveChat(
+            const chatData = await saveChat(
               user.id,
               user.fullName || "",
               messages
             );
-            if (chatId) {
-              setActiveChatId(chatId);
+            if (chatData?.id) {
+              addChat(chatData);
+              setActiveChatId(chatData.id);
             }
           }
         } catch (error) {
@@ -70,7 +71,7 @@ const ChatInput = () => {
         }
       }
     },
-    [activeChatId, user?.id, user?.fullName, setActiveChatId]
+    [activeChatId, addChat, setActiveChatId, user?.fullName, user?.id]
   );
 
   const submitHandler = async () => {
