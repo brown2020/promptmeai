@@ -42,7 +42,7 @@ export default function ChatCompare() {
   const { user } = useUser();
   const { messages, addMessage, setMessages, isLoading, setIsLoading } =
     useChatStore((state) => state);
-  const { activeChatId, isLoadingChat, setActiveChatId, setChats } =
+  const { activeChatId, isLoadingChat, setActiveChatId, setChats, addChat } =
     useChatSideBarStore((state) => state);
 
   // Fetch all chat details when the user ID is available
@@ -112,13 +112,14 @@ export default function ChatCompare() {
           if (activeChatId) {
             await updateChat(user.id, activeChatId, formattedMessages);
           } else {
-            const chatId = await saveChat(
+            const chat = await saveChat(
               user.id,
               user.fullName || "",
               formattedMessages
             );
-            if (chatId) {
-              setActiveChatId(chatId);
+            if (chat?.id) {
+              addChat(chat);
+              setActiveChatId(chat.id);
             }
           }
         } catch (error) {
@@ -126,7 +127,7 @@ export default function ChatCompare() {
         }
       }
     },
-    [activeChatId, user?.id, user?.fullName, setActiveChatId]
+    [user?.id, user?.fullName, activeChatId, addChat, setActiveChatId]
   );
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
