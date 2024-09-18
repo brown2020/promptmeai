@@ -6,6 +6,7 @@ import ChatDetailController from "./components/ChatDetailController";
 import ChatInput from "./components/ChatInput";
 import ChatResponseList from "./components/ChatResponseList";
 import { useTypingEffect } from "@/hooks";
+import { trimText } from "@/utils/text";
 
 const ChatDetailSection = () => {
   const { activeChatId, chats, isNewChat } = useChatSideBarStore(
@@ -15,7 +16,11 @@ const ChatDetailSection = () => {
   const typedTitle = useTypingEffect(title, 100);
 
   useEffect(() => {
-    setTitle(chats.find((chat) => chat.id === activeChatId)?.name || "");
+    const formatedTitle = trimText(
+      chats.find((chat) => chat.id === activeChatId)?.name || ""
+    );
+
+    setTitle(formatedTitle);
   }, [activeChatId, chats]);
 
   return (
