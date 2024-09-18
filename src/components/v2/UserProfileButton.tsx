@@ -1,25 +1,17 @@
 "use client";
+
 import { auth } from "@/firebase/firebaseClient";
+import { useIsClient } from "@/hooks";
 import { useAuthStore } from "@/zustand/useAuthStore";
 import { useInitializeStores } from "@/zustand/useInitializeStores";
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  useAuth,
-  UserButton,
-  useUser,
-} from "@clerk/nextjs";
-import {
-  signInWithCustomToken,
-  signOut as firebaseSignOut,
-  updateProfile,
-} from "firebase/auth";
+import { useAuth, UserButton, useUser } from "@clerk/nextjs";
+import { signInWithCustomToken, signOut, updateProfile } from "firebase/auth";
 import { serverTimestamp, Timestamp } from "firebase/firestore";
-import Link from "next/link";
 import { useEffect } from "react";
 
-export default function Header() {
+const UserProfileButton = () => {
+  const isClient = useIsClient();
+
   const { getToken, isSignedIn } = useAuth();
   const { user } = useUser();
   const setAuthDetails = useAuthStore((state) => state.setAuthDetails);
@@ -42,6 +34,7 @@ export default function Header() {
             displayName: user.fullName,
             photoURL: user.imageUrl,
           });
+
           setAuthDetails({
             uid: user.id,
             firebaseUid: userCredentials.user.uid,
@@ -57,7 +50,7 @@ export default function Header() {
         }
       } else {
         console.log("User is not signed in with Clerk");
-        await firebaseSignOut(auth);
+        await signOut(auth);
         clearAuthDetails();
       }
     };
@@ -65,22 +58,9 @@ export default function Header() {
     syncAuthState();
   }, [clearAuthDetails, getToken, isSignedIn, setAuthDetails, user]);
 
-  return (
-    <div className="flex justify-between flex-shrink-0 gap-3 px-4 h-14 items-center bg-blue-400 text-white sticky top-0 z-50">
-      <Link href="/" className="font-medium text-xl">
-        Prompt.me
-      </Link>
+  if (!isClient) return;
 
-      <div className="flex gap-2">
-        <SignedOut>
-          <SignInButton />
-        </SignedOut>
-        <SignedIn>
-          <Link href="/v1/chat-compare">Chat Compare</Link>
-          <Link href="/v1/account">Account</Link>
-          <UserButton />
-        </SignedIn>
-      </div>
-    </div>
-  );
-}
+  return <UserButton />;
+};
+
+export default UserProfileButton;

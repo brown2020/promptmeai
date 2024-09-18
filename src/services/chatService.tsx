@@ -1,4 +1,5 @@
 import { db } from "@/firebase/firebaseClient";
+import { ChatDetail } from "@/types/chat";
 import { CoreMessage } from "ai";
 import {
   addDoc,
@@ -42,7 +43,7 @@ export async function saveChat(
   userId: string,
   fullName: string,
   messages: Message[]
-): Promise<string | undefined> {
+): Promise<ChatDetail | undefined> {
   const chatData = serializeMessages(messages);
   if (!chatData) return;
 
@@ -59,7 +60,19 @@ export async function saveChat(
         name: chatName,
       }
     );
-    return chatRef.id;
+
+    // Get the document object after adding it
+    const docSnap = await getDoc(chatRef);
+
+    if (docSnap.exists()) {
+      const chatDetail: ChatDetail = {
+        id: docSnap.id,
+        name: docSnap.data().name,
+        timestamp: docSnap.data().timestamp,
+      };
+
+      return chatDetail;
+    }
   } catch (error) {
     handleFirestoreError(error, "Error saving chat");
   }
@@ -114,9 +127,7 @@ export async function getChat(
 }
 
 // Function to get all chat details
-export async function getAllChatDetails(
-  userId: string
-): Promise<Array<{ id: string; name: string }>> {
+export async function getAllChatDetails(userId: string): Promise<ChatDetail[]> {
   try {
     const chatsRef = collection(db, COLLECTION_NAME, userId, "chat");
     const querySnapshot = await getDocs(chatsRef);
@@ -124,6 +135,7 @@ export async function getAllChatDetails(
     return querySnapshot.docs.map((doc) => ({
       id: doc.id,
       name: doc.data().name || "Unnamed Chat",
+      timestamp: doc.data().timestamp,
     }));
   } catch (error) {
     handleFirestoreError(error, "Error getting chat details");

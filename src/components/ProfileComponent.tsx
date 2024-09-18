@@ -17,7 +17,7 @@ export default function ProfileComponent() {
 
           <Link
             className="bg-blue-500 text-white px-3 py-2 rounded-md hover:opacity-50 flex-1 text-center"
-            href={"/payment-attempt"}
+            href={"/v1/payment-attempt"}
           >
             Buy 10,000 Credits
           </Link>

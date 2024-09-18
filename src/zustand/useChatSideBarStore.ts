@@ -1,27 +1,30 @@
+import { ChatDetail } from "@/types/chat";
 import { create } from "zustand";
-
-type Chat = {
-  id: string;
-  name?: string; // Assuming each chat has a name for the sidebar
-};
 
 type ChatStore = {
   isLoadingChat: boolean;
-  chats: Chat[];
+  chats: ChatDetail[];
   activeChatId: string | undefined;
-  setChats: (chats: Chat[]) => void;
-  addChat: (chat: Chat) => void;
-  setActiveChatId: (chatId: string | undefined) => void;
+  isNewChat: boolean;
+  setChats: (chats: ChatDetail[]) => void;
+  addChat: (chat: ChatDetail) => void;
+  setActiveChatId: (chatId: string | undefined, isNewChat?: boolean) => void;
 };
 
 export const useChatSideBarStore = create<ChatStore>((set) => ({
   isLoadingChat: true,
   chats: [],
   activeChatId: undefined,
+  isNewChat: false,
   setChats: (chats) => {
     set({ chats });
     set({ isLoadingChat: false });
   },
-  addChat: (chat) => set((state) => ({ chats: [...state.chats, chat] })),
-  setActiveChatId: (chatId) => set({ activeChatId: chatId }),
+  addChat: (chat) =>
+    set((state) => ({ chats: [...state.chats, chat], isNewChat: true })),
+  setActiveChatId: (chatId, isNewChat = false) =>
+    set({
+      activeChatId: chatId,
+      isNewChat: isNewChat,
+    }),
 }));

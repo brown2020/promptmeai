@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { type CoreMessage } from "ai";
-import { MODELNAMES } from "@/constants/modelNames";
+import { MODEL_NAMES } from "@/constants/modelNames";
 import { continueConversation } from "@/actions/generateActions";
 import { readStreamableValue } from "ai/rsc";
 import { useChatStore } from "@/zustand/useChatStore";
@@ -42,7 +42,7 @@ export default function ChatCompare() {
   const { user } = useUser();
   const { messages, addMessage, setMessages, isLoading, setIsLoading } =
     useChatStore((state) => state);
-  const { activeChatId, isLoadingChat, setActiveChatId, setChats } =
+  const { activeChatId, isLoadingChat, setActiveChatId, setChats, addChat } =
     useChatSideBarStore((state) => state);
 
   // Fetch all chat details when the user ID is available
@@ -112,13 +112,14 @@ export default function ChatCompare() {
           if (activeChatId) {
             await updateChat(user.id, activeChatId, formattedMessages);
           } else {
-            const chatId = await saveChat(
+            const chat = await saveChat(
               user.id,
               user.fullName || "",
               formattedMessages
             );
-            if (chatId) {
-              setActiveChatId(chatId);
+            if (chat?.id) {
+              addChat(chat);
+              setActiveChatId(chat.id);
             }
           }
         } catch (error) {
@@ -126,7 +127,7 @@ export default function ChatCompare() {
         }
       }
     },
-    [activeChatId, user?.id, user?.fullName, setActiveChatId]
+    [user?.id, user?.fullName, activeChatId, addChat, setActiveChatId]
   );
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -139,7 +140,7 @@ export default function ChatCompare() {
 
     try {
       await Promise.all(
-        MODELNAMES.map((model) =>
+        MODEL_NAMES.map((model) =>
           getAssistantResponse(model.value, newUserMessage)
         )
       );

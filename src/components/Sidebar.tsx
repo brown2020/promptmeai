@@ -69,8 +69,8 @@ const Sidebar = () => {
         setEditDialog({ name: undefined, id: "", open: false });
         setChats(
           chats.map((chat) =>
-            chat.id === editDialog?.id
-              ? { ...chat, name: editDialog?.name }
+            chat.id === editDialog?.id && editDialog?.name !== undefined
+              ? { ...chat, name: editDialog.name }
               : chat
           )
         );
