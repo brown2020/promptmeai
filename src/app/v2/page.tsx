@@ -1,5 +1,7 @@
-import { redirect } from "next/navigation";
+import HomeScreen from "@/screens/home";
 
-export default function RootPage() {
-  redirect("/v2/chat");
-}
+const HomePage = () => {
+  return <HomeScreen />;
+};
+
+export default HomePage;
