@@ -1,3 +1,40 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  /* Ensure all scrollable elements have space for scrollbar */
+  .scrollable-container {
+    padding-right: 8px; /* Adjust as needed to create space for the scrollbar */
+    box-sizing: content-box; /* Ensure padding doesn’t affect total width */
+    overflow-y: auto; /* Ensure vertical scroll is enabled */
+  }
+
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    ::-webkit-scrollbar-track {
+      background: #374151;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #6b7280;
+    }
+  }
+}

@@ -11,7 +11,7 @@ const ChatList = ({ chatList }: ChatListProps) => {
   const groupedData = groupChatByDate(chatSortedDesc);
 
   return (
-    <div className="flex flex-col gap-[8px]">
+    <div className="flex flex-col gap-[8px] overflow-y-auto scrollable-container">
       {groupedData.today.length > 0 && (
         <ChatGroupedList groupName="Today" chatList={groupedData.today} />
       )}
