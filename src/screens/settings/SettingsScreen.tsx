@@ -1,20 +1,47 @@
+"use client";
+
+import { GaugeComponent } from "react-gauge-component";
+
 const SettingsScreen = () => {
   return (
-    <div className="w-screen h-screen bg-white flex justify-center">
-      <div className="bg-[#F5F5F5] w-full rounded-lg flex justify-center m-6 p-8">
-        <div className="max-w-[896px] w-full bg-white rounded-xl shadow px-[16px] py-[12px] flex flex-col gap-[12px]">
-          <h2 className="font-medium text-[20px]">Account Settings</h2>
-          <div className="border rounded-md p-4">
-            <div>
-              <span>Usage Credits: 1000</span>
-              <div>
-                <button>Buy 10,000 Credits</button>
-                <p>
-                  You can either buy credits or add your own API keys bellow.
-                </p>
-              </div>
-            </div>
+    <div className="w-screen h-screen bg-white relative">
+      {/* Green layer */}
+      <div className="w-full bg-[#24C69E] h-[235px] rounded-b-2xl relative" />
+      <div className="absolute top-5 left-[10px] bg-[white] shadow w-[calc(100%-64px)] h-[calc(100%-64px)] rounded-2xl flex flex-col gap-5 m-6 p-8 ">
+        <h2 className="font-medium text-[24px]">Account Settings</h2>
+        <div className="grid grid-cols-3 gap-4">
+          {/* Credit Information */}
+          <div className="border border-[#E5EAEE] p-4 rounded-lg">
+            <h3>Credit Usage</h3>
+            <GaugeComponent
+              arc={{
+                subArcs: [
+                  {
+                    limit: 20,
+                    color: "#EA4228",
+                    showTick: true,
+                  },
+                  {
+                    limit: 40,
+                    color: "#F58B19",
+                    showTick: true,
+                  },
+                  {
+                    limit: 60,
+                    color: "#F5CD19",
+                    showTick: true,
+                  },
+                  {
+                    limit: 100,
+                    color: "#5BE12C",
+                    showTick: true,
+                  },
+                ],
+              }}
+              value={90}
+            />
           </div>
+          <div className="col-span-2 ...">04</div>
         </div>
       </div>
     </div>
