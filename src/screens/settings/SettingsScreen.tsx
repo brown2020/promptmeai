@@ -1,5 +1,6 @@
 "use client";
 
+import Input from "@/components/v2/Input";
 import { GaugeComponent } from "react-gauge-component";
 
 const SettingsScreen = () => {
@@ -41,7 +42,15 @@ const SettingsScreen = () => {
               value={90}
             />
           </div>
-          <div className="col-span-2 ...">04</div>
+          <div className="col-span-2 border border-[#E5EAEE] p-4 rounded-lg flex flex-col gap-4">
+            <h3 className="text-[20px]">API Keys</h3>
+            <Input title="Open AI" />
+            <Input title="Anthropic" />
+            <Input title="Google Generative AI" />
+            <Input title="Mistral" />
+            <Input title="Fireworks" />
+            <Input title="Grooq" />
+          </div>
         </div>
       </div>
     </div>
