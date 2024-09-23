@@ -1,5 +1,6 @@
 "use client";
 
+import Button from "@/components/v2/Button";
 import CardContent from "@/components/v2/CardContent";
 import { GaugeComponent } from "react-gauge-component";
 
@@ -33,6 +34,7 @@ const CreditInformation = () => {
         }}
         value={90}
       />
+      <Button color="#10A37F">Buy 10,000 Credits</Button>
     </CardContent>
   );
 };
