@@ -34,7 +34,7 @@ const CreditInformation = () => {
         }}
         value={90}
       />
-      <Button color="#10A37F">Buy 10,000 Credits</Button>
+      <Button>Buy 10,000 Credits</Button>
     </CardContent>
   );
 };
