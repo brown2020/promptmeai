@@ -1,6 +1,6 @@
 import CreditInformation from "./sections/CreditInformation";
 import APIKeys from "./sections/APIKeys";
-import PaymentHistories from "./sections/PaymentHistories";
+import PaymentHistory from "./sections/PaymentHistory";
 
 const SettingsScreen = () => {
   return (
@@ -13,7 +13,7 @@ const SettingsScreen = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 overflow-auto scrollable-container">
             <CreditInformation />
             <APIKeys />
-            <PaymentHistories />
+            <PaymentHistory />
           </div>
         </div>
       </div>
