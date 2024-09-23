@@ -2,11 +2,14 @@
 
 import Button from "@/components/v2/Button";
 import CardContent from "@/components/v2/CardContent";
+import useProfileStore from "@/zustand/useProfileStore";
 import { GaugeComponent } from "react-gauge-component";
 
 const CreditInformation = () => {
+  const profile = useProfileStore((state) => state.profile);
+
   return (
-    <CardContent title="Credit Usage">
+    <CardContent title="Conversation Credits">
       <GaugeComponent
         arc={{
           subArcs: [
@@ -32,8 +35,11 @@ const CreditInformation = () => {
             },
           ],
         }}
-        value={90}
+        value={(profile.credits / 1000) * 100}
       />
+      <h4 className="self-center">
+        Credit usage: {Math.round(1000 - profile.credits)} from 1000
+      </h4>
       <Button>Buy 10,000 Credits</Button>
     </CardContent>
   );
