@@ -7,10 +7,11 @@ import ButtonIcon from "@/components/v2/ButtonIcon";
 import Divider from "@/components/v2/Divider";
 import ThemeSwitcher from "@/components/v2/ThemeSwitcher";
 import UserProfileButton from "@/components/v2/UserProfileButton";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const LeftPanel = () => {
   const router = useRouter();
+  const pathname = usePathname();
 
   return (
     <div className="flex flex-col justify-between items-center w-[64px] flex-shrink-0 bg-white border-r border-[#EAEAEA] p-[16px]">
@@ -20,11 +21,12 @@ const LeftPanel = () => {
         <div className="flex flex-col gap-[24px] justify-center items-center">
           <ButtonIcon
             icon={PiChatsCircle}
-            isActive
+            isActive={pathname.includes("chat")}
             onClick={() => router.push("/v2/chat")}
           />
           <ButtonIcon
             icon={RiListSettingsFill}
+            isActive={pathname.includes("settings")}
             onClick={() => router.push("/v2/settings")}
           />
         </div>
