@@ -11,7 +11,7 @@ const APIKeys = () => {
         <Input title="Google Generative AI" />
         <Input title="Mistral" />
         <Input title="Fireworks" />
-        <Input title="Grooq" />
+        {/* <Input title="Grooq" /> */}
       </div>
       <Button disabled>Update API Keys</Button>
     </CardContent>
