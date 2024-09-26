@@ -8,7 +8,7 @@ import {
 
 import { useEffect, useState } from "react";
 import { createPaymentIntent } from "@/actions/paymentActions";
-import convertToSubcurrency from "@/utils/convertToSubcurrency";
+import { convertToSubcurrency } from "@/utils/number";
 import Spinner from "@/components/v2/Spinner";
 
 type PaymentCheckoutProps = { amount: number };

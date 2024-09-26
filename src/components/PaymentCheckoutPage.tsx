@@ -8,7 +8,7 @@ import {
 
 import { useEffect, useState } from "react";
 import { createPaymentIntent } from "@/actions/paymentActions";
-import convertToSubcurrency from "@/utils/convertToSubcurrency";
+import { convertToSubcurrency } from "@/utils/number";
 import { ClipLoader } from "react-spinners";
 
 type Props = { amount: number };
