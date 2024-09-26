@@ -4,10 +4,13 @@ import Button from "@/components/v2/Button";
 import CardContent from "@/components/v2/CardContent";
 import Spinner from "@/components/v2/Spinner";
 import GreenWhiteLayout from "@/layouts/GreenWhiteLayout";
+import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { LuCheckCircle, LuCoins, LuCreditCard } from "react-icons/lu";
 
 const PaymentSuccessScreen = () => {
+  const router = useRouter();
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -56,7 +59,14 @@ const PaymentSuccessScreen = () => {
                 </div>
               </div>
 
-              <Button className="w-full">Return to Settings</Button>
+              <Button
+                className="w-full"
+                onClick={() => {
+                  router.push("/v2/settings");
+                }}
+              >
+                Return to Settings
+              </Button>
             </Fragment>
           )}
         </CardContent>
