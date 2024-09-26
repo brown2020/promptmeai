@@ -25,6 +25,7 @@ const defaultProfile: ProfileType = {
 
 interface ProfileState {
   profile: ProfileType;
+  isLoading: boolean;
   fetchProfile: () => void;
   updateProfile: (newProfile: Partial<ProfileType>) => Promise<void>;
   useCredits: (amount: number) => Promise<boolean>;
@@ -33,12 +34,14 @@ interface ProfileState {
 
 const useProfileStore = create<ProfileState>((set, get) => ({
   profile: defaultProfile,
+  isLoading: false,
 
   fetchProfile: async () => {
     const uid = useAuthStore.getState().uid;
     if (!uid) return;
 
     try {
+      set({ isLoading: true });
       const userRef = doc(db, `users/${uid}/profile/userData`);
       const docSnap = await getDoc(userRef);
 
@@ -66,8 +69,11 @@ const useProfileStore = create<ProfileState>((set, get) => ({
         await setDoc(userRef, newProfile);
         set({ profile: newProfile });
       }
+
+      set({ isLoading: false });
     } catch (error) {
       console.error("Error fetching or creating profile:", error);
+      set({ isLoading: false });
     }
   },
 
