@@ -10,6 +10,7 @@ export interface ProfileType {
   photoUrl: string;
   emailVerified: boolean;
   credits: number;
+  totalCredits: number;
 }
 
 const defaultProfile: ProfileType = {
@@ -19,6 +20,7 @@ const defaultProfile: ProfileType = {
   photoUrl: "",
   emailVerified: false,
   credits: 0,
+  totalCredits: 0,
 };
 
 interface ProfileState {
@@ -41,38 +43,28 @@ const useProfileStore = create<ProfileState>((set, get) => ({
       const docSnap = await getDoc(userRef);
 
       if (docSnap.exists()) {
-        const d = docSnap.data() as ProfileType;
-        console.log("Profile found:", d);
-
-        // Ensure credits are topped up if less than 100
-        const credits = d.credits && d.credits >= 100 ? d.credits : 1000;
-
+        const profileData = docSnap.data() as ProfileType;
         const newProfile = {
-          ...defaultProfile,
-          ...d,
-          credits,
-          email: useAuthStore.getState().authEmail || d.email,
-          contactEmail:
-            d.contactEmail || useAuthStore.getState().authEmail || "",
-          displayName:
-            d.displayName || useAuthStore.getState().authDisplayName || "",
-          photoUrl: d.photoUrl || useAuthStore.getState().authPhotoUrl || "",
+          ...profileData,
+          totalCredits: !profileData?.totalCredits
+            ? profileData.credits
+            : profileData.totalCredits,
         };
 
-        await setDoc(userRef, newProfile);
         set({ profile: newProfile });
       } else {
         const newProfile = {
           email: useAuthStore.getState().authEmail || "",
-          contactEmail: "",
+          contactEmail: useAuthStore.getState().authEmail || "",
           displayName: useAuthStore.getState().authDisplayName || "",
           photoUrl: useAuthStore.getState().authPhotoUrl || "",
           emailVerified: useAuthStore.getState().authEmailVerified || false,
           credits: 1000,
+          totalCredits: 1000,
         };
+
         await setDoc(userRef, newProfile);
         set({ profile: newProfile });
-        console.log("No profile found. Creating new profile document.");
       }
     } catch (error) {
       console.error("Error fetching or creating profile:", error);
@@ -135,10 +127,15 @@ const useProfileStore = create<ProfileState>((set, get) => ({
     try {
       const userRef = doc(db, `users/${uid}/profile/userData`);
 
-      await updateDoc(userRef, { credits: newCredits });
+      const newData = {
+        credits: newCredits,
+        totalCredits: newCredits,
+      };
+
+      await updateDoc(userRef, { ...newData });
 
       set((state) => ({
-        profile: { ...state.profile, credits: newCredits },
+        profile: { ...state.profile, ...newData },
       }));
     } catch (error) {
       console.error("Error adding credits:", error);
