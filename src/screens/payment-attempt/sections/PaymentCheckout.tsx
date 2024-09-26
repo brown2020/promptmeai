@@ -83,25 +83,30 @@ const PaymentCheckout = ({ amount }: PaymentCheckoutProps) => {
   }
 
   return (
-    <main className="flex flex-col w-full items-center max-w-6xl mx-auto py-10 px-4">
-      <div className="mb-10 flex flex-col gap-3 items-center">
-        <h1 className="text-2xl md:text-4xl">Buy 10,000 Credits</h1>
-        <h2 className="text-xl md:text-2xl">
-          Purchase amount: <span className="font-bold">${amount}</span>
-        </h2>
-      </div>
-      <form onSubmit={handleSubmit} className="bg-white p-2 rounded-md w-full">
-        {clientSecret && <PaymentElement />}
-
-        {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-
-        <button
-          disabled={!stripe || loading}
-          className="text-white w-full p-5 bg-black mt-2 rounded-md font-bold disabled:opacity-50 disabled:animate-pulse"
+    <main className="flex flex-col w-full items-center max-w-[1320px] py-10 px-4">
+      <div className="w-full overflow-auto scrollable-container">
+        <div className="mb-10 flex flex-col gap-3 items-center">
+          <h1 className="text-2xl md:text-4xl">Buy 10,000 Credits</h1>
+          <h2 className="text-xl md:text-2xl">
+            Purchase amount: <span className="font-bold">${amount}</span>
+          </h2>
+        </div>
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white p-2 rounded-md w-full"
         >
-          {!loading ? `Pay $${amount}` : "Processing..."}
-        </button>
-      </form>
+          {clientSecret && <PaymentElement />}
+
+          {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+
+          <button
+            disabled={!stripe || loading}
+            className="text-white w-full p-5 bg-black mt-2 rounded-md font-bold disabled:opacity-50 disabled:animate-pulse"
+          >
+            {!loading ? `Pay $${amount}` : "Processing..."}
+          </button>
+        </form>
+      </div>
     </main>
   );
 };
