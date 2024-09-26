@@ -1,12 +1,7 @@
-import GreenWhiteLayout from "@/layouts/GreenWhiteLayout";
 import SettingsScreen from "@/screens/settings";
 
-const PageSettings = () => {
-  return (
-    <GreenWhiteLayout>
-      <SettingsScreen />
-    </GreenWhiteLayout>
-  );
+const SettingsPage = () => {
+  return <SettingsScreen />;
 };
 
-export default PageSettings;
+export default SettingsPage;

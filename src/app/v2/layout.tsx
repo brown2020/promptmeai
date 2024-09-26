@@ -1,3 +1,5 @@
+import LeftPanel from "@/layouts/LeftPanel";
+import RowLayout from "@/layouts/RowLayout";
 import { ClerkProvider } from "@clerk/nextjs";
 
 export default function RootLayout({
@@ -8,7 +10,12 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body>{children}</body>
+        <body>
+          <RowLayout>
+            <LeftPanel />
+            {children}
+          </RowLayout>
+        </body>
       </html>
     </ClerkProvider>
   );
