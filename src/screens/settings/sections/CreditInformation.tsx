@@ -3,10 +3,12 @@
 import Button from "@/components/v2/Button";
 import CardContent from "@/components/v2/CardContent";
 import useProfileStore from "@/zustand/useProfileStore";
+import { useRouter } from "next/navigation";
 import { GaugeComponent } from "react-gauge-component";
 
 const CreditInformation = () => {
   const profile = useProfileStore((state) => state.profile);
+  const router = useRouter();
 
   return (
     <CardContent title="Conversation Credits">
@@ -40,7 +42,9 @@ const CreditInformation = () => {
       <h4 className="self-center">
         Credit usage: {Math.round(1000 - profile.credits)} from 1000
       </h4>
-      <Button>Buy 10,000 Credits</Button>
+      <Button onClick={() => router.push("/v2/payment-attempt")}>
+        Buy 10,000 Credits
+      </Button>
     </CardContent>
   );
 };
