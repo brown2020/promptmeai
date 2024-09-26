@@ -2,7 +2,7 @@ import { cn } from "@/utils/tailwind";
 import { PropsWithChildren } from "react";
 
 type CardContentProps = {
-  title: string;
+  title?: string;
   overrideStyles?: string;
 } & PropsWithChildren;
 
@@ -14,7 +14,7 @@ const CardContent = ({ title, overrideStyles, children }: CardContentProps) => {
         overrideStyles
       )}
     >
-      <h3 className="text-[20px]">{title}</h3>
+      {title && <h3 className="text-[20px]">{title}</h3>}
       {children}
     </div>
   );
