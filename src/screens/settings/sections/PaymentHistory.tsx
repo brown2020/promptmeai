@@ -36,7 +36,7 @@ const PaymentHistory = () => {
       title="Payment History"
       overrideStyles="col-span-1 lg:col-span-2 xl:col-span-3"
     >
-      {paymentsLoading ? (
+      {paymentsLoading || !uid ? (
         <Spinner />
       ) : (
         <Table
