@@ -1,10 +1,11 @@
 "use client";
 
-import PaymentCheckoutPage from "@/components/PaymentCheckoutPage";
+import GreenWhiteLayout from "@/layouts/GreenWhiteLayout";
 import convertToSubcurrency from "@/utils/convertToSubcurrency";
 
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import PaymentCheckout from "./sections/PaymentCheckout";
 
 if (process.env.NEXT_PUBLIC_STRIPE_KEY === undefined) {
   throw new Error("NEXT_PUBLIC_STRIPE_KEY is not defined");
@@ -16,16 +17,18 @@ const PaymentAttemptScreen = () => {
   const amount = 99.99;
 
   return (
-    <Elements
-      stripe={stripePromise}
-      options={{
-        mode: "payment",
-        amount: convertToSubcurrency(amount),
-        currency: "usd",
-      }}
-    >
-      <PaymentCheckoutPage amount={amount} />
-    </Elements>
+    <GreenWhiteLayout>
+      <Elements
+        stripe={stripePromise}
+        options={{
+          mode: "payment",
+          amount: convertToSubcurrency(amount),
+          currency: "usd",
+        }}
+      >
+        <PaymentCheckout amount={amount} />
+      </Elements>
+    </GreenWhiteLayout>
   );
 };
 
