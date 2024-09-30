@@ -1,5 +1,5 @@
 import CreditInformation from "./sections/CreditInformation";
-import APIKeys from "./sections/APIKeys";
+import InputAPIKeys from "./sections/InputAPIKeys";
 import PaymentHistory from "./sections/PaymentHistory";
 import GreenWhiteLayout from "@/layouts/GreenWhiteLayout";
 import UsageSelection from "./sections/UsageSelection";
@@ -12,7 +12,7 @@ const SettingsScreen = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 overflow-auto scrollable-container">
           <UsageSelection />
           <CreditInformation />
-          <APIKeys />
+          <InputAPIKeys />
           <PaymentHistory />
         </div>
       </div>
