@@ -8,6 +8,14 @@ export enum UsageMode {
   ApiKeys = "API_KEYS",
 }
 
+export type APIKeys = {
+  openAi: string;
+  anthropic: string;
+  googleGenerativeAi: string;
+  mistral: string;
+  fireworks: string;
+};
+
 export interface ProfileType {
   email: string;
   contactEmail: string;
@@ -17,6 +25,7 @@ export interface ProfileType {
   credits: number;
   totalCredits: number;
   usageMode: UsageMode;
+  APIKeys: APIKeys;
 }
 
 const defaultProfile: ProfileType = {
@@ -28,6 +37,13 @@ const defaultProfile: ProfileType = {
   credits: 0,
   totalCredits: 0,
   usageMode: UsageMode.Credits,
+  APIKeys: {
+    openAi: "",
+    anthropic: "",
+    googleGenerativeAi: "",
+    mistral: "",
+    fireworks: "",
+  },
 };
 
 interface ProfileState {
@@ -75,6 +91,13 @@ const useProfileStore = create<ProfileState>((set, get) => ({
           credits: 1000,
           totalCredits: 1000,
           usageMode: UsageMode.Credits,
+          APIKeys: {
+            openAi: "",
+            anthropic: "",
+            googleGenerativeAi: "",
+            mistral: "",
+            fireworks: "",
+          },
         };
 
         await setDoc(userRef, newProfile);
