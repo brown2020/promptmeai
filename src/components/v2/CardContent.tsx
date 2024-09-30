@@ -16,7 +16,7 @@ const CardContent = ({
   return (
     <div
       className={cn(
-        "border border-[#E5EAEE] p-4 rounded-lg flex flex-col gap-4",
+        "border border-[#E5EAEE] p-4 rounded-lg flex flex-col gap-4 transition duration-300 ease",
         {
           "border-[#0CA37F] border-[2px]": isActive,
         },
