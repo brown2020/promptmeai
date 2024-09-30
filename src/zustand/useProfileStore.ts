@@ -49,6 +49,7 @@ const defaultProfile: ProfileType = {
 interface ProfileState {
   profile: ProfileType;
   isLoading: boolean;
+  isDefaultData: boolean;
   fetchProfile: () => void;
   updateProfile: (newProfile: Partial<ProfileType>) => Promise<void>;
   useCredits: (amount: number) => Promise<boolean>;
@@ -58,6 +59,7 @@ interface ProfileState {
 const useProfileStore = create<ProfileState>((set, get) => ({
   profile: defaultProfile,
   isLoading: false,
+  isDefaultData: true,
 
   fetchProfile: async () => {
     const uid = useAuthStore.getState().uid;
@@ -77,7 +79,7 @@ const useProfileStore = create<ProfileState>((set, get) => ({
           APIKeys: profileData?.APIKeys || defaultProfile.APIKeys,
         };
 
-        set({ profile: newProfile });
+        set({ profile: newProfile, isDefaultData: false });
       } else {
         const newProfile = {
           email: useAuthStore.getState().authEmail || "",
@@ -92,7 +94,7 @@ const useProfileStore = create<ProfileState>((set, get) => ({
         };
 
         await setDoc(userRef, newProfile);
-        set({ profile: newProfile });
+        set({ profile: newProfile, isDefaultData: false });
       }
 
       set({ isLoading: false });

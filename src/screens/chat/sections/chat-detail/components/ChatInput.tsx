@@ -1,23 +1,35 @@
 "use client";
 
 import { continueConversation } from "@/actions/generateActions";
+import { ModalWarning } from "@/components/v2/modals";
 import { MODEL_NAMES } from "@/constants/modelNames";
 import { Message, saveChat, updateChat } from "@/services/chatService";
+import { isObjectEmpty } from "@/utils/object";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { useChatStore } from "@/zustand/useChatStore";
+import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 import { useUser } from "@clerk/nextjs";
 import { CoreMessage } from "ai";
 import { readStreamableValue } from "ai/rsc";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { PiPaperPlaneTilt } from "react-icons/pi";
 
 const ChatInput = () => {
+  const router = useRouter();
   const { user } = useUser();
-  const { messages, addMessage } = useChatStore((state) => state);
-  const { addChat, activeChatId, setActiveChatId } = useChatSideBarStore(
-    (state) => state
-  );
+  const { profile, isDefaultData } = useProfileStore();
+  const { messages, addMessage } = useChatStore();
+  const { addChat, activeChatId, setActiveChatId } = useChatSideBarStore();
+
   const inputRef = useRef<HTMLInputElement>(null);
+  const showAlert =
+    profile.usageMode === UsageMode.Credits
+      ? profile.credits === 0
+      : isObjectEmpty(profile.APIKeys);
+  const alertCredits =
+    "Your credits balance is exhausted, please buy more credits or use your API Keys";
+  const alertAPIKeys = "You are not setup the API Keys yet";
 
   const [input, setInput] = useState<string>("");
 
@@ -99,21 +111,31 @@ const ChatInput = () => {
   };
 
   return (
-    <div className="self-end w-full max-w-[720px] h-[56px] flex-shrink-0 flex gap-[16px] justify-center items-center">
-      <div className="w-full bg-white rounded-xl shadow px-[16px] py-[12px] flex gap-[12px] items-center">
-        <input
-          ref={inputRef}
-          className="w-full text-[14px] text-[#A0A7BB] outline-none"
-          placeholder="Type your question here..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && submitHandler()}
-        />
-        <div className="flex items-center justify-center h-[32px] w-[32px] rounded-lg cursor-pointer flex-shrink-0 mr-[-4px]">
-          <PiPaperPlaneTilt size={18} color="#ABABAB" />
+    <Fragment>
+      <div className="self-end w-full max-w-[720px] h-[56px] flex-shrink-0 flex gap-[16px] justify-center items-center">
+        <div className="w-full bg-white rounded-xl shadow px-[16px] py-[12px] flex gap-[12px] items-center">
+          <input
+            ref={inputRef}
+            className="w-full text-[14px] text-[#A0A7BB] outline-none"
+            placeholder="Type your question here..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && submitHandler()}
+          />
+          <div className="flex items-center justify-center h-[32px] w-[32px] rounded-lg cursor-pointer flex-shrink-0 mr-[-4px]">
+            <PiPaperPlaneTilt size={18} color="#ABABAB" />
+          </div>
         </div>
       </div>
-    </div>
+      <ModalWarning
+        isOpen={!isDefaultData && showAlert}
+        title={
+          profile?.usageMode === UsageMode.Credits ? alertCredits : alertAPIKeys
+        }
+        confirmText="Go to settings page"
+        onClose={() => router.push("/v2/settings")}
+      />
+    </Fragment>
   );
 };
 
