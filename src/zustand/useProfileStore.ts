@@ -3,6 +3,11 @@ import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { useAuthStore } from "./useAuthStore";
 import { db } from "@/firebase/firebaseClient";
 
+export enum UsageMode {
+  Credits = "CREDITS",
+  ApiKey = "API_KEY",
+}
+
 export interface ProfileType {
   email: string;
   contactEmail: string;
@@ -11,6 +16,7 @@ export interface ProfileType {
   emailVerified: boolean;
   credits: number;
   totalCredits: number;
+  usageMode: UsageMode;
 }
 
 const defaultProfile: ProfileType = {
@@ -21,6 +27,7 @@ const defaultProfile: ProfileType = {
   emailVerified: false,
   credits: 0,
   totalCredits: 0,
+  usageMode: UsageMode.Credits,
 };
 
 interface ProfileState {
@@ -52,6 +59,9 @@ const useProfileStore = create<ProfileState>((set, get) => ({
           totalCredits: !profileData?.totalCredits
             ? profileData.credits
             : profileData.totalCredits,
+          usageMode: !profileData?.usageMode
+            ? UsageMode.Credits
+            : profileData.usageMode,
         };
 
         set({ profile: newProfile });
@@ -64,6 +74,7 @@ const useProfileStore = create<ProfileState>((set, get) => ({
           emailVerified: useAuthStore.getState().authEmailVerified || false,
           credits: 1000,
           totalCredits: 1000,
+          usageMode: UsageMode.Credits,
         };
 
         await setDoc(userRef, newProfile);
