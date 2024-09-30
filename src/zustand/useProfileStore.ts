@@ -5,7 +5,7 @@ import { db } from "@/firebase/firebaseClient";
 
 export enum UsageMode {
   Credits = "CREDITS",
-  ApiKey = "API_KEY",
+  ApiKeys = "API_KEYS",
 }
 
 export interface ProfileType {
