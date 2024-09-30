@@ -3,7 +3,7 @@
 import Button from "@/components/v2/Button";
 import CardContent from "@/components/v2/CardContent";
 import Spinner from "@/components/v2/Spinner";
-import useProfileStore from "@/zustand/useProfileStore";
+import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 import { useRouter } from "next/navigation";
 import { Fragment } from "react";
 import { GaugeComponent } from "react-gauge-component";
@@ -16,7 +16,10 @@ const CreditInformation = () => {
   const credits = profile.credits;
 
   return (
-    <CardContent title="Conversation Credits">
+    <CardContent
+      title="Conversation Credits"
+      isActive={profile.usageMode === UsageMode.Credits}
+    >
       {isLoading || totalCredits === 0 ? (
         <Spinner />
       ) : (
