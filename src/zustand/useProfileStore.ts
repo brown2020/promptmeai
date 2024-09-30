@@ -72,12 +72,9 @@ const useProfileStore = create<ProfileState>((set, get) => ({
         const profileData = docSnap.data() as ProfileType;
         const newProfile = {
           ...profileData,
-          totalCredits: !profileData?.totalCredits
-            ? profileData.credits
-            : profileData.totalCredits,
-          usageMode: !profileData?.usageMode
-            ? UsageMode.Credits
-            : profileData.usageMode,
+          totalCredits: profileData?.totalCredits || profileData.credits,
+          usageMode: profileData?.usageMode || profileData.usageMode,
+          APIKeys: profileData?.APIKeys || defaultProfile.APIKeys,
         };
 
         set({ profile: newProfile });
@@ -91,13 +88,7 @@ const useProfileStore = create<ProfileState>((set, get) => ({
           credits: 1000,
           totalCredits: 1000,
           usageMode: UsageMode.Credits,
-          APIKeys: {
-            openAi: "",
-            anthropic: "",
-            googleGenerativeAi: "",
-            mistral: "",
-            fireworks: "",
-          },
+          APIKeys: defaultProfile.APIKeys,
         };
 
         await setDoc(userRef, newProfile);
