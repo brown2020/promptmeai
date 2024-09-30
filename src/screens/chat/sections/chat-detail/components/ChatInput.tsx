@@ -28,8 +28,9 @@ const ChatInput = () => {
       ? profile.credits === 0
       : isObjectEmpty(profile.APIKeys);
   const alertCredits =
-    "Your credits balance is exhausted, please buy more credits or use your API Keys";
-  const alertAPIKeys = "You are not setup the API Keys yet";
+    "Your credit balance is exhausted. Please purchase more credits or provide your API keys to continue.";
+  const alertAPIKeys =
+    "API keys have not been set up yet. Please configure your API keys to proceed.";
 
   const [input, setInput] = useState<string>("");
 
