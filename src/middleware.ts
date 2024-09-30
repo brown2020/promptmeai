@@ -2,6 +2,7 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
 const isProtectedRoute = createRouteMatcher([
   "/v2/chat(.*)",
+  "/v2/settings/(.*)",
   "/v1/chat-compare(.*)",
   "/v1/account(.*)",
 ]);
