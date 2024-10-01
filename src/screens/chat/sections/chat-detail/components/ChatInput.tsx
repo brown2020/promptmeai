@@ -95,17 +95,26 @@ const ChatInput = () => {
     setInput("");
 
     try {
-      await Promise.all(
+      const results = await Promise.allSettled(
         MODEL_NAMES.map((model) =>
           getAssistantResponse(model.value, newUserMessage)
         )
       );
 
-      const updatedMessages: Message[] = useChatStore
-        .getState()
-        .messages.map((msg) => msg);
+      // Filter fulfilled results
+      const successfulResponses = results.filter(
+        (result) => result.status === "fulfilled"
+      );
 
-      await saveChatFunction(updatedMessages);
+      if (successfulResponses.length > 0) {
+        const updatedMessages: Message[] = useChatStore
+          .getState()
+          .messages.map((msg) => msg);
+
+        await saveChatFunction(updatedMessages);
+      } else {
+        console.error("All promises failed.");
+      }
     } catch (error) {
       console.error("Error handling submission: ", error);
     }
