@@ -1,3 +1,5 @@
+import { convertToSubcurrency } from "./number";
+
 // Approximation: 1 token ≈ 4 characters (this is a common estimate for GPT models)
 const AVERAGE_CHARACTERS_PER_TOKEN = 4;
 
@@ -19,4 +21,9 @@ export function calculateCost(totalTokens: number): number {
   const cost = totalTokens * flatRatePerToken;
 
   return cost;
+}
+
+// Function to convert cost to credits number
+export function costToCredits(cost: number): number {
+  return convertToSubcurrency(cost);
 }
