@@ -5,8 +5,9 @@ import { ModalWarning } from "@/components/v2/modals";
 import { MODEL_NAMES } from "@/constants/modelNames";
 import { Message, saveChat, updateChat } from "@/services/chatService";
 import { isObjectEmpty } from "@/utils/object";
+import { countTokens } from "@/utils/token";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
-import { useChatStore } from "@/zustand/useChatStore";
+import { PromptCoreMessage, useChatStore } from "@/zustand/useChatStore";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 import { useUser } from "@clerk/nextjs";
 import { CoreMessage } from "ai";
@@ -56,6 +57,7 @@ const ChatInput = () => {
         useChatStore.getState().addResponse(model, {
           role: "assistant",
           content: content as string,
+          tokenUsage: content ? countTokens(content) : 0,
         });
       }
     },
@@ -66,6 +68,7 @@ const ChatInput = () => {
     async (messages: Message[]) => {
       if (user?.id) {
         try {
+          console.log("message", messages);
           if (activeChatId) {
             await updateChat(user.id, activeChatId, messages);
           } else {
@@ -90,7 +93,11 @@ const ChatInput = () => {
   const submitHandler = async () => {
     if (!input) return;
 
-    const newUserMessage: CoreMessage = { content: input, role: "user" };
+    const newUserMessage: PromptCoreMessage = {
+      content: input,
+      role: "user",
+      tokenUsage: countTokens(input),
+    };
     addMessage(newUserMessage);
     setInput("");
 

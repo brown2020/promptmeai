@@ -1,15 +1,21 @@
 import { create } from "zustand";
 import { type CoreMessage } from "ai";
+import useProfileStore, { UsageMode } from "./useProfileStore";
+
+export type PromptCoreMessage = {
+  tokenUsage?: number;
+} & CoreMessage;
 
 export type Message = {
-  userMessage: CoreMessage;
-  responses: Record<string, CoreMessage>;
+  mode: UsageMode;
+  userMessage: PromptCoreMessage;
+  responses: Record<string, PromptCoreMessage>;
 };
 
 type ChatStore = {
   messages: Message[];
-  addMessage: (userMessage: CoreMessage) => void;
-  addResponse: (model: string, response: CoreMessage) => void;
+  addMessage: (userMessage: PromptCoreMessage) => void;
+  addResponse: (model: string, response: PromptCoreMessage) => void;
   setMessages: (
     messages: Message[] | ((prevMessages: Message[]) => Message[])
   ) => void;
@@ -22,16 +28,20 @@ export const useChatStore = create<ChatStore>((set) => ({
   isLoading: false,
 
   // Function to add a new user message
-  addMessage: (userMessage) =>
+  addMessage: (userMessage) => {
+    const { profile } = useProfileStore.getState();
+
     set((state) => ({
       messages: [
         ...state.messages,
         {
+          mode: profile.usageMode,
           userMessage,
           responses: {},
         },
       ],
-    })),
+    }));
+  },
 
   // Function to add a response from a model
   addResponse: (model, response) =>
