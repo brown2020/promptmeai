@@ -10,6 +10,7 @@ export type Message = {
   mode: UsageMode;
   userMessage: PromptCoreMessage;
   responses: Record<string, PromptCoreMessage>;
+  totalTokenUsage?: number;
 };
 
 type ChatStore = {

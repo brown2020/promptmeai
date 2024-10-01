@@ -52,7 +52,7 @@ interface ProfileState {
   isDefaultData: boolean;
   fetchProfile: () => void;
   updateProfile: (newProfile: Partial<ProfileType>) => Promise<void>;
-  useCredits: (amount: number) => Promise<boolean>;
+  reduceCredits: (amount: number) => Promise<boolean>;
   addCredits: (amount: number) => Promise<void>;
 }
 
@@ -124,7 +124,7 @@ const useProfileStore = create<ProfileState>((set, get) => ({
     }
   },
 
-  useCredits: async (amount: number) => {
+  reduceCredits: async (amount: number) => {
     const uid = useAuthStore.getState().uid;
     if (!uid) return false;
 

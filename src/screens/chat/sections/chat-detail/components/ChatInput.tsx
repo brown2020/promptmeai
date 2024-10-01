@@ -3,11 +3,19 @@
 import { continueConversation } from "@/actions/generateActions";
 import { ModalWarning } from "@/components/v2/modals";
 import { MODEL_NAMES } from "@/constants/modelNames";
-import { Message, saveChat, updateChat } from "@/services/chatService";
+import { saveChat, updateChat } from "@/services/chatService";
 import { isObjectEmpty } from "@/utils/object";
-import { countTokens } from "@/utils/token";
+import {
+  calculateCreditCost,
+  calculateTotalTokenUsage,
+  countTokens,
+} from "@/utils/token";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
-import { PromptCoreMessage, useChatStore } from "@/zustand/useChatStore";
+import {
+  Message,
+  PromptCoreMessage,
+  useChatStore,
+} from "@/zustand/useChatStore";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 import { useUser } from "@clerk/nextjs";
 import { CoreMessage } from "ai";
@@ -19,7 +27,7 @@ import { PiPaperPlaneTilt } from "react-icons/pi";
 const ChatInput = () => {
   const router = useRouter();
   const { user } = useUser();
-  const { profile, isDefaultData } = useProfileStore();
+  const { profile, isDefaultData, reduceCredits } = useProfileStore();
   const { messages, addMessage } = useChatStore();
   const { addChat, activeChatId, setActiveChatId } = useChatSideBarStore();
 
@@ -68,20 +76,30 @@ const ChatInput = () => {
     async (messages: Message[]) => {
       if (user?.id) {
         try {
-          console.log("message", messages);
+          const newMessages = [...messages];
+          const lastIndex = newMessages.length - 1;
+          const lastMessage = newMessages[lastIndex];
+          const totalTokenUsage = calculateTotalTokenUsage(lastMessage);
+          newMessages[lastIndex] = {
+            ...lastMessage,
+            totalTokenUsage,
+          };
+
           if (activeChatId) {
-            await updateChat(user.id, activeChatId, messages);
+            await updateChat(user.id, activeChatId, newMessages);
           } else {
             const chatData = await saveChat(
               user.id,
               user.fullName || "",
-              messages
+              newMessages
             );
             if (chatData?.id) {
               addChat(chatData);
               setActiveChatId(chatData.id, true);
             }
           }
+
+          return totalTokenUsage;
         } catch (error) {
           console.error("Error saving or updating chat: ", error);
         }
@@ -118,7 +136,12 @@ const ChatInput = () => {
           .getState()
           .messages.map((msg) => msg);
 
-        await saveChatFunction(updatedMessages);
+        const totalTokenUsage = await saveChatFunction(updatedMessages);
+
+        if (totalTokenUsage) {
+          const totalCreditUse = calculateCreditCost(totalTokenUsage);
+          reduceCredits(totalCreditUse);
+        }
       } else {
         console.error("All promises failed.");
       }

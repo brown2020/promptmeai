@@ -1,6 +1,6 @@
 import { db } from "@/firebase/firebaseClient";
 import { ChatDetail } from "@/types/chat";
-import { CoreMessage } from "ai";
+import { Message } from "@/zustand/useChatStore";
 import {
   addDoc,
   collection,
@@ -13,11 +13,6 @@ import {
 } from "firebase/firestore";
 
 const COLLECTION_NAME = "promptme_chats";
-
-export type Message = {
-  userMessage: CoreMessage;
-  responses: Record<string, CoreMessage>;
-};
 
 // Helper function to serialize messages
 const serializeMessages = (messages: Message[]): string | null => {
