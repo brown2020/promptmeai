@@ -2,17 +2,20 @@ import { cn } from "@/utils/tailwind";
 import MarkdownRenderer from "@/components/v2/MarkdownRenderer";
 import ChatAiIcon from "./ChatAiIcon";
 import ChatProfileIcon from "./ChatProfileIcon";
+import CreditUsage from "./CreditUsage";
 
 type ChatResponseCardProps = {
   type: "self" | "ai";
   aiModel?: string;
   content: string;
+  tokenUsage?: number;
 };
 
 const ChatResponseCard = ({
   type,
   aiModel,
   content,
+  tokenUsage,
 }: ChatResponseCardProps) => {
   return (
     <div
@@ -40,7 +43,8 @@ const ChatResponseCard = ({
           }
         )}
       >
-        <div className="text-[14px] text-[#1E1F22]">
+        <div className="relative text-[14px] text-[#1E1F22]">
+          {tokenUsage && <CreditUsage tokenUsage={tokenUsage} />}
           <MarkdownRenderer content={content} />
         </div>
       </div>

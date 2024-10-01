@@ -38,7 +38,8 @@ export function calculateTotalTokenUsage(message: Message) {
 }
 
 // Function to calculate total token credit cost
-export function calculateCreditCost(tokens: number): number {
+export function calculateCreditCost(tokens: number, round = true): number {
   const totalCost = calculateCost(tokens);
-  return convertToSubcurrency(totalCost);
+
+  return convertToSubcurrency(totalCost, 100, round);
 }
