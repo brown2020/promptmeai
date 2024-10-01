@@ -31,6 +31,9 @@ const ChatInput = () => {
   const { messages, addMessage } = useChatStore();
   const { addChat, activeChatId, setActiveChatId } = useChatSideBarStore();
 
+  const [isAlertAPIKeysNotWorking, setIsAlertAPIKeysNotWorking] =
+    useState<boolean>(false);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const showAlert =
     profile.usageMode === UsageMode.Credits
@@ -40,6 +43,8 @@ const ChatInput = () => {
     "Your credit balance is exhausted. Please purchase more credits or provide your API keys to continue.";
   const alertAPIKeys =
     "API keys have not been set up yet. Please configure your API keys to proceed.";
+  const alertAPIKeysNotWorking =
+    "No valid API keys detected. Please configure your API keys to continue.";
 
   const [input, setInput] = useState<string>("");
 
@@ -147,6 +152,8 @@ const ChatInput = () => {
         }
       } else {
         console.error("All promises failed.");
+
+        setIsAlertAPIKeysNotWorking(true);
       }
     } catch (error) {
       console.error("Error handling submission: ", error);
@@ -171,9 +178,13 @@ const ChatInput = () => {
         </div>
       </div>
       <ModalWarning
-        isOpen={!isDefaultData && showAlert}
+        isOpen={(!isDefaultData && showAlert) || isAlertAPIKeysNotWorking}
         title={
-          profile?.usageMode === UsageMode.Credits ? alertCredits : alertAPIKeys
+          profile?.usageMode === UsageMode.Credits
+            ? alertCredits
+            : isAlertAPIKeysNotWorking
+            ? alertAPIKeysNotWorking
+            : alertAPIKeys
         }
         confirmText="Go to settings page"
         onClose={() => router.push("/v2/settings")}
