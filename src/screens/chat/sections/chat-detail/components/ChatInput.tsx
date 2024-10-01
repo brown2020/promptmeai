@@ -28,7 +28,7 @@ const ChatInput = () => {
   const router = useRouter();
   const { user } = useUser();
   const { profile, isDefaultData, reduceCredits } = useProfileStore();
-  const { messages, addMessage } = useChatStore();
+  const { messages, addMessage, setMessages } = useChatStore();
   const { addChat, activeChatId, setActiveChatId } = useChatSideBarStore();
 
   const [isAlertAPIKeysNotWorking, setIsAlertAPIKeysNotWorking] =
@@ -154,6 +154,7 @@ const ChatInput = () => {
         console.error("All promises failed.");
 
         setIsAlertAPIKeysNotWorking(true);
+        setMessages([]);
       }
     } catch (error) {
       console.error("Error handling submission: ", error);
