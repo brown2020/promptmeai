@@ -58,7 +58,10 @@ const ChatInput = () => {
 
       const result = await continueConversation(
         [...currentMessages, userMessage],
-        model
+        model,
+        profile.usageMode === UsageMode.Credits
+          ? profile.usageMode
+          : profile.APIKeys
       );
 
       for await (const content of readStreamableValue(result)) {
@@ -69,7 +72,7 @@ const ChatInput = () => {
         });
       }
     },
-    [messages]
+    [messages, profile.APIKeys, profile.usageMode]
   );
 
   const saveChatFunction = useCallback(
