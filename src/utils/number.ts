@@ -1,5 +1,10 @@
-export const convertToSubcurrency = (amount: number, factor = 100) => {
-  return Math.round(amount * factor);
+export const convertToSubcurrency = (
+  amount: number,
+  factor = 100,
+  round = true
+) => {
+  const result = amount * factor;
+  return round ? Math.round(result) : result;
 };
 
 export const subcurrencyToNumber = (amount: number, factor = 100) => {

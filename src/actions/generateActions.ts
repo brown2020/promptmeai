@@ -2,28 +2,50 @@
 
 import { createStreamableValue } from "ai/rsc";
 import { CoreMessage, streamText } from "ai";
-import { createOpenAI, openai } from "@ai-sdk/openai";
-import { google } from "@ai-sdk/google";
-import { mistral } from "@ai-sdk/mistral";
-import { anthropic } from "@ai-sdk/anthropic";
+import { createOpenAI } from "@ai-sdk/openai";
+import { APIKeys, UsageMode } from "@/zustand/useProfileStore";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { createMistral } from "@ai-sdk/mistral";
+import { createAnthropic } from "@ai-sdk/anthropic";
 
-const fireworks = createOpenAI({
-  apiKey: process.env.FIREWORKS_API_KEY ?? "",
-  baseURL: "https://api.fireworks.ai/inference/v1",
-});
-
-async function getModel(modelName: string) {
+async function getModel(modelName: string, apiKeys: APIKeys | UsageMode) {
   switch (modelName) {
     case "gpt-4o":
-      return openai("gpt-4o");
+      return createOpenAI({
+        apiKey:
+          apiKeys === UsageMode.Credits
+            ? process.env.OPENAI_API_KEY
+            : (apiKeys as APIKeys)?.openAi || "",
+      })("gpt-4o");
     case "gemini-1.5-pro":
-      return google("models/gemini-1.5-pro-latest");
+      return createGoogleGenerativeAI({
+        apiKey:
+          apiKeys === UsageMode.Credits
+            ? process.env.GOOGLE_GENERATIVE_AI_API_KEY
+            : (apiKeys as APIKeys)?.googleGenerativeAi || "",
+      })("models/gemini-1.5-pro-latest");
     case "mistral-large":
-      return mistral("mistral-large-latest");
+      return createMistral({
+        apiKey:
+          apiKeys === UsageMode.Credits
+            ? process.env.MISTRAL_API_KEY
+            : (apiKeys as APIKeys)?.mistral || "",
+      })("mistral-large-latest");
     case "claude-3-5-sonnet":
-      return anthropic("claude-3-5-sonnet-20240620");
+      return createAnthropic({
+        apiKey:
+          apiKeys === UsageMode.Credits
+            ? process.env.ANTHROPIC_API_KEY
+            : (apiKeys as APIKeys)?.anthropic || "",
+      })("claude-3-5-sonnet-20240620");
     case "llama-v3p1-405b":
-      return fireworks("accounts/fireworks/models/llama-v3p1-405b-instruct");
+      return createOpenAI({
+        apiKey:
+          apiKeys === UsageMode.Credits
+            ? process.env.FIREWORKS_API_KEY
+            : (apiKeys as APIKeys)?.fireworks || "",
+        baseURL: "https://api.fireworks.ai/inference/v1",
+      })("accounts/fireworks/models/llama-v3p1-405b-instruct");
 
     default:
       throw new Error(`Unsupported model name: ${modelName}`);
@@ -32,9 +54,10 @@ async function getModel(modelName: string) {
 
 export async function continueConversation(
   messages: CoreMessage[],
-  modelName: string = "gpt-4o"
+  modelName: string = "gpt-4o",
+  apiKeys: APIKeys | UsageMode
 ) {
-  const model = await getModel(modelName);
+  const model = await getModel(modelName, apiKeys);
 
   const result = await streamText({
     model,
@@ -48,9 +71,10 @@ export async function continueConversation(
 export async function generateResponse(
   systemPrompt: string,
   userPrompt: string,
-  modelName: string = "gpt-4o"
+  modelName: string = "gpt-4o",
+  apiKeys: APIKeys | UsageMode
 ) {
-  const model = await getModel(modelName);
+  const model = await getModel(modelName, apiKeys);
 
   const messages: CoreMessage[] = [
     {

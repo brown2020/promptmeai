@@ -1,11 +1,15 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Fragment } from "react";
 import { type CoreMessage } from "ai";
 import { MODEL_NAMES } from "@/constants/modelNames";
 import { continueConversation } from "@/actions/generateActions";
 import { readStreamableValue } from "ai/rsc";
-import { useChatStore } from "@/zustand/useChatStore";
+import {
+  Message,
+  PromptCoreMessage,
+  useChatStore,
+} from "@/zustand/useChatStore";
 import { useUser } from "@clerk/nextjs";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import {
@@ -13,10 +17,10 @@ import {
   getChat,
   saveChat,
   updateChat,
-  Message,
 } from "@/services/chatService";
 import { ModelChat } from "./ModelChat";
 import { ClipLoader } from "react-spinners";
+import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 
 // Chat input form component
 const ChatInputForm: React.FC<{
@@ -41,9 +45,10 @@ export default function ChatCompare() {
   const [input, setInput] = useState("");
   const { user } = useUser();
   const { messages, addMessage, setMessages, isLoading, setIsLoading } =
-    useChatStore((state) => state);
+    useChatStore();
   const { activeChatId, isLoadingChat, setActiveChatId, setChats, addChat } =
-    useChatSideBarStore((state) => state);
+    useChatSideBarStore();
+  const { profile } = useProfileStore();
 
   // Fetch all chat details when the user ID is available
   useEffect(() => {
@@ -99,10 +104,11 @@ export default function ChatCompare() {
   }, [activeChatId, setIsLoading, setMessages, user?.id]);
 
   const saveChatFunction = useCallback(
-    async (coreMessages: CoreMessage[]) => {
+    async (coreMessages: PromptCoreMessage[]) => {
       if (user?.id) {
         const formattedMessages: Message[] = coreMessages.map(
           (coreMessage) => ({
+            mode: profile.usageMode,
             userMessage: coreMessage,
             responses: {},
           })
@@ -127,7 +133,14 @@ export default function ChatCompare() {
         }
       }
     },
-    [user?.id, user?.fullName, activeChatId, addChat, setActiveChatId]
+    [
+      activeChatId,
+      addChat,
+      profile.usageMode,
+      setActiveChatId,
+      user?.fullName,
+      user?.id,
+    ]
   );
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -164,7 +177,10 @@ export default function ChatCompare() {
 
       const result = await continueConversation(
         [...currentMessages, userMessage],
-        model
+        model,
+        profile.usageMode === UsageMode.Credits
+          ? profile.usageMode
+          : profile.APIKeys
       );
 
       for await (const content of readStreamableValue(result)) {
@@ -174,7 +190,7 @@ export default function ChatCompare() {
         });
       }
     },
-    [messages]
+    [messages, profile.APIKeys, profile.usageMode]
   );
 
   return (
@@ -182,7 +198,7 @@ export default function ChatCompare() {
       {isLoading || isLoadingChat ? (
         <ClipLoader size={30} color="#ffffff" />
       ) : (
-        <>
+        <Fragment>
           <div className="flex-1 overflow-auto p-4 mb-10">
             <div className="space-y-4">
               <ModelChat />
@@ -193,7 +209,7 @@ export default function ChatCompare() {
             input={input}
             setInput={setInput}
           />
-        </>
+        </Fragment>
       )}
     </div>
   );

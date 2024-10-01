@@ -8,6 +8,7 @@ import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { useUser } from "@clerk/nextjs";
 import { getChat } from "@/services/chatService";
 import ChatResponseCard from "./ChatResponseCard";
+import { UsageMode } from "@/zustand/useProfileStore";
 
 const ChatResponseList = () => {
   const { user } = useUser();
@@ -37,6 +38,11 @@ const ChatResponseList = () => {
             <ChatResponseCard
               type="self"
               content={message.userMessage.content as string}
+              tokenUsage={
+                message.mode === UsageMode.Credits
+                  ? message.userMessage?.tokenUsage
+                  : undefined
+              }
             />
 
             {MODEL_NAMES.map((model) => {
@@ -49,6 +55,11 @@ const ChatResponseList = () => {
                   type="ai"
                   aiModel={model.label}
                   content={response.content as string}
+                  tokenUsage={
+                    message.mode === UsageMode.Credits
+                      ? response.tokenUsage
+                      : undefined
+                  }
                 />
               );
             })}

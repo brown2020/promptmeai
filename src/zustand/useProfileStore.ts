@@ -3,6 +3,19 @@ import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { useAuthStore } from "./useAuthStore";
 import { db } from "@/firebase/firebaseClient";
 
+export enum UsageMode {
+  Credits = "CREDITS",
+  ApiKeys = "API_KEYS",
+}
+
+export type APIKeys = {
+  openAi: string;
+  anthropic: string;
+  googleGenerativeAi: string;
+  mistral: string;
+  fireworks: string;
+};
+
 export interface ProfileType {
   email: string;
   contactEmail: string;
@@ -11,6 +24,8 @@ export interface ProfileType {
   emailVerified: boolean;
   credits: number;
   totalCredits: number;
+  usageMode: UsageMode;
+  APIKeys: APIKeys;
 }
 
 const defaultProfile: ProfileType = {
@@ -21,20 +36,30 @@ const defaultProfile: ProfileType = {
   emailVerified: false,
   credits: 0,
   totalCredits: 0,
+  usageMode: UsageMode.Credits,
+  APIKeys: {
+    openAi: "",
+    anthropic: "",
+    googleGenerativeAi: "",
+    mistral: "",
+    fireworks: "",
+  },
 };
 
 interface ProfileState {
   profile: ProfileType;
   isLoading: boolean;
+  isDefaultData: boolean;
   fetchProfile: () => void;
   updateProfile: (newProfile: Partial<ProfileType>) => Promise<void>;
-  useCredits: (amount: number) => Promise<boolean>;
+  reduceCredits: (amount: number) => Promise<boolean>;
   addCredits: (amount: number) => Promise<void>;
 }
 
 const useProfileStore = create<ProfileState>((set, get) => ({
   profile: defaultProfile,
   isLoading: false,
+  isDefaultData: true,
 
   fetchProfile: async () => {
     const uid = useAuthStore.getState().uid;
@@ -49,12 +74,12 @@ const useProfileStore = create<ProfileState>((set, get) => ({
         const profileData = docSnap.data() as ProfileType;
         const newProfile = {
           ...profileData,
-          totalCredits: !profileData?.totalCredits
-            ? profileData.credits
-            : profileData.totalCredits,
+          totalCredits: profileData?.totalCredits || profileData.credits,
+          usageMode: profileData?.usageMode || profileData.usageMode,
+          APIKeys: profileData?.APIKeys || defaultProfile.APIKeys,
         };
 
-        set({ profile: newProfile });
+        set({ profile: newProfile, isDefaultData: false });
       } else {
         const newProfile = {
           email: useAuthStore.getState().authEmail || "",
@@ -64,10 +89,12 @@ const useProfileStore = create<ProfileState>((set, get) => ({
           emailVerified: useAuthStore.getState().authEmailVerified || false,
           credits: 1000,
           totalCredits: 1000,
+          usageMode: UsageMode.Credits,
+          APIKeys: defaultProfile.APIKeys,
         };
 
         await setDoc(userRef, newProfile);
-        set({ profile: newProfile });
+        set({ profile: newProfile, isDefaultData: false });
       }
 
       set({ isLoading: false });
@@ -97,7 +124,7 @@ const useProfileStore = create<ProfileState>((set, get) => ({
     }
   },
 
-  useCredits: async (amount: number) => {
+  reduceCredits: async (amount: number) => {
     const uid = useAuthStore.getState().uid;
     if (!uid) return false;
 
