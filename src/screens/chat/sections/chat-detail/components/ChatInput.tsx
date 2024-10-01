@@ -138,7 +138,7 @@ const ChatInput = () => {
 
         const totalTokenUsage = await saveChatFunction(updatedMessages);
 
-        if (totalTokenUsage) {
+        if (totalTokenUsage && profile.usageMode === UsageMode.Credits) {
           const totalCreditUse = calculateCreditCost(totalTokenUsage);
           reduceCredits(totalCreditUse);
         }
