@@ -1,6 +1,6 @@
 "use client";
 
-import ButtonIcon from "@/components/v2/ButtonIcon";
+import ButtonIcon from "@/components/ButtonIcon";
 import { HiOutlinePlus } from "react-icons/hi";
 import ChatTabs from "./components/ChatTabs";
 import SearchInput from "./components/SearchInput";

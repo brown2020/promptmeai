@@ -1,8 +1,8 @@
 "use client";
 
-import Button from "@/components/v2/Button";
-import CardContent from "@/components/v2/CardContent";
-import Spinner from "@/components/v2/Spinner";
+import Button from "@/components/Button";
+import CardContent from "@/components/CardContent";
+import Spinner from "@/components/Spinner";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 import { useRouter } from "next/navigation";
 import { Fragment } from "react";

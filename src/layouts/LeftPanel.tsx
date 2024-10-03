@@ -2,11 +2,11 @@
 
 import { PiChatsCircle } from "react-icons/pi";
 import { RiListSettingsFill } from "react-icons/ri";
-import Logo from "@/components/v2/Logo";
-import ButtonIcon from "@/components/v2/ButtonIcon";
-import Divider from "@/components/v2/Divider";
-import ThemeSwitcher from "@/components/v2/ThemeSwitcher";
-import UserProfileButton from "@/components/v2/UserProfileButton";
+import Logo from "@/components/Logo";
+import ButtonIcon from "@/components/ButtonIcon";
+import Divider from "@/components/Divider";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
+import UserProfileButton from "@/components/UserProfileButton";
 import { usePathname, useRouter } from "next/navigation";
 
 const LeftPanel = () => {

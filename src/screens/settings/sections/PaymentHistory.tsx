@@ -1,8 +1,8 @@
 "use client";
 
-import CardContent from "@/components/v2/CardContent";
-import Spinner from "@/components/v2/Spinner";
-import Table from "@/components/v2/Table";
+import CardContent from "@/components/CardContent";
+import Spinner from "@/components/Spinner";
+import Table from "@/components/Table";
 import { formatNumber, subcurrencyToNumber } from "@/utils/number";
 import { capitalize } from "@/utils/text";
 import { useAuthStore } from "@/zustand/useAuthStore";

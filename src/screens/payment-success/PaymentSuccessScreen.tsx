@@ -1,9 +1,9 @@
 "use client";
 
 import { validatePaymentIntent } from "@/actions/paymentActions";
-import Button from "@/components/v2/Button";
-import CardContent from "@/components/v2/CardContent";
-import Spinner from "@/components/v2/Spinner";
+import Button from "@/components/Button";
+import CardContent from "@/components/CardContent";
+import Spinner from "@/components/Spinner";
 import GreenWhiteLayout from "@/layouts/GreenWhiteLayout";
 import { formatNumber, subcurrencyToNumber } from "@/utils/number";
 import { useAuthStore } from "@/zustand/useAuthStore";

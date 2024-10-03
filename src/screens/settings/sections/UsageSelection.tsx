@@ -1,7 +1,7 @@
 "use client";
 
-import CardContent from "@/components/v2/CardContent";
-import Select from "@/components/v2/Select";
+import CardContent from "@/components/CardContent";
+import Select from "@/components/Select";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 
 const UsageSelection = () => {

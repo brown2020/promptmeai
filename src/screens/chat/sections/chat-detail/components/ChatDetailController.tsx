@@ -1,4 +1,4 @@
-import ButtonIcon from "@/components/v2/ButtonIcon";
+import ButtonIcon from "@/components/ButtonIcon";
 import { BsThreeDots } from "react-icons/bs";
 
 const ChatDetailController = () => {
