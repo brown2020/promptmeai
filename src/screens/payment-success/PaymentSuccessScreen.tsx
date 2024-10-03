@@ -1,7 +1,7 @@
 "use client";
 
 import { validatePaymentIntent } from "@/actions/paymentActions";
-import Button from "@/components/Button";
+import { Button } from "@/components/buttons";
 import CardContent from "@/components/CardContent";
 import Spinner from "@/components/Spinner";
 import GreenWhiteLayout from "@/layouts/GreenWhiteLayout";

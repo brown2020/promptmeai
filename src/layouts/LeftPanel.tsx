@@ -3,7 +3,7 @@
 import { PiChatsCircle } from "react-icons/pi";
 import { RiListSettingsFill } from "react-icons/ri";
 import Logo from "@/components/Logo";
-import ButtonIcon from "@/components/ButtonIcon";
+import { ButtonIcon } from "@/components/buttons";
 import Divider from "@/components/Divider";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import UserProfileButton from "@/components/UserProfileButton";

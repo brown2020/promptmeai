@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "@/components/Button";
+import { Button } from "@/components/buttons";
 import CardContent from "@/components/CardContent";
 import Input from "@/components/Input";
 import { areObjectsEqual } from "@/utils/object";

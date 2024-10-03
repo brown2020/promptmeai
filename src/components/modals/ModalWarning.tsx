@@ -2,7 +2,7 @@
 
 import { Modal, ModalContent, ModalBody } from "@nextui-org/react";
 import { PiWarningFill } from "react-icons/pi";
-import Button from "../Button";
+import { Button } from "@/components/buttons";
 
 type ModalWarningProps = {
   isOpen: boolean;
