@@ -49,7 +49,7 @@ const HomeScreen = () => {
           informed decisions in your AI projects.
         </motion.p>
         <SignedOut>
-          <SignInButton forceRedirectUrl="/v2/chat" mode="modal">
+          <SignInButton forceRedirectUrl="/chat" mode="modal">
             <motion.button
               initial={{ opacity: 0 }}
               animate={{

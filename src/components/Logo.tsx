@@ -19,7 +19,7 @@ const Logo = () => {
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
       onMouseLeave={() => setIsPressed(false)}
-      onClick={() => router.push("/v2/chat")}
+      onClick={() => router.push("/chat")}
     >
       <GiBrainTentacle
         className={`transition-colors duration-150 ${

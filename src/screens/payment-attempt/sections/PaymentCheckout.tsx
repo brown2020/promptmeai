@@ -55,7 +55,7 @@ const PaymentCheckout = ({ amount }: PaymentCheckoutProps) => {
         elements,
         clientSecret,
         confirmParams: {
-          return_url: `${window.location.origin}/v2/payment-success?amount=${amount}`,
+          return_url: `${window.location.origin}/payment-success?amount=${amount}`,
         },
       });
 

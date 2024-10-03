@@ -124,7 +124,7 @@ const PaymentSuccessScreen = () => {
               <Button
                 className="w-full"
                 onClick={() => {
-                  router.push("/v2/settings");
+                  router.push("/settings");
                 }}
               >
                 Return to Settings

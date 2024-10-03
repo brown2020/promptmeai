@@ -188,7 +188,7 @@ const ChatInput = () => {
             : alertAPIKeys
         }
         confirmText="Go to settings page"
-        onClose={() => router.push("/v2/settings")}
+        onClose={() => router.push("/settings")}
       />
     </Fragment>
   );

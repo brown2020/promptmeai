@@ -22,12 +22,12 @@ const LeftPanel = () => {
           <ButtonIcon
             icon={PiChatsCircle}
             isActive={pathname.includes("chat")}
-            onClick={() => router.push("/v2/chat")}
+            onClick={() => router.push("/chat")}
           />
           <ButtonIcon
             icon={RiListSettingsFill}
             isActive={pathname.includes("settings")}
-            onClick={() => router.push("/v2/settings")}
+            onClick={() => router.push("/settings")}
           />
         </div>
       </div>

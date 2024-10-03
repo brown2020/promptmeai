@@ -59,7 +59,7 @@ const CreditInformation = () => {
         </Fragment>
       )}
 
-      <Button onClick={() => router.push("/v2/payment-attempt")}>
+      <Button onClick={() => router.push("/payment-attempt")}>
         Buy 10,000 Credits
       </Button>
     </CardContent>
