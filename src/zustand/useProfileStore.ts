@@ -74,8 +74,8 @@ const useProfileStore = create<ProfileState>((set, get) => ({
         const profileData = docSnap.data() as ProfileType;
         const newProfile = {
           ...profileData,
-          totalCredits: profileData?.totalCredits || profileData.credits,
-          usageMode: profileData?.usageMode || profileData.usageMode,
+          totalCredits: profileData?.totalCredits || defaultProfile.credits,
+          usageMode: profileData?.usageMode || defaultProfile.usageMode,
           APIKeys: profileData?.APIKeys || defaultProfile.APIKeys,
         };
 
