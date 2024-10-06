@@ -2,11 +2,11 @@
 
 import { PiChatsCircle } from "react-icons/pi";
 import { RiListSettingsFill } from "react-icons/ri";
-import Logo from "@/components/v2/Logo";
-import ButtonIcon from "@/components/v2/ButtonIcon";
-import Divider from "@/components/v2/Divider";
-import ThemeSwitcher from "@/components/v2/ThemeSwitcher";
-import UserProfileButton from "@/components/v2/UserProfileButton";
+import Logo from "@/components/Logo";
+import { ButtonIcon } from "@/components/buttons";
+import Divider from "@/components/Divider";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
+import UserProfileButton from "@/components/UserProfileButton";
 import { usePathname, useRouter } from "next/navigation";
 
 const LeftPanel = () => {
@@ -22,12 +22,12 @@ const LeftPanel = () => {
           <ButtonIcon
             icon={PiChatsCircle}
             isActive={pathname.includes("chat")}
-            onClick={() => router.push("/v2/chat")}
+            onClick={() => router.push("/chat")}
           />
           <ButtonIcon
             icon={RiListSettingsFill}
             isActive={pathname.includes("settings")}
-            onClick={() => router.push("/v2/settings")}
+            onClick={() => router.push("/settings")}
           />
         </div>
       </div>

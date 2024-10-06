@@ -1,7 +1,7 @@
 "use client";
 
 import { continueConversation } from "@/actions/generateActions";
-import { ModalWarning } from "@/components/v2/modals";
+import { ModalWarning } from "@/components/modals";
 import { MODEL_NAMES } from "@/constants/modelNames";
 import { saveChat, updateChat } from "@/services/chatService";
 import { isObjectEmpty } from "@/utils/object";
@@ -188,7 +188,7 @@ const ChatInput = () => {
             : alertAPIKeys
         }
         confirmText="Go to settings page"
-        onClose={() => router.push("/v2/settings")}
+        onClose={() => router.push("/settings")}
       />
     </Fragment>
   );

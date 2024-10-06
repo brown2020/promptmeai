@@ -7,7 +7,7 @@ type ChatCardProps = {
 };
 
 const ChatCard = ({ id, title }: ChatCardProps) => {
-  const { setActiveChatId, activeChatId } = useChatSideBarStore(
+  const { setActiveChatId, activeChatId, setDrawerOpen } = useChatSideBarStore(
     (state) => state
   );
 
@@ -21,7 +21,10 @@ const ChatCard = ({ id, title }: ChatCardProps) => {
           "bg-[#23C69E]/[0.15]": isActive,
         }
       )}
-      onClick={() => setActiveChatId(id)}
+      onClick={() => {
+        setActiveChatId(id);
+        setDrawerOpen(false);
+      }}
     >
       <div className="flex items-center justify-between gap-[8px]">
         <h4 className="text-[14px] text-[#1E1F22] whitespace-nowrap overflow-hidden text-ellipsis">

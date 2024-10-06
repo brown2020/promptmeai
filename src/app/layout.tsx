@@ -1,3 +1,8 @@
+import LeftPanel from "@/layouts/LeftPanel";
+import RowLayout from "@/layouts/RowLayout";
+import { ClerkProvider } from "@clerk/nextjs";
+import { Providers } from "./providers";
+
 import "@/styles/globals.css";
 
 export const metadata = {
@@ -5,10 +10,23 @@ export const metadata = {
   description: "Compare chatbot models",
 };
 
-type Props = {
+export default function RootLayout({
+  children,
+}: Readonly<{
   children: React.ReactNode;
-};
-
-export default function RootLayout({ children }: Props) {
-  return children;
+}>) {
+  return (
+    <ClerkProvider>
+      <html lang="en">
+        <body>
+          <Providers>
+            <RowLayout>
+              <LeftPanel />
+              {children}
+            </RowLayout>
+          </Providers>
+        </body>
+      </html>
+    </ClerkProvider>
+  );
 }

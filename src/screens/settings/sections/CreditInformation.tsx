@@ -1,8 +1,8 @@
 "use client";
 
-import Button from "@/components/v2/Button";
-import CardContent from "@/components/v2/CardContent";
-import Spinner from "@/components/v2/Spinner";
+import { Button } from "@/components/buttons";
+import CardContent from "@/components/CardContent";
+import Spinner from "@/components/Spinner";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 import { useRouter } from "next/navigation";
 import { Fragment } from "react";
@@ -59,7 +59,7 @@ const CreditInformation = () => {
         </Fragment>
       )}
 
-      <Button onClick={() => router.push("/v2/payment-attempt")}>
+      <Button onClick={() => router.push("/payment-attempt")}>
         Buy 10,000 Credits
       </Button>
     </CardContent>

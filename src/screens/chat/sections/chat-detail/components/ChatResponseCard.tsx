@@ -1,5 +1,5 @@
 import { cn } from "@/utils/tailwind";
-import MarkdownRenderer from "@/components/v2/MarkdownRenderer";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
 import ChatAiIcon from "./ChatAiIcon";
 import ChatProfileIcon from "./ChatProfileIcon";
 import CreditUsage from "./CreditUsage";

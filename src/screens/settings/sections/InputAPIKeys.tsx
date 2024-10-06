@@ -1,8 +1,8 @@
 "use client";
 
-import Button from "@/components/v2/Button";
-import CardContent from "@/components/v2/CardContent";
-import Input from "@/components/v2/Input";
+import { Button } from "@/components/buttons";
+import CardContent from "@/components/CardContent";
+import Input from "@/components/Input";
 import { areObjectsEqual } from "@/utils/object";
 import useProfileStore, { APIKeys, UsageMode } from "@/zustand/useProfileStore";
 import { useEffect, useState } from "react";
