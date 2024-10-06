@@ -45,7 +45,7 @@ const MyChatSection = () => {
     <Fragment>
       {/* Button to open the drawer on screens below lg */}
       <button
-        className="fixed left-[48px] top-1/2 -translate-y-1/2 lg:hidden z-50 bg-gray-300 text-white p-2 rounded-full hover:bg-gray-500 transition-all"
+        className="fixed left-[16px] top-1/2 -translate-y-1/2 lg:hidden z-50 bg-gray-300 text-white p-2 rounded-full hover:bg-gray-500 transition-all"
         onClick={() => setDrawerOpen(true)}
       >
         <FaArrowRight />

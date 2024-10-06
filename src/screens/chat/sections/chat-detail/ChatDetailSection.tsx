@@ -33,7 +33,7 @@ const ChatDetailSection = () => {
         <ChatDetailController />
       </div>
       {/* Main chat detail section */}
-      <div className="bg-[#F5F5F5] h-[calc(100%-48px)] w-[calc(100% + 32px)] rounded-lg ml-[-16px] flex justify-center px-[24px]">
+      <div className="bg-[#F5F5F5] h-[calc(100%-48px)] w-[calc(100% + 32px)] rounded-lg lg:ml-[-16px] flex justify-center px-[24px]">
         {/* Wrapper */}
         <div className="h-full w-full max-w-[736px] flex flex-col gap-[24px] justify-between items-center py-[24px] ">
           <ChatResponseList />
