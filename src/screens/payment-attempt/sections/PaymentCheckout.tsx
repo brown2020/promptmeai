@@ -26,6 +26,7 @@ const PaymentCheckout = ({ amount }: PaymentCheckoutProps) => {
         const secret = await createPaymentIntent(convertToSubcurrency(amount));
         if (secret) setClientSecret(secret);
       } catch (error) {
+        console.error("Failed to initialize payment:", error);
         setErrorMessage("Failed to initialize payment. Please try again.");
       }
     }

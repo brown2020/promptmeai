@@ -70,6 +70,7 @@ const PaymentSuccessScreen = () => {
           setMessage("Payment validation failed");
         }
       } catch (error) {
+        console.error("Error handling payment success:", error);
         setMessage("Error handling payment success");
       } finally {
         setIsLoading(false);
