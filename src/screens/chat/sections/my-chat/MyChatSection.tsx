@@ -14,7 +14,7 @@ import { useAuthStore } from "@/zustand/useAuthStore";
 
 const MyChatSection = () => {
   const { uid, firebaseUid } = useAuthStore();
-  const { isDrawerOpen, chats, setDrawerOpen, setChats, setActiveChatId } =
+  const { isDrawerOpen, setDrawerOpen, setChats, setActiveChatId } =
     useChatSideBarStore();
   const { setMessages } = useChatStore();
 
@@ -75,7 +75,7 @@ const MyChatSection = () => {
 
         <ChatTabs />
         <SearchInput />
-        <ChatList chatList={chats} />
+        <ChatList />
       </div>
     </Fragment>
   );

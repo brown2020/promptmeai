@@ -12,8 +12,8 @@ import { UsageMode } from "@/zustand/useProfileStore";
 
 const ChatResponseList = () => {
   const { user } = useUser();
-  const { messages, setMessages } = useChatStore((state) => state);
-  const { activeChatId } = useChatSideBarStore((state) => state);
+  const { messages, setMessages } = useChatStore();
+  const { activeChatId } = useChatSideBarStore();
 
   useEffect(() => {
     const updateMessages = async (userId: string, activeChatId: string) => {
