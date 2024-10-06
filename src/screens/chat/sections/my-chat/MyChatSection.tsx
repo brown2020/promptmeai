@@ -6,7 +6,7 @@ import { FaArrowRight } from "react-icons/fa6";
 import ChatTabs from "./components/ChatTabs";
 import SearchInput from "./components/SearchInput";
 import ChatList from "./components/ChatList";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect } from "react";
 import { getAllChatDetails } from "@/services/chatService";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { useChatStore } from "@/zustand/useChatStore";
@@ -14,12 +14,9 @@ import { useAuthStore } from "@/zustand/useAuthStore";
 
 const MyChatSection = () => {
   const { uid, firebaseUid } = useAuthStore((state) => state);
-  const { chats, setChats, setActiveChatId } = useChatSideBarStore(
-    (state) => state
-  );
+  const { isDrawerOpen, chats, setDrawerOpen, setChats, setActiveChatId } =
+    useChatSideBarStore((state) => state);
   const { setMessages } = useChatStore((state) => state);
-
-  const [isDrawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     const getAllChatList = async (userId: string) => {
