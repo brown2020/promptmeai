@@ -13,10 +13,10 @@ import { useChatStore } from "@/zustand/useChatStore";
 import { useAuthStore } from "@/zustand/useAuthStore";
 
 const MyChatSection = () => {
-  const { uid, firebaseUid } = useAuthStore((state) => state);
+  const { uid, firebaseUid } = useAuthStore();
   const { isDrawerOpen, chats, setDrawerOpen, setChats, setActiveChatId } =
-    useChatSideBarStore((state) => state);
-  const { setMessages } = useChatStore((state) => state);
+    useChatSideBarStore();
+  const { setMessages } = useChatStore();
 
   useEffect(() => {
     const getAllChatList = async (userId: string) => {
@@ -36,6 +36,7 @@ const MyChatSection = () => {
   const addNewChat = () => {
     setActiveChatId("");
     setMessages([]);
+    setDrawerOpen(false);
   };
 
   return (
