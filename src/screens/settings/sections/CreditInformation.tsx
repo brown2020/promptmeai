@@ -6,7 +6,7 @@ import Spinner from "@/components/Spinner";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, useMemo } from "react";
 import { GaugeComponent } from "react-gauge-component";
 
 const CreditInformation = () => {
@@ -15,8 +15,8 @@ const CreditInformation = () => {
     useProfileStore();
   const router = useRouter();
 
-  const [totalCredits, setTotalCredits] = useState<number>(0);
-  const [credits, setCredits] = useState<number>(0);
+  const [credits, setCredits] = useState(0);
+  const [totalCredits, setTotalCredits] = useState(0);
 
   useEffect(() => {
     if (profile.totalCredits) {
@@ -29,15 +29,17 @@ const CreditInformation = () => {
   }, [profile.credits, profile.totalCredits]);
 
   useEffect(() => {
-    const syncTotalCredits = async () => {
-      await updateProfile({ totalCredits: credits });
-      setTotalCredits(credits);
-    };
-
     if (!isDefaultData && totalCredits < credits) {
-      syncTotalCredits();
+      updateProfile({ totalCredits: credits }).then(() =>
+        setTotalCredits(credits)
+      );
     }
   }, [credits, isDefaultData, totalCredits, updateProfile]);
+
+  const creditUsage = useMemo(
+    () => totalCredits - credits,
+    [credits, totalCredits]
+  );
 
   return (
     <CardContent
@@ -51,38 +53,17 @@ const CreditInformation = () => {
           <GaugeComponent
             arc={{
               subArcs: [
-                {
-                  limit: 20,
-                  color: "#EA4228",
-                  showTick: true,
-                },
-                {
-                  limit: 40,
-                  color: "#F58B19",
-                  showTick: true,
-                },
-                {
-                  limit: 60,
-                  color: "#F5CD19",
-                  showTick: true,
-                },
-                {
-                  limit: 100,
-                  color: "#5BE12C",
-                  showTick: true,
-                },
+                { limit: 20, color: "#EA4228", showTick: true },
+                { limit: 40, color: "#F58B19", showTick: true },
+                { limit: 60, color: "#F5CD19", showTick: true },
+                { limit: 100, color: "#5BE12C", showTick: true },
               ],
             }}
-            value={(credits / totalCredits) * 100}
+            value={(credits / totalCredits) * 100 || 0}
           />
-          <h4 className="self-center">
-            {`Credit usage: ${Math.round(
-              totalCredits - credits
-            )} from ${totalCredits}`}
-          </h4>
+          <h4 className="self-center">{`Credit usage: ${creditUsage} from ${totalCredits}`}</h4>
         </Fragment>
       )}
-
       <Button onClick={() => router.push("/payment-attempt")}>
         Buy 10,000 Credits
       </Button>
