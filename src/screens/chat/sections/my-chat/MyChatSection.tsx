@@ -2,7 +2,6 @@
 
 import { ButtonIcon } from "@/components/buttons";
 import { HiOutlinePlus } from "react-icons/hi";
-import { FaArrowRight } from "react-icons/fa6";
 import ChatTabs from "./components/ChatTabs";
 import SearchInput from "./components/SearchInput";
 import ChatList from "./components/ChatList";
