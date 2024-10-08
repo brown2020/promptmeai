@@ -7,9 +7,10 @@ import ChatInput from "./components/ChatInput";
 import ChatResponseList from "./components/ChatResponseList";
 import { useTypingEffect } from "@/hooks";
 import { trimText } from "@/utils/text";
+import { RxHamburgerMenu } from "react-icons/rx";
 
 const ChatDetailSection = () => {
-  const { activeChatId, chats, isNewChat } = useChatSideBarStore(
+  const { activeChatId, chats, isNewChat, setDrawerOpen } = useChatSideBarStore(
     (state) => state
   );
   const [title, setTitle] = useState<string>("");
@@ -26,8 +27,13 @@ const ChatDetailSection = () => {
   return (
     <div className="w-full h-full p-[16px] flex flex-col gap-[16px] overflow-hidden">
       {/* Top section */}
-      <div className="flex justify-between items-center">
-        <h3 className="text-[18px] text-ellipsis text-[#1E1F22]">
+      <div className="flex justify-between items-center gap-4">
+        <RxHamburgerMenu
+          size={24}
+          className="lg:hidden cursor-pointer flex-shrink-0"
+          onClick={() => setDrawerOpen(true)}
+        />
+        <h3 className="text-[18px] whitespace-nowrap overflow-hidden text-ellipsis text-[#1E1F22]">
           {isNewChat ? typedTitle : title}
         </h3>
         <ChatDetailController />
