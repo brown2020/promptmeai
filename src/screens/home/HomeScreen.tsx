@@ -10,10 +10,16 @@ import { GiBrainTentacle } from "react-icons/gi";
 const HomeScreen = () => {
   const isClient = useIsClient();
 
+  if (!isClient)
+    return (
+      <div className="h-screen w-screen flex flex-col items-center justify-center">
+        <Spinner message="Getting things ready..." />
+      </div>
+    );
+
   return (
     <div className="h-screen w-screen flex justify-center items-center p-6">
       <div className="flex flex-col gap-4 max-w-[450px] prose justify-center items-center text-center">
-        {!isClient && <Spinner />}
         <motion.div
           initial={{ scale: 0 }}
           animate={{
