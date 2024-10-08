@@ -1,35 +1,16 @@
-"use client";
-
-import { PiChatsCircle } from "react-icons/pi";
-import { RiListSettingsFill } from "react-icons/ri";
-import Logo from "@/components/Logo";
-import { ButtonIcon } from "@/components/buttons";
+import Logo from "@/layouts/navigation-buttons/Logo";
 import Divider from "@/components/Divider";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import UserProfileButton from "@/components/UserProfileButton";
-import { usePathname, useRouter } from "next/navigation";
+import { NavigationList } from "./navigation-buttons";
 
 const LeftPanel = () => {
-  const router = useRouter();
-  const pathname = usePathname();
-
   return (
-    <div className="flex flex-col justify-between items-center w-[64px] flex-shrink-0 bg-white border-r border-[#EAEAEA] p-[16px]">
+    <div className="hidden sm:flex flex-col justify-between items-center w-[64px] flex-shrink-0 bg-white border-r border-[#EAEAEA] p-[16px]">
       {/* Top section */}
       <div className="flex flex-col gap-[64px] justify-center items-center">
         <Logo />
-        <div className="flex flex-col gap-[24px] justify-center items-center">
-          <ButtonIcon
-            icon={PiChatsCircle}
-            isActive={pathname.includes("chat")}
-            onClick={() => router.push("/chat")}
-          />
-          <ButtonIcon
-            icon={RiListSettingsFill}
-            isActive={pathname.includes("settings")}
-            onClick={() => router.push("/settings")}
-          />
-        </div>
+        <NavigationList />
       </div>
 
       {/* Bottom section */}
