@@ -2,7 +2,6 @@
 
 import { ButtonIcon } from "@/components/buttons";
 import { HiOutlinePlus } from "react-icons/hi";
-import { FaArrowRight } from "react-icons/fa6";
 import ChatTabs from "./components/ChatTabs";
 import SearchInput from "./components/SearchInput";
 import ChatList from "./components/ChatList";
@@ -41,14 +40,6 @@ const MyChatSection = () => {
 
   return (
     <Fragment>
-      {/* Button to open the drawer on screens below lg */}
-      <button
-        className="fixed left-[16px] top-1/2 -translate-y-1/2 lg:hidden z-50 bg-gray-300 text-white p-2 rounded-full hover:bg-gray-500 transition-all"
-        onClick={() => setDrawerOpen(true)}
-      >
-        <FaArrowRight />
-      </button>
-
       {/* Drawer backdrop for mobile */}
       <div
         className={`fixed inset-0 z-40 bg-black bg-opacity-50 transition-opacity lg:hidden ${

@@ -35,7 +35,7 @@ const defaultProfile: ProfileType = {
   photoUrl: "",
   emailVerified: false,
   credits: 0,
-  totalCredits: 0,
+  totalCredits: 1000,
   usageMode: UsageMode.Credits,
   APIKeys: {
     openAi: "",
@@ -72,9 +72,11 @@ const useProfileStore = create<ProfileState>((set, get) => ({
 
       if (docSnap.exists()) {
         const profileData = docSnap.data() as ProfileType;
+
         const newProfile = {
           ...profileData,
-          totalCredits: profileData?.totalCredits || defaultProfile.credits,
+          totalCredits:
+            profileData?.totalCredits || defaultProfile.totalCredits,
           usageMode: profileData?.usageMode || defaultProfile.usageMode,
           APIKeys: profileData?.APIKeys || defaultProfile.APIKeys,
         };

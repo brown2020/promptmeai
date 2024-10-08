@@ -4,19 +4,21 @@ import { auth } from "@/firebase/firebaseClient";
 import { useIsClient } from "@/hooks";
 import { useAuthStore } from "@/zustand/useAuthStore";
 import { useInitializeStores } from "@/zustand/useInitializeStores";
-import { useAuth, UserButton, useUser } from "@clerk/nextjs";
+import { useAuth, useClerk, UserButton, useUser } from "@clerk/nextjs";
+import { Spinner } from "@nextui-org/react";
 import { signInWithCustomToken, signOut, updateProfile } from "firebase/auth";
 import { serverTimestamp, Timestamp } from "firebase/firestore";
 import { useEffect } from "react";
+import { FaUserAstronaut } from "react-icons/fa6";
 
 const UserProfileButton = () => {
   const isClient = useIsClient();
-
   const { getToken, isSignedIn } = useAuth();
   const { user } = useUser();
   const setAuthDetails = useAuthStore((state) => state.setAuthDetails);
   const clearAuthDetails = useAuthStore((state) => state.clearAuthDetails);
   useInitializeStores();
+  const { openSignIn } = useClerk();
 
   useEffect(() => {
     const syncAuthState = async () => {
@@ -58,9 +60,18 @@ const UserProfileButton = () => {
     syncAuthState();
   }, [clearAuthDetails, getToken, isSignedIn, setAuthDetails, user]);
 
-  if (!isClient) return;
+  if (!isClient) return <Spinner color="default" />;
 
-  return <UserButton />;
+  return isSignedIn && user ? (
+    <UserButton />
+  ) : (
+    <FaUserAstronaut
+      size={24}
+      color="#255148"
+      onClick={() => openSignIn()}
+      className="cursor-pointer"
+    />
+  );
 };
 
 export default UserProfileButton;

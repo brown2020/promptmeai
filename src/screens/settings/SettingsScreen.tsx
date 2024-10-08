@@ -7,8 +7,10 @@ import UsageSelection from "./sections/UsageSelection";
 const SettingsScreen = () => {
   return (
     <GreenWhiteLayout>
-      <div className="flex flex-col gap-5 p-8 max-w-[1320px] w-full">
-        <h2 className="font-medium text-[24px]">Account Settings</h2>
+      <div className="flex flex-col gap-2 sm:gap-5 p-4 sm:p-8 max-w-[1320px] w-full">
+        <h2 className="font-medium text-[20px] sm:text-[24px]">
+          Account Settings
+        </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 overflow-auto scrollable-container">
           <UsageSelection />
           <CreditInformation />
