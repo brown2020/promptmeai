@@ -10,7 +10,7 @@ const Spinner = ({ message }: SpinnerProps) => {
 
       {/* Message */}
       {message && (
-        <p className="mt-4 text-lg font-medium text-gray-500 animate-pulse">
+        <p className="mt-4 text-md font-medium text-gray-500 animate-pulse">
           {message}
         </p>
       )}

@@ -10,7 +10,7 @@ const ChatResponseEmptyState = () => {
   return (
     <div className="h-full flex flex-col justify-center items-center gap-1">
       {!user ? (
-        <Spinner />
+        <Spinner message="Setting things up for you..." />
       ) : (
         <Fragment>
           <motion.div
