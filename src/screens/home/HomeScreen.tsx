@@ -4,13 +4,8 @@ import { SignedOut } from "@clerk/clerk-react";
 import { SignInButton } from "@clerk/nextjs";
 import { motion } from "framer-motion";
 import { GiBrainTentacle } from "react-icons/gi";
-import { useIsClient } from "@/hooks";
 
 const HomeScreen = () => {
-  const isClient = useIsClient();
-
-  if (!isClient) return;
-
   return (
     <div className="h-screen w-screen flex justify-center items-center p-6">
       <div className="flex flex-col gap-4 max-w-[450px] prose justify-center items-center text-center">

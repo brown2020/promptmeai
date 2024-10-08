@@ -1,17 +1,15 @@
 "use client";
 
 import { auth } from "@/firebase/firebaseClient";
-import { useIsClient } from "@/hooks";
 import { useAuthStore } from "@/zustand/useAuthStore";
 import { useInitializeStores } from "@/zustand/useInitializeStores";
-import { useAuth, UserButton, useUser } from "@clerk/nextjs";
+import { SignInButton, useAuth, UserButton, useUser } from "@clerk/nextjs";
 import { signInWithCustomToken, signOut, updateProfile } from "firebase/auth";
 import { serverTimestamp, Timestamp } from "firebase/firestore";
 import { useEffect } from "react";
+import { FaUserAstronaut } from "react-icons/fa6";
 
 const UserProfileButton = () => {
-  const isClient = useIsClient();
-
   const { getToken, isSignedIn } = useAuth();
   const { user } = useUser();
   const setAuthDetails = useAuthStore((state) => state.setAuthDetails);
@@ -58,9 +56,13 @@ const UserProfileButton = () => {
     syncAuthState();
   }, [clearAuthDetails, getToken, isSignedIn, setAuthDetails, user]);
 
-  if (!isClient) return;
-
-  return <UserButton />;
+  return isSignedIn ? (
+    <UserButton />
+  ) : (
+    <SignInButton forceRedirectUrl="/chat" mode="modal">
+      <FaUserAstronaut size={24} color="#255148" />
+    </SignInButton>
+  );
 };
 
 export default UserProfileButton;
