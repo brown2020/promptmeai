@@ -18,6 +18,7 @@ import {
 } from "@/zustand/useChatStore";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 import { useUser } from "@clerk/nextjs";
+import { Spinner } from "@nextui-org/react";
 import { CoreMessage } from "ai";
 import { readStreamableValue } from "ai/rsc";
 import { useRouter } from "next/navigation";
@@ -28,7 +29,8 @@ const ChatInput = () => {
   const router = useRouter();
   const { user } = useUser();
   const { profile, isDefaultData, reduceCredits } = useProfileStore();
-  const { messages, addMessage, setMessages } = useChatStore();
+  const { messages, addMessage, setMessages, setIsLoading, isLoading } =
+    useChatStore();
   const { addChat, activeChatId, setActiveChatId } = useChatSideBarStore();
 
   const [isAlertAPIKeysNotWorking, setIsAlertAPIKeysNotWorking] =
@@ -117,7 +119,7 @@ const ChatInput = () => {
   );
 
   const submitHandler = async () => {
-    if (!input) return;
+    if (!input || isLoading) return;
 
     const newUserMessage: PromptCoreMessage = {
       content: input,
@@ -127,6 +129,7 @@ const ChatInput = () => {
     addMessage(newUserMessage);
     setInput("");
 
+    setIsLoading(true);
     try {
       const results = await Promise.allSettled(
         MODEL_NAMES.map((model) =>
@@ -156,8 +159,11 @@ const ChatInput = () => {
         setIsAlertAPIKeysNotWorking(true);
         setMessages([]);
       }
+
+      setIsLoading(false);
     } catch (error) {
       console.error("Error handling submission: ", error);
+      setIsLoading(false);
     }
   };
 
@@ -173,8 +179,15 @@ const ChatInput = () => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && submitHandler()}
           />
-          <div className="flex items-center justify-center h-[32px] w-[32px] rounded-lg cursor-pointer flex-shrink-0 mr-[-4px]">
-            <PiPaperPlaneTilt size={18} color="#ABABAB" />
+          <div
+            className="flex items-center justify-center h-[32px] w-[32px] rounded-lg cursor-pointer flex-shrink-0 mr-[-4px]"
+            onClick={submitHandler}
+          >
+            {isLoading ? (
+              <Spinner color="default" />
+            ) : (
+              <PiPaperPlaneTilt size={18} color="#ABABAB" />
+            )}
           </div>
         </div>
       </div>
