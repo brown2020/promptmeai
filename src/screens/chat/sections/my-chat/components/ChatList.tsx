@@ -4,6 +4,7 @@ import { groupChatByDate, sortChatByDateDesc } from "@/utils/chat";
 import ChatGroupedList from "./ChatGroupedList";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import Spinner from "@/components/Spinner";
+import EmptyChatList from "./EmptyChatList";
 
 const ChatList = () => {
   const { isLoadingChat, chats } = useChatSideBarStore();
@@ -11,9 +12,19 @@ const ChatList = () => {
   const chatSortedDesc = sortChatByDateDesc(chats);
   const groupedData = groupChatByDate(chatSortedDesc);
 
+  if (isLoadingChat)
+    return (
+      <div className="flex flex-col items-center justify-center h-[calc(100%-200px)]">
+        <Spinner message="Preparing your content..." />
+      </div>
+    );
+
+  if (chats.length === 0) {
+    return <EmptyChatList />;
+  }
+
   return (
     <div className="flex flex-col gap-[8px] overflow-y-auto scrollable-container">
-      {isLoadingChat && <Spinner />}
       {groupedData.today.length > 0 && (
         <ChatGroupedList groupName="Today" chatList={groupedData.today} />
       )}
