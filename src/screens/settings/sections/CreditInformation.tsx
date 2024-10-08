@@ -6,27 +6,45 @@ import Spinner from "@/components/Spinner";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { GaugeComponent } from "react-gauge-component";
 
 const CreditInformation = () => {
   const { user } = useUser();
-  const { profile, isLoading, updateProfile } = useProfileStore();
+  const { profile, isLoading, isDefaultData, updateProfile } =
+    useProfileStore();
   const router = useRouter();
 
-  const totalCredits = profile.totalCredits;
-  const credits = profile.credits;
+  const [totalCredits, setTotalCredits] = useState<number>(0);
+  const [credits, setCredits] = useState<number>(0);
 
-  if (totalCredits < credits) {
-    updateProfile({ totalCredits: credits });
-  }
+  useEffect(() => {
+    if (profile.totalCredits) {
+      setTotalCredits(profile.totalCredits);
+    }
+
+    if (profile.credits) {
+      setCredits(profile.credits);
+    }
+  }, [profile.credits, profile.totalCredits]);
+
+  useEffect(() => {
+    const syncTotalCredits = async () => {
+      await updateProfile({ totalCredits: credits });
+      setTotalCredits(credits);
+    };
+
+    if (!isDefaultData && totalCredits < credits) {
+      syncTotalCredits();
+    }
+  }, [credits, isDefaultData, totalCredits, updateProfile]);
 
   return (
     <CardContent
       title="Conversation Credits"
       isActive={profile.usageMode === UsageMode.Credits}
     >
-      {isLoading || !user ? (
+      {isLoading || !user || isDefaultData ? (
         <Spinner />
       ) : (
         <Fragment>
