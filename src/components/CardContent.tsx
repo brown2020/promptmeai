@@ -16,14 +16,14 @@ const CardContent = ({
   return (
     <div
       className={cn(
-        "border border-[#E5EAEE] p-4 rounded-lg flex flex-col gap-4 transition duration-300 ease",
+        "border border-[#E5EAEE] p-3 sm:p-4 rounded-lg flex flex-col gap-3 sm:gap-4 transition duration-300 ease",
         {
           "border-[#0CA37F] border-[2px]": isActive,
         },
         overrideStyles
       )}
     >
-      {title && <h3 className="text-[20px]">{title}</h3>}
+      {title && <h3 className="text-[17px] sm:text-[20px]">{title}</h3>}
       {children}
     </div>
   );
