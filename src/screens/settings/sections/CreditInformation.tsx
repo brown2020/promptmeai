@@ -4,23 +4,29 @@ import { Button } from "@/components/buttons";
 import CardContent from "@/components/CardContent";
 import Spinner from "@/components/Spinner";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
+import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { Fragment } from "react";
 import { GaugeComponent } from "react-gauge-component";
 
 const CreditInformation = () => {
-  const { profile, isLoading } = useProfileStore((state) => state);
+  const { user } = useUser();
+  const { profile, isLoading, updateProfile } = useProfileStore();
   const router = useRouter();
 
   const totalCredits = profile.totalCredits;
   const credits = profile.credits;
+
+  if (totalCredits < credits) {
+    updateProfile({ totalCredits: credits });
+  }
 
   return (
     <CardContent
       title="Conversation Credits"
       isActive={profile.usageMode === UsageMode.Credits}
     >
-      {isLoading || totalCredits === 0 ? (
+      {isLoading || !user ? (
         <Spinner />
       ) : (
         <Fragment>
