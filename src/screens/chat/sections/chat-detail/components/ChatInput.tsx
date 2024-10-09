@@ -173,7 +173,7 @@ const ChatInput = () => {
         <div className="w-full bg-white rounded-xl shadow px-[16px] py-[12px] flex gap-[12px] items-center">
           <input
             ref={inputRef}
-            className="w-full text-[14px] text-[#A0A7BB] outline-none"
+            className="w-full text-[16px] text-[#A0A7BB] outline-none"
             placeholder="Type your question here..."
             value={input}
             onChange={(e) => setInput(e.target.value)}

@@ -28,7 +28,7 @@ const SearchInput = () => {
         <IoSearch size={18} color="#575B65" />
         <input
           placeholder="Search..."
-          className="bg-transparent border-none outline-none text-[14px] text-[#575B65] w-full"
+          className="bg-transparent border-none outline-none text-[16px] text-[#575B65] w-full"
           onChange={(e) => searchHandler(e.target.value)}
         />
       </div>

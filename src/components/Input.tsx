@@ -7,7 +7,7 @@ type InputProps = {
 const Input = ({ title, ...props }: InputProps) => {
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-[14px]">{title}</span>
+      <span className="text-[16px]">{title}</span>
       <input {...props} className="border py-[10px] px-[14px] rounded-md" />
     </div>
   );
