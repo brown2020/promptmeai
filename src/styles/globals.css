@@ -7,6 +7,7 @@
   body {
     overflow-x: hidden; /* Keep this to prevent horizontal scrolling */
   }
+
   /* Ensure all scrollable elements have space for scrollbar */
   .scrollable-container {
     padding-right: 8px; /* Adjust as needed to create space for the scrollbar */
