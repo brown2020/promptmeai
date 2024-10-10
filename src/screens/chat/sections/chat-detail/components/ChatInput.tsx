@@ -18,7 +18,7 @@ import {
 } from "@/zustand/useChatStore";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 import { useUser } from "@clerk/nextjs";
-import { Spinner } from "@nextui-org/react";
+import { FaStopCircle } from "react-icons/fa";
 import { CoreMessage } from "ai";
 import { readStreamableValue } from "ai/rsc";
 import { useRouter } from "next/navigation";
@@ -31,7 +31,7 @@ const ChatInput = () => {
   const { profile, isDefaultData, reduceCredits } = useProfileStore();
   const { messages, addMessage, setMessages, setIsLoading, isLoading } =
     useChatStore();
-  const { addChat, activeChatId, setActiveChatId } = useChatSideBarStore();
+  const { addChat, setActiveChatId } = useChatSideBarStore();
 
   const [isAlertAPIKeysNotWorking, setIsAlertAPIKeysNotWorking] =
     useState<boolean>(false);
@@ -82,45 +82,42 @@ const ChatInput = () => {
     [messages, profile.APIKeys, profile.usageMode]
   );
 
-  const saveChatFunction = useCallback(
-    async (messages: Message[]) => {
-      if (user?.id) {
-        try {
-          const newMessages = [...messages];
-          const lastIndex = newMessages.length - 1;
-          const lastMessage = newMessages[lastIndex];
-          const totalTokenUsage = calculateTotalTokenUsage(lastMessage);
-          newMessages[lastIndex] = {
-            ...lastMessage,
-            totalTokenUsage,
-          };
+  const saveChatFunction = async () => {
+    if (user?.id) {
+      try {
+        const newMessages = [...useChatStore.getState().messages];
+        const lastIndex = newMessages.length - 1;
+        const lastMessage = newMessages[lastIndex];
+        const totalTokenUsage = calculateTotalTokenUsage(lastMessage);
+        newMessages[lastIndex] = {
+          ...lastMessage,
+          totalTokenUsage,
+        };
 
-          if (activeChatId) {
-            await updateChat(user.id, activeChatId, newMessages);
-          } else {
-            const chatData = await saveChat(
-              user.id,
-              user.fullName || "",
-              newMessages
-            );
-            if (chatData?.id) {
-              addChat(chatData);
-              setActiveChatId(chatData.id, true);
-            }
+        const activeChatId = useChatSideBarStore.getState().activeChatId;
+
+        if (activeChatId) {
+          await updateChat(user.id, activeChatId, newMessages);
+        } else {
+          const chatData = await saveChat(
+            user.id,
+            user.fullName || "",
+            newMessages
+          );
+          if (chatData?.id) {
+            addChat(chatData);
+            setActiveChatId(chatData.id, true);
           }
-
-          return totalTokenUsage;
-        } catch (error) {
-          console.error("Error saving or updating chat: ", error);
         }
+
+        return totalTokenUsage;
+      } catch (error) {
+        console.error("Error saving or updating chat: ", error);
       }
-    },
-    [activeChatId, addChat, setActiveChatId, user?.fullName, user?.id]
-  );
+    }
+  };
 
-  const submitHandler = async () => {
-    if (!input || isLoading) return;
-
+  const initialMessage = () => {
     const newUserMessage: PromptCoreMessage = {
       content: input,
       role: "user",
@@ -128,6 +125,16 @@ const ChatInput = () => {
     };
     addMessage(newUserMessage);
     setInput("");
+
+    saveChatFunction();
+
+    return newUserMessage;
+  };
+
+  const submitHandler = async () => {
+    if (!input || isLoading) return;
+
+    const newUserMessage = initialMessage();
 
     setIsLoading(true);
     try {
@@ -143,11 +150,7 @@ const ChatInput = () => {
       );
 
       if (successfulResponses.length > 0) {
-        const updatedMessages: Message[] = useChatStore
-          .getState()
-          .messages.map((msg) => msg);
-
-        const totalTokenUsage = await saveChatFunction(updatedMessages);
+        const totalTokenUsage = await saveChatFunction();
 
         if (totalTokenUsage && profile.usageMode === UsageMode.Credits) {
           const totalCreditUse = calculateCreditCost(totalTokenUsage);
@@ -184,9 +187,9 @@ const ChatInput = () => {
             onClick={submitHandler}
           >
             {isLoading ? (
-              <Spinner color="default" />
+              <FaStopCircle size={24} />
             ) : (
-              <PiPaperPlaneTilt size={18} color="#ABABAB" />
+              <PiPaperPlaneTilt size={24} color="#ABABAB" />
             )}
           </div>
         </div>
