@@ -11,11 +11,7 @@ import {
   countTokens,
 } from "@/utils/token";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
-import {
-  Message,
-  PromptCoreMessage,
-  useChatStore,
-} from "@/zustand/useChatStore";
+import { PromptCoreMessage, useChatStore } from "@/zustand/useChatStore";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 import { useUser } from "@clerk/nextjs";
 import { FaStopCircle } from "react-icons/fa";
@@ -35,6 +31,7 @@ const ChatInput = () => {
 
   const [isAlertAPIKeysNotWorking, setIsAlertAPIKeysNotWorking] =
     useState<boolean>(false);
+  const [abortController, setAbortController] = useState<AbortController>();
 
   const inputRef = useRef<HTMLInputElement>(null);
   const showAlert =
@@ -57,26 +54,46 @@ const ChatInput = () => {
   }, []);
 
   const getAssistantResponse = useCallback(
-    async (model: string, userMessage: CoreMessage) => {
-      const currentMessages: CoreMessage[] = messages.flatMap((message) => [
-        message.userMessage,
-        ...Object.values(message.responses),
-      ]);
+    async (model: string, userMessage: CoreMessage, signal?: AbortSignal) => {
+      try {
+        const currentMessages: CoreMessage[] = messages.flatMap((message) => [
+          message.userMessage,
+          ...Object.values(message.responses),
+        ]);
 
-      const result = await continueConversation(
-        [...currentMessages, userMessage],
-        model,
-        profile.usageMode === UsageMode.Credits
-          ? profile.usageMode
-          : profile.APIKeys
-      );
+        // Remove signal here to avoid serialization issue
+        const result = await continueConversation(
+          [...currentMessages, userMessage],
+          model,
+          profile.usageMode === UsageMode.Credits
+            ? profile.usageMode
+            : profile.APIKeys
+        );
 
-      for await (const content of readStreamableValue(result)) {
-        useChatStore.getState().addResponse(model, {
-          role: "assistant",
-          content: content as string,
-          tokenUsage: content ? countTokens(content) : 0,
-        });
+        // Check for abort status within the loop
+        for await (const content of readStreamableValue(result)) {
+          if (signal?.aborted) {
+            console.log("Aborted");
+            break;
+          }
+
+          useChatStore.getState().addResponse(model, {
+            role: "assistant",
+            content: content as string,
+            tokenUsage: content ? countTokens(content) : 0,
+          });
+        }
+      } catch (error) {
+        // Type guard to check if `error` has the expected properties
+        if (error instanceof Error) {
+          if (error.name === "AbortError") {
+            console.log("Request aborted.");
+          } else {
+            console.error("Error fetching assistant response:", error.message);
+          }
+        } else {
+          console.error("Unknown error:", error);
+        }
       }
     },
     [messages, profile.APIKeys, profile.usageMode]
@@ -138,9 +155,13 @@ const ChatInput = () => {
 
     setIsLoading(true);
     try {
+      const abortController = new AbortController();
+      setAbortController(abortController);
+      const signal = abortController.signal;
+
       const results = await Promise.allSettled(
         MODEL_NAMES.map((model) =>
-          getAssistantResponse(model.value, newUserMessage)
+          getAssistantResponse(model.value, newUserMessage, signal)
         )
       );
 
@@ -151,6 +172,8 @@ const ChatInput = () => {
 
       if (successfulResponses.length > 0) {
         const totalTokenUsage = await saveChatFunction();
+
+        console.log("call pay", successfulResponses, totalTokenUsage);
 
         if (totalTokenUsage && profile.usageMode === UsageMode.Credits) {
           const totalCreditUse = calculateCreditCost(totalTokenUsage);
@@ -184,7 +207,9 @@ const ChatInput = () => {
           />
           <div
             className="flex items-center justify-center h-[32px] w-[32px] rounded-lg cursor-pointer flex-shrink-0 mr-[-4px]"
-            onClick={submitHandler}
+            onClick={() =>
+              isLoading ? abortController?.abort() : submitHandler()
+            }
           >
             {isLoading ? (
               <FaStopCircle size={24} />
