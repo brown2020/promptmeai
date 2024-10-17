@@ -5,17 +5,20 @@ import { HiOutlinePlus } from "react-icons/hi";
 import ChatTabs from "./components/ChatTabs";
 import SearchInput from "./components/SearchInput";
 import ChatList from "./components/ChatList";
-import { Fragment, useEffect } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { getAllChatDetails } from "@/services/chatService";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { useChatStore } from "@/zustand/useChatStore";
 import { useAuthStore } from "@/zustand/useAuthStore";
+import { WarningChangingMessage } from "@/components/modals";
 
 const MyChatSection = () => {
   const { uid, firebaseUid } = useAuthStore();
   const { isDrawerOpen, setDrawerOpen, setChats, setActiveChatId } =
     useChatSideBarStore();
-  const { setMessages } = useChatStore();
+  const { setMessages, isLoading: anotherActiveRequest } = useChatStore();
+
+  const [showWarning, setShowWarning] = useState<boolean>(false);
 
   useEffect(() => {
     const getAllChatList = async (userId: string) => {
@@ -32,11 +35,11 @@ const MyChatSection = () => {
     }
   }, [firebaseUid, setChats, uid]);
 
-  const addNewChat = () => {
+  const addNewChat = useCallback(() => {
     setActiveChatId("");
     setMessages([]);
     setDrawerOpen(false);
-  };
+  }, [setActiveChatId, setDrawerOpen, setMessages]);
 
   return (
     <Fragment>
@@ -60,7 +63,13 @@ const MyChatSection = () => {
           <ButtonIcon
             icon={HiOutlinePlus}
             type="primary"
-            onClick={addNewChat}
+            onClick={() => {
+              if (anotherActiveRequest) {
+                setShowWarning(true);
+              } else {
+                addNewChat();
+              }
+            }}
           />
         </div>
 
@@ -68,6 +77,13 @@ const MyChatSection = () => {
         <SearchInput />
         <ChatList />
       </div>
+
+      {/* Warning for the new message if there is active request */}
+      <WarningChangingMessage
+        showWarning={showWarning}
+        setShowWarning={setShowWarning}
+        onFinish={addNewChat}
+      />
     </Fragment>
   );
 };
