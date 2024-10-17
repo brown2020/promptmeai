@@ -10,21 +10,15 @@ import { getAllChatDetails } from "@/services/chatService";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { useChatStore } from "@/zustand/useChatStore";
 import { useAuthStore } from "@/zustand/useAuthStore";
-import { ModalWarning } from "@/components/modals";
-import { Spinner } from "@nextui-org/react";
+import { WarningChangingMessage } from "@/components/modals";
 
 const MyChatSection = () => {
   const { uid, firebaseUid } = useAuthStore();
   const { isDrawerOpen, setDrawerOpen, setChats, setActiveChatId } =
     useChatSideBarStore();
-  const {
-    setMessages,
-    isLoading: anotherActiveRequest,
-    abortController,
-  } = useChatStore();
+  const { setMessages, isLoading: anotherActiveRequest } = useChatStore();
 
   const [showWarning, setShowWarning] = useState<boolean>(false);
-  const [warningContinue, setWarningContinue] = useState<boolean>(false);
 
   useEffect(() => {
     const getAllChatList = async (userId: string) => {
@@ -46,16 +40,6 @@ const MyChatSection = () => {
     setMessages([]);
     setDrawerOpen(false);
   }, [setActiveChatId, setDrawerOpen, setMessages]);
-
-  useEffect(() => {
-    if (warningContinue) {
-      if (!anotherActiveRequest) {
-        setWarningContinue(false);
-        setShowWarning(false);
-        addNewChat();
-      }
-    }
-  }, [addNewChat, anotherActiveRequest, warningContinue]);
 
   return (
     <Fragment>
@@ -95,26 +79,10 @@ const MyChatSection = () => {
       </div>
 
       {/* Warning for new the message if there is active request */}
-      <ModalWarning
-        isOpen={showWarning}
-        backdrop="opaque"
-        title="Another request is in progress. Continuing will stop the current request. Do you want to proceed?"
-        confirmText={
-          warningContinue ? (
-            <Spinner color="default" size="sm" />
-          ) : (
-            "Yes, continue"
-          )
-        }
-        disableConfirm={warningContinue}
-        onConfirm={() => {
-          setWarningContinue(true);
-          abortController?.abort();
-        }}
-        onClose={() => {
-          setShowWarning(false);
-        }}
-        isDismissable={true}
+      <WarningChangingMessage
+        showWarning={showWarning}
+        setShowWarning={setShowWarning}
+        onFinish={addNewChat}
       />
     </Fragment>
   );
