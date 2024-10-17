@@ -5,17 +5,26 @@ import { HiOutlinePlus } from "react-icons/hi";
 import ChatTabs from "./components/ChatTabs";
 import SearchInput from "./components/SearchInput";
 import ChatList from "./components/ChatList";
-import { Fragment, useEffect } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { getAllChatDetails } from "@/services/chatService";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { useChatStore } from "@/zustand/useChatStore";
 import { useAuthStore } from "@/zustand/useAuthStore";
+import { ModalWarning } from "@/components/modals";
+import { Spinner } from "@nextui-org/react";
 
 const MyChatSection = () => {
   const { uid, firebaseUid } = useAuthStore();
   const { isDrawerOpen, setDrawerOpen, setChats, setActiveChatId } =
     useChatSideBarStore();
-  const { setMessages } = useChatStore();
+  const {
+    setMessages,
+    isLoading: anotherActiveRequest,
+    abortController,
+  } = useChatStore();
+
+  const [showWarning, setShowWarning] = useState<boolean>(false);
+  const [warningContinue, setWarningContinue] = useState<boolean>(false);
 
   useEffect(() => {
     const getAllChatList = async (userId: string) => {
@@ -32,11 +41,21 @@ const MyChatSection = () => {
     }
   }, [firebaseUid, setChats, uid]);
 
-  const addNewChat = () => {
+  const addNewChat = useCallback(() => {
     setActiveChatId("");
     setMessages([]);
     setDrawerOpen(false);
-  };
+  }, [setActiveChatId, setDrawerOpen, setMessages]);
+
+  useEffect(() => {
+    if (warningContinue) {
+      if (!anotherActiveRequest) {
+        setWarningContinue(false);
+        setShowWarning(false);
+        addNewChat();
+      }
+    }
+  }, [addNewChat, anotherActiveRequest, warningContinue]);
 
   return (
     <Fragment>
@@ -60,7 +79,13 @@ const MyChatSection = () => {
           <ButtonIcon
             icon={HiOutlinePlus}
             type="primary"
-            onClick={addNewChat}
+            onClick={() => {
+              if (anotherActiveRequest) {
+                setShowWarning(true);
+              } else {
+                addNewChat();
+              }
+            }}
           />
         </div>
 
@@ -68,6 +93,29 @@ const MyChatSection = () => {
         <SearchInput />
         <ChatList />
       </div>
+
+      {/* Warning for new the message if there is active request */}
+      <ModalWarning
+        isOpen={showWarning}
+        backdrop="opaque"
+        title="Another request is in progress. Continuing will stop the current request. Do you want to proceed?"
+        confirmText={
+          warningContinue ? (
+            <Spinner color="default" size="sm" />
+          ) : (
+            "Yes, continue"
+          )
+        }
+        disableConfirm={warningContinue}
+        onConfirm={() => {
+          setWarningContinue(true);
+          abortController?.abort();
+        }}
+        onClose={() => {
+          setShowWarning(false);
+        }}
+        isDismissable={true}
+      />
     </Fragment>
   );
 };
