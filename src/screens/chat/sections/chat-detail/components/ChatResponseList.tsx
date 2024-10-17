@@ -2,7 +2,7 @@
 
 import { useChatStore } from "@/zustand/useChatStore";
 import ChatResponseEmptyState from "./ChatResponseEmptyState";
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { MODEL_NAMES } from "@/constants/modelNames";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { useUser } from "@clerk/nextjs";
@@ -14,6 +14,7 @@ const ChatResponseList = () => {
   const { user } = useUser();
   const { messages, setMessages } = useChatStore();
   const { activeChatId } = useChatSideBarStore();
+  const endOfMessagesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const updateMessages = async (userId: string, activeChatId: string) => {
@@ -28,6 +29,11 @@ const ChatResponseList = () => {
       updateMessages(user.id, activeChatId);
     }
   }, [activeChatId, setMessages, user?.id]);
+
+  // Scroll to the bottom whenever messages change
+  useEffect(() => {
+    endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   return (
     <div className="h-full w-full overflow-y-auto flex flex-col gap-[24px] pr-[8px]">
@@ -47,7 +53,7 @@ const ChatResponseList = () => {
 
             {MODEL_NAMES.map((model) => {
               const response = message.responses[model.value];
-              if (!response) return;
+              if (!response) return null;
 
               return (
                 <ChatResponseCard
@@ -65,6 +71,8 @@ const ChatResponseList = () => {
             })}
           </Fragment>
         ))}
+      {/* Ref to scroll to the bottom */}
+      <div ref={endOfMessagesRef} />
     </div>
   );
 };
