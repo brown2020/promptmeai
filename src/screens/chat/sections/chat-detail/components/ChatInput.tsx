@@ -20,6 +20,7 @@ import { readStreamableValue } from "ai/rsc";
 import { useRouter } from "next/navigation";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { PiPaperPlaneTilt } from "react-icons/pi";
+import { Spinner } from "@nextui-org/react";
 
 const ChatInput = () => {
   const router = useRouter();
@@ -38,6 +39,7 @@ const ChatInput = () => {
 
   const [isAlertAPIKeysNotWorking, setIsAlertAPIKeysNotWorking] =
     useState<boolean>(false);
+  const [isStopRequest, setIsStopRequest] = useState<boolean>(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const showAlert =
@@ -155,7 +157,7 @@ const ChatInput = () => {
   };
 
   const submitHandler = async () => {
-    if (!input || isLoading) return;
+    if (!input || isLoading || isStopRequest) return;
 
     const newUserMessage = initialMessage();
 
@@ -193,6 +195,7 @@ const ChatInput = () => {
       }
 
       setIsLoading(false);
+      setIsStopRequest(false);
     } catch (error) {
       console.error("Error handling submission: ", error);
       setIsLoading(false);
@@ -200,8 +203,11 @@ const ChatInput = () => {
   };
 
   const stopRequest = () => {
-    abortController?.abort();
-    setAbortController(undefined);
+    if (!isStopRequest) {
+      setIsStopRequest(true);
+      abortController?.abort();
+      setAbortController(undefined);
+    }
   };
 
   return (
@@ -220,10 +226,12 @@ const ChatInput = () => {
             className="flex items-center justify-center h-[32px] w-[32px] rounded-lg cursor-pointer flex-shrink-0 mr-[-4px]"
             onClick={() => (isLoading ? stopRequest() : submitHandler())}
           >
-            {isLoading ? (
+            {isLoading && !isStopRequest ? (
               <FaStopCircle size={24} />
+            ) : isStopRequest ? (
+              <Spinner size="sm" color="default" />
             ) : (
-              <PiPaperPlaneTilt size={24} color="#ABABAB" />
+              <PiPaperPlaneTilt size={20} color="#ABABAB" />
             )}
           </div>
         </div>
