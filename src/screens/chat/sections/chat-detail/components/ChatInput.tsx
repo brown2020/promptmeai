@@ -42,7 +42,7 @@ const ChatInput = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const showAlert =
     profile.usageMode === UsageMode.Credits
-      ? profile.credits === 0
+      ? profile.credits <= 10
       : isObjectEmpty(profile.APIKeys);
   const alertCredits =
     "Your credit balance is exhausted. Please purchase more credits or provide your API keys to continue.";
