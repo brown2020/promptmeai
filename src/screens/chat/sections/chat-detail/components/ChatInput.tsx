@@ -79,7 +79,7 @@ const ChatInput = () => {
         // Check for abort status within the loop
         for await (const content of readStreamableValue(result)) {
           if (signal?.aborted) {
-            console.log("Aborted");
+            console.log("Aborted request", model);
             break;
           }
 
@@ -179,7 +179,7 @@ const ChatInput = () => {
       if (successfulResponses.length > 0) {
         const totalTokenUsage = await saveChatFunction();
 
-        console.log("call pay", successfulResponses, totalTokenUsage);
+        console.log("Total token proceed", totalTokenUsage);
 
         if (totalTokenUsage && profile.usageMode === UsageMode.Credits) {
           const totalCreditUse = calculateCreditCost(totalTokenUsage);
