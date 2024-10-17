@@ -22,6 +22,8 @@ type ChatStore = {
   ) => void;
   isLoading: boolean;
   setIsLoading: (isLoading: boolean) => void;
+  abortController?: AbortController;
+  setAbortController: (abortController?: AbortController) => void;
 };
 
 export const useChatStore = create<ChatStore>((set) => ({
@@ -76,4 +78,7 @@ export const useChatStore = create<ChatStore>((set) => ({
     set(() => ({
       isLoading,
     })),
+
+  setAbortController: (abortController?: AbortController) =>
+    set({ abortController }),
 }));

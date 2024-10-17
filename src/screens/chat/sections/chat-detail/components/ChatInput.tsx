@@ -25,13 +25,19 @@ const ChatInput = () => {
   const router = useRouter();
   const { user } = useUser();
   const { profile, isDefaultData, reduceCredits } = useProfileStore();
-  const { messages, addMessage, setMessages, setIsLoading, isLoading } =
-    useChatStore();
+  const {
+    messages,
+    addMessage,
+    setMessages,
+    setIsLoading,
+    isLoading,
+    setAbortController,
+    abortController,
+  } = useChatStore();
   const { addChat, setActiveChatId } = useChatSideBarStore();
 
   const [isAlertAPIKeysNotWorking, setIsAlertAPIKeysNotWorking] =
     useState<boolean>(false);
-  const [abortController, setAbortController] = useState<AbortController>();
 
   const inputRef = useRef<HTMLInputElement>(null);
   const showAlert =
@@ -193,6 +199,11 @@ const ChatInput = () => {
     }
   };
 
+  const stopRequest = () => {
+    abortController?.abort();
+    setAbortController(undefined);
+  };
+
   return (
     <Fragment>
       <div className="self-end w-full max-w-[720px] h-[56px] flex-shrink-0 flex gap-[16px] justify-center items-center">
@@ -207,9 +218,7 @@ const ChatInput = () => {
           />
           <div
             className="flex items-center justify-center h-[32px] w-[32px] rounded-lg cursor-pointer flex-shrink-0 mr-[-4px]"
-            onClick={() =>
-              isLoading ? abortController?.abort() : submitHandler()
-            }
+            onClick={() => (isLoading ? stopRequest() : submitHandler())}
           >
             {isLoading ? (
               <FaStopCircle size={24} />
