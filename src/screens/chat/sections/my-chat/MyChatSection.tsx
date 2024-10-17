@@ -78,7 +78,7 @@ const MyChatSection = () => {
         <ChatList />
       </div>
 
-      {/* Warning for new the message if there is active request */}
+      {/* Warning for the new message if there is active request */}
       <WarningChangingMessage
         showWarning={showWarning}
         setShowWarning={setShowWarning}
