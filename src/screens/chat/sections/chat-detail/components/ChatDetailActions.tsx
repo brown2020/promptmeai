@@ -1,3 +1,6 @@
+import { archiveChat } from "@/services/chatService";
+import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
+import { useUser } from "@clerk/nextjs";
 import {
   Button,
   Dropdown,
@@ -5,11 +8,23 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/react";
+import toast from "react-hot-toast";
 import { BsThreeDots } from "react-icons/bs";
 
 const ChatDetailActions = () => {
-  const saveHandler = () => {
-    alert("save");
+  const { user } = useUser();
+  const { activeChatId } = useChatSideBarStore();
+
+  const saveHandler = async () => {
+    if (!user?.id || !activeChatId) return;
+
+    const result = await archiveChat(user?.id, activeChatId);
+
+    if (result) {
+      toast.success("Chat archived successfully.", { id: "archive-success" });
+    } else {
+      toast.error("Failed to archive the chat.", { id: "archive-failed" });
+    }
   };
 
   const deleteHandler = () => {
