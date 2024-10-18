@@ -8,6 +8,14 @@ import {
 import { BsThreeDots } from "react-icons/bs";
 
 const ChatDetailController = () => {
+  const saveHandler = () => {
+    alert("save");
+  };
+
+  const deleteHandler = () => {
+    alert("delete");
+  };
+
   return (
     <Dropdown>
       <DropdownTrigger>
@@ -15,10 +23,20 @@ const ChatDetailController = () => {
           <BsThreeDots />
         </Button>
       </DropdownTrigger>
-      <DropdownMenu aria-label="Static Actions">
-        <DropdownItem key="save">Save</DropdownItem>
+      <DropdownMenu
+        aria-label="Chat Action"
+        onAction={(key) => {
+          switch (key) {
+            case "save":
+              return saveHandler();
+            case "delete":
+              return deleteHandler();
+          }
+        }}
+      >
+        <DropdownItem key="save">Save Chat</DropdownItem>
         <DropdownItem key="delete" className="text-danger" color="danger">
-          Delete file
+          Delete Chat
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>
