@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
-import ChatDetailController from "./components/ChatDetailController";
+import ChatDetailActions from "./components/ChatDetailActions";
 import ChatInput from "./components/ChatInput";
 import ChatResponseList from "./components/ChatResponseList";
 import { useTypingEffect } from "@/hooks";
@@ -36,7 +36,7 @@ const ChatDetailSection = () => {
         <h3 className="text-[18px] whitespace-nowrap overflow-hidden text-ellipsis text-[#1E1F22]">
           {isNewChat ? typedTitle : title}
         </h3>
-        <ChatDetailController />
+        <ChatDetailActions />
       </div>
       {/* Main chat detail section */}
       <div className="bg-[#F5F5F5] h-[calc(100%-48px)] w-[calc(100% + 32px)] rounded-lg lg:ml-[-16px] flex justify-center px-[18px] sm:px-[24px]">

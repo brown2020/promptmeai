@@ -7,7 +7,7 @@ import {
 } from "@nextui-org/react";
 import { BsThreeDots } from "react-icons/bs";
 
-const ChatDetailController = () => {
+const ChatDetailActions = () => {
   const saveHandler = () => {
     alert("save");
   };
@@ -43,4 +43,4 @@ const ChatDetailController = () => {
   );
 };
 
-export default ChatDetailController;
+export default ChatDetailActions;
