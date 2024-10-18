@@ -157,6 +157,40 @@ export async function updateChatName(
   }
 }
 
+// Function to archive chat
+export async function archiveChat(
+  userId: string,
+  chatId: string
+): Promise<boolean> {
+  try {
+    await updateDoc(doc(db, COLLECTION_NAME, userId, "chat", chatId), {
+      timestamp: serverTimestamp(),
+      isArchived: true,
+    });
+    return true;
+  } catch (error) {
+    handleFirestoreError(error, "Error updating chat name");
+    return false;
+  }
+}
+
+// Function to un-archive chat
+export async function unarchiveChat(
+  userId: string,
+  chatId: string
+): Promise<boolean> {
+  try {
+    await updateDoc(doc(db, COLLECTION_NAME, userId, "chat", chatId), {
+      timestamp: serverTimestamp(),
+      isArchived: false,
+    });
+    return true;
+  } catch (error) {
+    handleFirestoreError(error, "Error updating chat name");
+    return false;
+  }
+}
+
 // Function to delete a chat
 export async function deleteChat(
   userId: string,
