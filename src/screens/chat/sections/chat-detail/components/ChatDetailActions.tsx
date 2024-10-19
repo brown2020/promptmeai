@@ -1,4 +1,4 @@
-import { archiveChat } from "@/services/chatService";
+import { bookmarkChat } from "@/services/chatService";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { useUser } from "@clerk/nextjs";
 import {
@@ -18,7 +18,7 @@ const ChatDetailActions = () => {
   const saveHandler = async () => {
     if (!user?.id || !activeChatId) return;
 
-    const result = await archiveChat(user?.id, activeChatId);
+    const result = await bookmarkChat(user?.id, activeChatId);
 
     if (result) {
       toast.success("Chat archived successfully.", { id: "archive-success" });

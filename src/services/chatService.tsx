@@ -157,36 +157,36 @@ export async function updateChatName(
   }
 }
 
-// Function to archive chat
-export async function archiveChat(
+// Function to bookmark chat
+export async function bookmarkChat(
   userId: string,
   chatId: string
 ): Promise<boolean> {
   try {
     await updateDoc(doc(db, COLLECTION_NAME, userId, "chat", chatId), {
       timestamp: serverTimestamp(),
-      isArchived: true,
+      bookmakred: true,
     });
     return true;
   } catch (error) {
-    handleFirestoreError(error, "Error updating chat name");
+    handleFirestoreError(error, "Error bookmark chat name");
     return false;
   }
 }
 
-// Function to un-archive chat
-export async function unarchiveChat(
+// Function to remove bookmakred chat
+export async function removeBookmarkedChat(
   userId: string,
   chatId: string
 ): Promise<boolean> {
   try {
     await updateDoc(doc(db, COLLECTION_NAME, userId, "chat", chatId), {
       timestamp: serverTimestamp(),
-      isArchived: false,
+      bookmarked: false,
     });
     return true;
   } catch (error) {
-    handleFirestoreError(error, "Error updating chat name");
+    handleFirestoreError(error, "Error remove bookmarked chat name");
     return false;
   }
 }
