@@ -19,7 +19,7 @@ const MyChatSection = () => {
     isDrawerOpen,
     setDrawerOpen,
     setChats,
-    setSavedChats,
+    setPinnedChats,
     setActiveChatId,
   } = useChatSideBarStore();
   const { setMessages, isLoading: anotherActiveRequest } = useChatStore();
@@ -32,13 +32,11 @@ const MyChatSection = () => {
         const chats = await getAllChatDetails(userId);
         const sortedChats = sortChatByDateDesc(chats);
 
-        const bookmarkedChats = sortedChats.filter((chat) => chat.bookmarked);
-        const nonBookmarkedChats = sortedChats.filter(
-          (chat) => !chat.bookmarked
-        );
+        const nonPinnedChats = sortedChats.filter((chat) => !chat.pinned);
+        const pinnedChats = sortedChats.filter((chat) => chat.pinned);
 
-        setChats(nonBookmarkedChats);
-        setSavedChats(bookmarkedChats);
+        setChats(nonPinnedChats);
+        setPinnedChats(pinnedChats);
       } catch (error) {
         console.error("Error fetching all chat details: ", error);
       }
@@ -47,7 +45,7 @@ const MyChatSection = () => {
     if (uid && firebaseUid) {
       getAllChatList(uid);
     }
-  }, [firebaseUid, setChats, setSavedChats, uid]);
+  }, [firebaseUid, setChats, setPinnedChats, uid]);
 
   const addNewChat = useCallback(() => {
     setActiveChatId("");

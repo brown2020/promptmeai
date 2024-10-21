@@ -1,13 +1,13 @@
 "use client";
 
-import { IoBookmark } from "react-icons/io5";
 import { PiChatsCircleFill } from "react-icons/pi";
 import { motion } from "framer-motion";
 import { cn } from "@/utils/tailwind";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
+import { TbPinnedFilled } from "react-icons/tb";
 
 const ChatTabs = () => {
-  const { chats, savedChats, activeTab, setActiveTab } = useChatSideBarStore(
+  const { chats, pinnedChats, activeTab, setActiveTab } = useChatSideBarStore(
     (state) => state
   );
 
@@ -54,24 +54,24 @@ const ChatTabs = () => {
         className={cn(
           "relative z-10 w-[135.5px] flex gap-[6px] h-full items-center justify-center",
           {
-            "text-[#14B48D] font-semibold": activeTab === "saved",
-            "text-[#3B3B3B]": activeTab !== "saved",
+            "text-[#14B48D] font-semibold": activeTab === "pinned",
+            "text-[#3B3B3B]": activeTab !== "pinned",
           }
         )}
-        onClick={() => setActiveTab("saved")}
+        onClick={() => setActiveTab("pinned")}
       >
-        <IoBookmark
+        <TbPinnedFilled
           size={14}
-          color={activeTab === "saved" ? "#14B48D" : "#3B3B3B"}
+          color={activeTab === "pinned" ? "#14B48D" : "#3B3B3B"}
         />
-        <span className="uppercase text-[12px]">Saved</span>
+        <span className="uppercase text-[12px]">Pinned</span>
         <span
           className={cn("rounded px-[4px] py-[2px] text-[10px] font-semibold", {
-            "bg-[#14B48D]/[0.15]": activeTab === "saved",
-            "bg-[#3B3B3B]/[0.11]": activeTab !== "saved",
+            "bg-[#14B48D]/[0.15]": activeTab === "pinned",
+            "bg-[#3B3B3B]/[0.11]": activeTab !== "pinned",
           })}
         >
-          {savedChats.length}
+          {pinnedChats.length}
         </span>
       </button>
     </div>

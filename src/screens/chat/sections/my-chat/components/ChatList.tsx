@@ -8,14 +8,15 @@ import EmptyChatList from "./EmptyChatList";
 import { useEffect, useMemo, useState } from "react";
 
 const ChatList = () => {
-  const { isLoadingChat, chats, savedChats, activeTab } = useChatSideBarStore();
+  const { isLoadingChat, chats, pinnedChats, activeTab } =
+    useChatSideBarStore();
 
   const [groupedData, setGroupedData] = useState<ChatGroups>();
 
   const chatGroupedData = useMemo(() => groupChatByDate(chats), [chats]);
-  const savedChatGroupedData = useMemo(
-    () => groupChatByDate(savedChats),
-    [savedChats]
+  const pinnedChatGroupedData = useMemo(
+    () => groupChatByDate(pinnedChats),
+    [pinnedChats]
   );
 
   useEffect(() => {
@@ -23,11 +24,11 @@ const ChatList = () => {
       case "chats": {
         return setGroupedData(chatGroupedData);
       }
-      case "saved": {
-        return setGroupedData(savedChatGroupedData);
+      case "pinned": {
+        return setGroupedData(pinnedChatGroupedData);
       }
     }
-  }, [activeTab, chatGroupedData, savedChatGroupedData]);
+  }, [activeTab, chatGroupedData, pinnedChatGroupedData]);
 
   if (isLoadingChat)
     return (

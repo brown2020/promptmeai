@@ -1,29 +1,29 @@
 import { ChatDetail } from "@/types/chat";
 import { create } from "zustand";
 
-type Tab = "chats" | "saved";
+type ActiveTab = "chats" | "pinned";
 
 type ChatStore = {
   isDrawerOpen: boolean;
   isLoadingChat: boolean;
   chats: ChatDetail[];
-  savedChats: ChatDetail[];
+  pinnedChats: ChatDetail[];
   activeChatId: string | undefined;
   isNewChat: boolean;
-  activeTab: Tab;
+  activeTab: ActiveTab;
   setDrawerOpen: (value: boolean) => void;
   setChats: (chats: ChatDetail[]) => void;
-  setSavedChats: (chats: ChatDetail[]) => void;
+  setPinnedChats: (chats: ChatDetail[]) => void;
   addChat: (chat: ChatDetail) => void;
   setActiveChatId: (chatId: string | undefined, isNewChat?: boolean) => void;
-  setActiveTab: (tab: Tab) => void;
+  setActiveTab: (tab: ActiveTab) => void;
 };
 
 export const useChatSideBarStore = create<ChatStore>((set) => ({
   isDrawerOpen: false,
   isLoadingChat: true,
   chats: [],
-  savedChats: [],
+  pinnedChats: [],
   activeChatId: undefined,
   isNewChat: false,
   activeTab: "chats",
@@ -33,9 +33,9 @@ export const useChatSideBarStore = create<ChatStore>((set) => ({
   setChats: (chats) => {
     set({ chats, isLoadingChat: false });
   },
-  setSavedChats: (chats) => {
+  setPinnedChats: (chats) => {
     set({
-      savedChats: chats,
+      pinnedChats: chats,
       isLoadingChat: false,
     });
   },

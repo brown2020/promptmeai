@@ -1,4 +1,4 @@
-import { bookmarkChat } from "@/services/chatService";
+import { pinChat } from "@/services/chatService";
 import { moveChatById } from "@/utils/chat";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { useUser } from "@clerk/nextjs";
@@ -18,45 +18,45 @@ const ChatDetailActions = () => {
   const {
     activeChatId,
     chats,
-    savedChats,
+    pinnedChats,
     setChats,
-    setSavedChats,
+    setPinnedChats,
     setActiveTab,
   } = useChatSideBarStore();
 
-  const saveHandler = useCallback(async () => {
+  const pinHandler = useCallback(async () => {
     if (!user?.id || !activeChatId) return;
 
-    const result = await bookmarkChat(user?.id, activeChatId);
+    const result = await pinChat(user?.id, activeChatId);
 
     if (result) {
-      toast.success("Chat saved successfully.", {
-        id: "save-success",
+      toast.success("Chat pinned successfully.", {
+        id: "pin-success",
       });
 
       const { result, notFound } = moveChatById(
         activeChatId,
         chats,
-        savedChats
+        pinnedChats
       );
 
       if (!notFound) {
         setChats(result.newFromArray);
-        setSavedChats(result.newToArray);
-        setActiveTab("saved");
+        setPinnedChats(result.newToArray);
+        setActiveTab("pinned");
       }
     } else {
-      toast.error("Failed to save the chat.", {
-        id: "save-failed",
+      toast.error("Failed to pin the chat.", {
+        id: "pin-failed",
       });
     }
   }, [
     activeChatId,
     chats,
-    savedChats,
+    pinnedChats,
     setActiveTab,
     setChats,
-    setSavedChats,
+    setPinnedChats,
     user?.id,
   ]);
 
@@ -75,14 +75,14 @@ const ChatDetailActions = () => {
         aria-label="Chat Action"
         onAction={(key) => {
           switch (key) {
-            case "save":
-              return saveHandler();
+            case "pin":
+              return pinHandler();
             case "delete":
               return deleteHandler();
           }
         }}
       >
-        <DropdownItem key="save">Save Chat</DropdownItem>
+        <DropdownItem key="pin">Pin Chat</DropdownItem>
         <DropdownItem key="delete" className="text-danger" color="danger">
           Delete Chat
         </DropdownItem>

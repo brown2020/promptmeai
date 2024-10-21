@@ -131,7 +131,7 @@ export async function getAllChatDetails(userId: string): Promise<ChatDetail[]> {
       id: doc.id,
       name: doc.data().name || "Unnamed Chat",
       timestamp: doc.data().timestamp,
-      bookmarked: doc.data().bookmarked,
+      pinned: doc.data().pinned,
     }));
   } catch (error) {
     handleFirestoreError(error, "Error getting chat details");
@@ -158,36 +158,36 @@ export async function updateChatName(
   }
 }
 
-// Function to bookmark chat
-export async function bookmarkChat(
+// Function to pin chat
+export async function pinChat(
   userId: string,
   chatId: string
 ): Promise<boolean> {
   try {
     await updateDoc(doc(db, COLLECTION_NAME, userId, "chat", chatId), {
       timestamp: serverTimestamp(),
-      bookmarked: true,
+      pinned: true,
     });
     return true;
   } catch (error) {
-    handleFirestoreError(error, "Error bookmark chat name");
+    handleFirestoreError(error, "Error pin chat name");
     return false;
   }
 }
 
-// Function to remove bookmarked chat
-export async function removeBookmarkedChat(
+// Function to remove pinned chat
+export async function removePinnedChat(
   userId: string,
   chatId: string
 ): Promise<boolean> {
   try {
     await updateDoc(doc(db, COLLECTION_NAME, userId, "chat", chatId), {
       timestamp: serverTimestamp(),
-      bookmarked: false,
+      pinned: false,
     });
     return true;
   } catch (error) {
-    handleFirestoreError(error, "Error remove bookmarked chat name");
+    handleFirestoreError(error, "Error remove pinned chat name");
     return false;
   }
 }
