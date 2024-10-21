@@ -1,4 +1,5 @@
 import { bookmarkChat } from "@/services/chatService";
+import { moveChatById } from "@/utils/chat";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { useUser } from "@clerk/nextjs";
 import {
@@ -8,14 +9,22 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/react";
+import { useCallback } from "react";
 import toast from "react-hot-toast";
 import { BsThreeDots } from "react-icons/bs";
 
 const ChatDetailActions = () => {
   const { user } = useUser();
-  const { activeChatId } = useChatSideBarStore();
+  const {
+    activeChatId,
+    chats,
+    savedChats,
+    setChats,
+    setSavedChats,
+    setActiveTab,
+  } = useChatSideBarStore();
 
-  const saveHandler = async () => {
+  const saveHandler = useCallback(async () => {
     if (!user?.id || !activeChatId) return;
 
     const result = await bookmarkChat(user?.id, activeChatId);
@@ -24,10 +33,32 @@ const ChatDetailActions = () => {
       toast.success("Chat saved successfully.", {
         id: "save-success",
       });
+
+      const { result, notFound } = moveChatById(
+        activeChatId,
+        chats,
+        savedChats
+      );
+
+      if (!notFound) {
+        setChats(result.newFromArray);
+        setSavedChats(result.newToArray);
+        setActiveTab("saved");
+      }
     } else {
-      toast.error("Failed to save the chat.", { id: "save-failed" });
+      toast.error("Failed to save the chat.", {
+        id: "save-failed",
+      });
     }
-  };
+  }, [
+    activeChatId,
+    chats,
+    savedChats,
+    setActiveTab,
+    setChats,
+    setSavedChats,
+    user?.id,
+  ]);
 
   const deleteHandler = () => {
     alert("delete");

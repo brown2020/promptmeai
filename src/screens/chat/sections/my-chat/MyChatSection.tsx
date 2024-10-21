@@ -11,6 +11,7 @@ import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { useChatStore } from "@/zustand/useChatStore";
 import { useAuthStore } from "@/zustand/useAuthStore";
 import { WarningChangingMessage } from "@/components/modals";
+import { sortChatByDateDesc } from "@/utils/chat";
 
 const MyChatSection = () => {
   const { uid, firebaseUid } = useAuthStore();
@@ -28,10 +29,11 @@ const MyChatSection = () => {
   useEffect(() => {
     const getAllChatList = async (userId: string) => {
       try {
-        const chatDetails = await getAllChatDetails(userId);
+        const chats = await getAllChatDetails(userId);
+        const sortedChats = sortChatByDateDesc(chats);
 
-        const bookmarkedChats = chatDetails.filter((chat) => chat.bookmarked);
-        const nonBookmarkedChats = chatDetails.filter(
+        const bookmarkedChats = sortedChats.filter((chat) => chat.bookmarked);
+        const nonBookmarkedChats = sortedChats.filter(
           (chat) => !chat.bookmarked
         );
 

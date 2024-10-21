@@ -1,7 +1,8 @@
 import { ChatDetail } from "@/types/chat";
+import { Timestamp } from "firebase/firestore";
 import moment from "moment";
 
-type ChatGroups = {
+export type ChatGroups = {
   today: ChatDetail[];
   yesterday: ChatDetail[];
   previous7Days: ChatDetail[];
@@ -60,4 +61,36 @@ export const groupChatByDate = (data: ChatDetail[]): ChatGroups => {
   });
 
   return groups;
+};
+
+export const moveChatById = (
+  id: string,
+  fromArray: ChatDetail[],
+  toArray: ChatDetail[]
+): {
+  result: {
+    newFromArray: ChatDetail[];
+    newToArray: ChatDetail[];
+  };
+  notFound: boolean;
+} => {
+  const index = fromArray.findIndex((item) => item.id === id);
+
+  if (index !== -1) {
+    const [item] = fromArray.splice(index, 1);
+    item.timestamp = Timestamp.now();
+
+    return {
+      result: {
+        newFromArray: [...fromArray],
+        newToArray: [item, ...toArray],
+      },
+      notFound: false,
+    };
+  }
+
+  return {
+    result: { newFromArray: fromArray, newToArray: toArray },
+    notFound: true,
+  };
 };
