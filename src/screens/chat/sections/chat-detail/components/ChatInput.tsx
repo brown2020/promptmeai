@@ -35,7 +35,7 @@ const ChatInput = () => {
     setAbortController,
     abortController,
   } = useChatStore();
-  const { addChat, setActiveChatId } = useChatSideBarStore();
+  const { addChat, setActiveChatId, setActiveTab } = useChatSideBarStore();
 
   const [isAlertAPIKeysNotWorking, setIsAlertAPIKeysNotWorking] =
     useState<boolean>(false);
@@ -150,6 +150,7 @@ const ChatInput = () => {
     };
     addMessage(newUserMessage);
     setInput("");
+    setActiveTab("chats");
 
     saveChatFunction();
 
