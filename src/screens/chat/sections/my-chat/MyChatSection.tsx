@@ -14,8 +14,13 @@ import { WarningChangingMessage } from "@/components/modals";
 
 const MyChatSection = () => {
   const { uid, firebaseUid } = useAuthStore();
-  const { isDrawerOpen, setDrawerOpen, setChats, setActiveChatId } =
-    useChatSideBarStore();
+  const {
+    isDrawerOpen,
+    setDrawerOpen,
+    setChats,
+    setSavedChats,
+    setActiveChatId,
+  } = useChatSideBarStore();
   const { setMessages, isLoading: anotherActiveRequest } = useChatStore();
 
   const [showWarning, setShowWarning] = useState<boolean>(false);
@@ -24,7 +29,14 @@ const MyChatSection = () => {
     const getAllChatList = async (userId: string) => {
       try {
         const chatDetails = await getAllChatDetails(userId);
-        setChats(chatDetails);
+
+        const bookmarkedChats = chatDetails.filter((chat) => chat.bookmarked);
+        const nonBookmarkedChats = chatDetails.filter(
+          (chat) => !chat.bookmarked
+        );
+
+        setChats(nonBookmarkedChats);
+        setSavedChats(bookmarkedChats);
       } catch (error) {
         console.error("Error fetching all chat details: ", error);
       }
@@ -33,7 +45,7 @@ const MyChatSection = () => {
     if (uid && firebaseUid) {
       getAllChatList(uid);
     }
-  }, [firebaseUid, setChats, uid]);
+  }, [firebaseUid, setChats, setSavedChats, uid]);
 
   const addNewChat = useCallback(() => {
     setActiveChatId("");
