@@ -4,4 +4,5 @@ export type ChatDetail = {
   id: string;
   name: string;
   timestamp: Timestamp;
+  bookmarked?: boolean;
 };

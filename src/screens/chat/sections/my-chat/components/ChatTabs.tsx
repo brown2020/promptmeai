@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { IoBookmark } from "react-icons/io5";
 import { PiChatsCircleFill } from "react-icons/pi";
 import { motion } from "framer-motion";
@@ -8,8 +7,9 @@ import { cn } from "@/utils/tailwind";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 
 const ChatTabs = () => {
-  const { chats } = useChatSideBarStore((state) => state);
-  const [activeTab, setActiveTab] = useState("chats");
+  const { chats, savedChats, activeTab, setActiveTab } = useChatSideBarStore(
+    (state) => state
+  );
 
   const buttonWidth = 135.5;
   const gapBetweenButtons = 10;
@@ -46,7 +46,7 @@ const ChatTabs = () => {
             "bg-[#3B3B3B]/[0.11]": activeTab !== "chats",
           })}
         >
-          {chats.length || 0}
+          {chats.length}
         </span>
       </button>
 
@@ -71,7 +71,7 @@ const ChatTabs = () => {
             "bg-[#3B3B3B]/[0.11]": activeTab !== "saved",
           })}
         >
-          0
+          {savedChats.length}
         </span>
       </button>
     </div>
