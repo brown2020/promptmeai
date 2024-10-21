@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/utils/tailwind";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { TbPinnedFilled } from "react-icons/tb";
+import React from "react";
 
 const ChatTabs = () => {
   const { chats, pinnedChats, activeTab, setActiveTab } = useChatSideBarStore(
@@ -78,4 +79,4 @@ const ChatTabs = () => {
   );
 };
 
-export default ChatTabs;
+export default React.memo(ChatTabs);
