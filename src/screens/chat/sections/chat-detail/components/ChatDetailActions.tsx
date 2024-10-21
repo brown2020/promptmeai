@@ -9,6 +9,7 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/react";
+import React from "react";
 import { useCallback } from "react";
 import toast from "react-hot-toast";
 import { BsThreeDots } from "react-icons/bs";
@@ -23,6 +24,8 @@ const ChatDetailActions = () => {
     setPinnedChats,
     setActiveTab,
   } = useChatSideBarStore();
+
+  console.log("re-render");
 
   const pinHandler = useCallback(async () => {
     if (!user?.id || !activeChatId) return;
@@ -91,4 +94,4 @@ const ChatDetailActions = () => {
   );
 };
 
-export default ChatDetailActions;
+export default React.memo(ChatDetailActions);
