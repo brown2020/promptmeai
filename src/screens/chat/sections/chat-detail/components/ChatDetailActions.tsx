@@ -21,9 +21,11 @@ const ChatDetailActions = () => {
     const result = await bookmarkChat(user?.id, activeChatId);
 
     if (result) {
-      toast.success("Chat archived successfully.", { id: "archive-success" });
+      toast.success("Chat saved successfully.", {
+        id: "save-success",
+      });
     } else {
-      toast.error("Failed to archive the chat.", { id: "archive-failed" });
+      toast.error("Failed to save the chat.", { id: "save-failed" });
     }
   };
 
