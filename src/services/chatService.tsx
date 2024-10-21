@@ -131,6 +131,7 @@ export async function getAllChatDetails(userId: string): Promise<ChatDetail[]> {
       id: doc.id,
       name: doc.data().name || "Unnamed Chat",
       timestamp: doc.data().timestamp,
+      bookmarked: doc.data().bookmarked,
     }));
   } catch (error) {
     handleFirestoreError(error, "Error getting chat details");
@@ -165,7 +166,7 @@ export async function bookmarkChat(
   try {
     await updateDoc(doc(db, COLLECTION_NAME, userId, "chat", chatId), {
       timestamp: serverTimestamp(),
-      bookmakred: true,
+      bookmarked: true,
     });
     return true;
   } catch (error) {
@@ -174,7 +175,7 @@ export async function bookmarkChat(
   }
 }
 
-// Function to remove bookmakred chat
+// Function to remove bookmarked chat
 export async function removeBookmarkedChat(
   userId: string,
   chatId: string
