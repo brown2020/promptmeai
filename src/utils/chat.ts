@@ -94,3 +94,7 @@ export const moveChatById = (
     notFound: true,
   };
 };
+
+export const deleteChatById = (id: string, chats: ChatDetail[]) => {
+  return chats.filter((item) => item.id !== id);
+};

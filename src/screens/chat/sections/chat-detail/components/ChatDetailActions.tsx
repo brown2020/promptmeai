@@ -1,6 +1,7 @@
-import { pinChat, removePinnedChat } from "@/services/chatService";
-import { moveChatById } from "@/utils/chat";
+import { deleteChat, pinChat, removePinnedChat } from "@/services/chatService";
+import { deleteChatById, moveChatById } from "@/utils/chat";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
+import { useChatStore } from "@/zustand/useChatStore";
 import { useUser } from "@clerk/nextjs";
 import {
   Button,
@@ -19,10 +20,13 @@ const ChatDetailActions = () => {
     activeChatId,
     chats,
     pinnedChats,
+    activeTab,
     setChats,
     setPinnedChats,
     setActiveTab,
+    setActiveChatId,
   } = useChatSideBarStore();
+  const { setMessages } = useChatStore();
 
   const isPinnedChat = useMemo(
     () => pinnedChats.find((p) => p.id === activeChatId),
@@ -92,8 +96,30 @@ const ChatDetailActions = () => {
     }
   };
 
-  const deleteHandler = () => {
-    alert("delete");
+  const deleteHandler = async () => {
+    if (!user?.id || !activeChatId) return;
+
+    const result = await deleteChat(user?.id, activeChatId);
+
+    if (result) {
+      const chatData = activeTab === "chats" ? chats : pinnedChats;
+      const newData = deleteChatById(activeChatId, chatData);
+
+      if (activeTab === "chats") {
+        setChats(newData);
+      } else if (activeTab === "pinned") {
+        setPinnedChats(newData);
+      }
+
+      setActiveChatId(undefined);
+      setMessages([]);
+
+      toast.success("Chat deleted successfully.", { id: "delete-success" });
+    } else {
+      toast.error("Failed to delete the chat.", {
+        id: "delete-failed",
+      });
+    }
   };
 
   return (
