@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import ChatDetailActions from "./components/ChatDetailActions";
 import ChatInput from "./components/ChatInput";
@@ -22,11 +22,14 @@ const ChatDetailSection = () => {
   const typedTitle = useTypingEffect(title, 100);
 
   useEffect(() => {
-    const formatedTitle = trimText(
-      activeTab === "chats"
-        ? chats.find((chat) => chat.id === activeChatId)?.name || ""
-        : pinnedChats.find((chat) => chat.id === activeChatId)?.name || ""
-    );
+    let tempTitle = chats.find((chat) => chat.id === activeChatId)?.name || "";
+
+    if (!tempTitle) {
+      tempTitle =
+        pinnedChats.find((chat) => chat.id === activeChatId)?.name || "";
+    }
+
+    const formatedTitle = trimText(tempTitle);
 
     setTitle(formatedTitle);
   }, [activeChatId, activeTab, chats, pinnedChats]);
@@ -57,4 +60,4 @@ const ChatDetailSection = () => {
   );
 };
 
-export default ChatDetailSection;
+export default memo(ChatDetailSection);
