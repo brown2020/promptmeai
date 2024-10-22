@@ -10,19 +10,26 @@ import { trimText } from "@/utils/text";
 import { RxHamburgerMenu } from "react-icons/rx";
 
 const ChatDetailSection = () => {
-  const { activeChatId, chats, isNewChat, setDrawerOpen } = useChatSideBarStore(
-    (state) => state
-  );
+  const {
+    activeChatId,
+    chats,
+    pinnedChats,
+    isNewChat,
+    activeTab,
+    setDrawerOpen,
+  } = useChatSideBarStore((state) => state);
   const [title, setTitle] = useState<string>("");
   const typedTitle = useTypingEffect(title, 100);
 
   useEffect(() => {
     const formatedTitle = trimText(
-      chats.find((chat) => chat.id === activeChatId)?.name || ""
+      activeTab === "chats"
+        ? chats.find((chat) => chat.id === activeChatId)?.name || ""
+        : pinnedChats.find((chat) => chat.id === activeChatId)?.name || ""
     );
 
     setTitle(formatedTitle);
-  }, [activeChatId, chats]);
+  }, [activeChatId, activeTab, chats, pinnedChats]);
 
   return (
     <div className="w-full h-full p-[16px] flex flex-col gap-[16px] overflow-hidden">
