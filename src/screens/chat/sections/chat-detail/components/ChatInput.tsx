@@ -18,7 +18,14 @@ import { FaStopCircle } from "react-icons/fa";
 import { CoreMessage } from "ai";
 import { readStreamableValue } from "ai/rsc";
 import { useRouter } from "next/navigation";
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import {
+  Fragment,
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { PiPaperPlaneTilt } from "react-icons/pi";
 import { Spinner } from "@nextui-org/react";
 
@@ -54,6 +61,8 @@ const ChatInput = () => {
     "No valid API keys detected. Please configure your API keys to continue.";
 
   const [input, setInput] = useState<string>("");
+
+  console.log("re-render chat input");
 
   useEffect(() => {
     if (inputRef.current) {
@@ -253,4 +262,4 @@ const ChatInput = () => {
   );
 };
 
-export default ChatInput;
+export default memo(ChatInput);
