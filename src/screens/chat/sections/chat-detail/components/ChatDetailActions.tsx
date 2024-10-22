@@ -26,19 +26,19 @@ const ChatDetailActions = () => {
     setActiveTab,
     setActiveChatId,
   } = useChatSideBarStore();
-  const { setMessages } = useChatStore();
+  const { setMessages, isLoading } = useChatStore();
 
   const isPinnedChat = useMemo(
     () => pinnedChats.find((p) => p.id === activeChatId),
     [activeChatId, pinnedChats]
   );
   const disabledAllKeys = useMemo(() => {
-    if (!activeChatId) {
+    if (!activeChatId || isLoading) {
       return ["pin", "delete"];
     } else {
       return [];
     }
-  }, [activeChatId]);
+  }, [activeChatId, isLoading]);
 
   const pinHandler = async () => {
     if (!user?.id || !activeChatId) return;
