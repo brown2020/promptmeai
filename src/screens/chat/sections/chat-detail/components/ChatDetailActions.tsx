@@ -1,4 +1,4 @@
-import { pinChat } from "@/services/chatService";
+import { pinChat, removePinnedChat } from "@/services/chatService";
 import { moveChatById } from "@/utils/chat";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { useUser } from "@clerk/nextjs";
@@ -9,8 +9,7 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/react";
-import React from "react";
-import { useCallback } from "react";
+import React, { useMemo } from "react";
 import toast from "react-hot-toast";
 import { BsThreeDots } from "react-icons/bs";
 
@@ -25,9 +24,12 @@ const ChatDetailActions = () => {
     setActiveTab,
   } = useChatSideBarStore();
 
-  console.log("re-render");
+  const isPinnedChat = useMemo(
+    () => pinnedChats.find((p) => p.id === activeChatId),
+    [activeChatId, pinnedChats]
+  );
 
-  const pinHandler = useCallback(async () => {
+  const pinHandler = async () => {
     if (!user?.id || !activeChatId) return;
 
     const result = await pinChat(user?.id, activeChatId);
@@ -53,15 +55,35 @@ const ChatDetailActions = () => {
         id: "pin-failed",
       });
     }
-  }, [
-    activeChatId,
-    chats,
-    pinnedChats,
-    setActiveTab,
-    setChats,
-    setPinnedChats,
-    user?.id,
-  ]);
+  };
+
+  const unpinHandler = async () => {
+    if (!user?.id || !activeChatId) return;
+
+    const result = await removePinnedChat(user?.id, activeChatId);
+
+    if (result) {
+      toast.success("Chat unpinned successfully.", {
+        id: "unpin-success",
+      });
+
+      const { result, notFound } = moveChatById(
+        activeChatId,
+        pinnedChats,
+        chats
+      );
+
+      if (!notFound) {
+        setPinnedChats(result.newFromArray);
+        setChats(result.newToArray);
+        setActiveTab("chats");
+      }
+    } else {
+      toast.error("Failed to unpin the chat.", {
+        id: "unpin-failed",
+      });
+    }
+  };
 
   const deleteHandler = () => {
     alert("delete");
@@ -79,13 +101,15 @@ const ChatDetailActions = () => {
         onAction={(key) => {
           switch (key) {
             case "pin":
-              return pinHandler();
+              return isPinnedChat ? unpinHandler() : pinHandler();
             case "delete":
               return deleteHandler();
           }
         }}
       >
-        <DropdownItem key="pin">Pin Chat</DropdownItem>
+        <DropdownItem key="pin">{`${
+          isPinnedChat ? "Unpin" : "Pin"
+        } Chat`}</DropdownItem>
         <DropdownItem key="delete" className="text-danger" color="danger">
           Delete Chat
         </DropdownItem>
