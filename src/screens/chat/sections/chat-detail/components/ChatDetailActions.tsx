@@ -28,6 +28,13 @@ const ChatDetailActions = () => {
     () => pinnedChats.find((p) => p.id === activeChatId),
     [activeChatId, pinnedChats]
   );
+  const disabledAllKeys = useMemo(() => {
+    if (!activeChatId) {
+      return ["pin", "delete"];
+    } else {
+      return [];
+    }
+  }, [activeChatId]);
 
   const pinHandler = async () => {
     if (!user?.id || !activeChatId) return;
@@ -106,6 +113,7 @@ const ChatDetailActions = () => {
               return deleteHandler();
           }
         }}
+        disabledKeys={disabledAllKeys}
       >
         <DropdownItem key="pin">{`${
           isPinnedChat ? "Unpin" : "Pin"
