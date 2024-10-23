@@ -26,7 +26,7 @@ const ButtonIcon = ({
         "bg-[#F9F9F9] dark:bg-[#2D2E31] rounded-lg w-[32px] h-[32px] flex justify-center items-center shadow-xl cursor-pointer",
         {
           "bg-[#10A37F] dark:bg-[#10A37F]": isActive,
-          "bg-[#23C69E]": type === "primary",
+          "bg-[#23C69E] dark:bg-[#24C69E]": type === "primary",
           "bg-[#EFEFEF]": type === "secondary",
         },
         className
@@ -35,7 +35,8 @@ const ButtonIcon = ({
     >
       <Icon
         className={cn("text-[#255148] dark:text-[#23C69E]", {
-          "text-white dark:text-[#EEEEEE]": isActive || type === "primary",
+          "text-white dark:text-[#EEEEEE]": isActive,
+          "text-white dark:text-white": type === "primary",
           "text-[#3B3B3B]": type === "secondary",
         })}
         size={iconSize}
