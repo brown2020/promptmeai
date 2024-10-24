@@ -23,7 +23,9 @@ const CardContent = ({
         overrideStyles
       )}
     >
-      {title && <h3 className="text-[17px] sm:text-[20px]">{title}</h3>}
+      {title && (
+        <h3 className="text-[17px] sm:text-[20px] dark:text-[#EEE]">{title}</h3>
+      )}
       {children}
     </div>
   );
