@@ -2,7 +2,6 @@
 
 import Spinner from "@/components/Spinner";
 import { useIsClient } from "@/hooks";
-import { SignedOut } from "@clerk/clerk-react";
 import { SignInButton } from "@clerk/nextjs";
 import { motion } from "framer-motion";
 import { GiBrainTentacle } from "react-icons/gi";
