@@ -62,8 +62,6 @@ const ChatInput = () => {
 
   const [input, setInput] = useState<string>("");
 
-  console.log("re-render chat input");
-
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus(); // Automatically focus the input
@@ -223,10 +221,10 @@ const ChatInput = () => {
   return (
     <Fragment>
       <div className="self-end w-full max-w-[720px] h-[56px] flex-shrink-0 flex gap-[16px] justify-center items-center">
-        <div className="w-full bg-white rounded-xl shadow px-[16px] py-[12px] flex gap-[12px] items-center">
+        <div className="w-full bg-white dark:bg-[#4B4F5B] rounded-xl shadow px-[16px] py-[12px] flex gap-[12px] items-center">
           <input
             ref={inputRef}
-            className="w-full text-[16px] text-[#A0A7BB] outline-none"
+            className="w-full text-[16px] dark:bg-[#4B4F5B] text-[#A0A7BB] outline-none"
             placeholder="Type your question here..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
