@@ -14,7 +14,7 @@ const ChatResponseEmptyState = () => {
       ) : (
         <Fragment>
           <motion.div
-            className="bg-[#464646] p-3 rounded-2xl mb-4"
+            className="bg-[#464646] dark:bg-[#1E1F22] p-3 rounded-2xl mb-4"
             initial={{ scale: 0 }}
             animate={{
               scale: [1, 1.2, 1],
@@ -25,7 +25,7 @@ const ChatResponseEmptyState = () => {
           </motion.div>
 
           <motion.span
-            className="text-xl text-[#9F969C]"
+            className="text-xl text-[#9F969C] dark:text-[#EEE]/[0.7]"
             initial={{ opacity: 0, y: 20 }}
             animate={{
               opacity: 1,
@@ -36,7 +36,7 @@ const ChatResponseEmptyState = () => {
             Hi, {user && user.fullName}
           </motion.span>
           <motion.span
-            className="text-xl text-[#53494D]"
+            className="text-xl text-[#53494D] dark:text-[#EEE]"
             initial={{ opacity: 0, y: 20 }}
             animate={{
               opacity: 1,
