@@ -25,7 +25,7 @@ const MarkdownRenderer = ({ content, className }: MarkdownRendererProps) => {
     <Markdown
       remarkPlugins={[remarkGfm]}
       rehypePlugins={[rehypeRaw]}
-      className={cn("prose prose-sm", className)}
+      className={cn("prose prose-sm dark:prose-invert", className)}
       components={components}
     >
       {content}
