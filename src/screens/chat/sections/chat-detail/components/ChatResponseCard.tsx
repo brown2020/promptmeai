@@ -35,6 +35,7 @@ const ChatResponseCard = ({
         className={cn(
           "min-h-[40px] w-fit bg-white dark:bg-[#4B4F5B] rounded-lg py-[12px] px-[24px] flex items-center",
           {
+            "dark:bg-[#27303F]": aiModel,
             "bg-[#14A27F]/[0.15]": aiModel?.toLowerCase().includes("gpt"),
             "bg-[#FF6F61]/[0.15]": aiModel?.toLowerCase().includes("gemini"),
             "bg-[#3498DB]/[0.15]": aiModel?.toLowerCase().includes("mistral"),
