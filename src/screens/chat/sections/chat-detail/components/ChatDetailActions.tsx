@@ -125,7 +125,7 @@ const ChatDetailActions = () => {
   return (
     <Dropdown>
       <DropdownTrigger>
-        <Button isIconOnly variant="light" className="bg-[#F9F9F9] shadow-xl">
+        <Button isIconOnly className="bg-[#F9F9F9] dark:bg-[#1E1F21] shadow-xl">
           <BsThreeDots />
         </Button>
       </DropdownTrigger>
