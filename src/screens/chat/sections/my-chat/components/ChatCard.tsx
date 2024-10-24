@@ -28,9 +28,9 @@ const ChatCard = ({ id, title }: ChatCardProps) => {
     <Fragment>
       <div
         className={cn(
-          "flex flex-col gap-[6px] py-[11px] px-[18px] rounded-lg w-full cursor-pointer hover:bg-[#23C69E]/[0.20]",
+          "flex flex-col gap-[6px] py-[11px] px-[18px] rounded-lg w-full cursor-pointer hover:bg-[#23C69E]/[0.20] dark:hover:bg-[#1E1F22]",
           {
-            "bg-[#23C69E]/[0.15]": isActive,
+            "bg-[#23C69E]/[0.15] dark:bg-[#1E1F22]": isActive,
           }
         )}
         onClick={() => {
@@ -42,7 +42,7 @@ const ChatCard = ({ id, title }: ChatCardProps) => {
         }}
       >
         <div className="flex items-center justify-between gap-[8px]">
-          <h4 className="text-[14px] text-[#1E1F22] whitespace-nowrap overflow-hidden text-ellipsis">
+          <h4 className="text-[14px] text-[#1E1F22] dark:text-[#EEE]/[0.9] whitespace-nowrap overflow-hidden text-ellipsis">
             {title}
           </h4>
         </div>
