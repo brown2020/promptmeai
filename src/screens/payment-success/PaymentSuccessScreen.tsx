@@ -90,23 +90,23 @@ const PaymentSuccessScreen = () => {
             <Fragment>
               <div className="flex flex-col items-center gap-4">
                 <div className="bg-[#E7E7E8] w-16 h-16 rounded-full flex items-center justify-center">
-                  <LuCheckCircle size="36" />
+                  <LuCheckCircle size="36" className="dark:text-[#2E987D]" />
                 </div>
                 <h2 className="text-2xl font-bold">Payment Successful!</h2>
               </div>
 
               <div className="flex flex-col items-center text-center gap-4">
-                <p className="text-[#72717A]">
+                <p className="text-[#72717A] dark:text-[#EEE]">
                   Thank you for your purchase. Your token credits have been
                   added to your account.
                 </p>
-                <div className="bg-[#F4F4F5] p-4 flex flex-col gap-2 w-full rounded-lg">
+                <div className="bg-[#F4F4F5] dark:bg-[#F4F4F5]/[0.8] p-4 flex flex-col gap-2 w-full rounded-lg">
                   <div className="flex justify-between items-center">
                     <div className="flex gap-2 items-center text-[#18181B]">
                       <LuCoins size={20} />
                       <span>Token Credits</span>
                     </div>
-                    <span className="font-semibold">{`${formatNumber(
+                    <span className="font-semibold text-[#18181B]">{`${formatNumber(
                       amount + 1
                     )} credits`}</span>
                   </div>
@@ -115,7 +115,7 @@ const PaymentSuccessScreen = () => {
                       <LuCreditCard size={20} />
                       <span>Amount Paid</span>
                     </div>
-                    <span className="font-semibold">
+                    <span className="font-semibold text-[#18181B]">
                       {formatNumber(subcurrencyToNumber(amount), 2, "$")}
                     </span>
                   </div>
