@@ -35,9 +35,9 @@ const ChatDetailSection = () => {
   }, [activeChatId, activeTab, chats, pinnedChats]);
 
   return (
-    <div className="w-full h-full p-[16px] flex flex-col gap-[16px] overflow-hidden">
+    <div className="w-full h-full p-[16px] flex flex-col gap-[12px] overflow-hidden">
       {/* Top section */}
-      <div className="flex justify-between items-center gap-4">
+      <div className="flex justify-between items-center gap-4 mt-[-4px]">
         <RxHamburgerMenu
           size={24}
           className="lg:hidden cursor-pointer flex-shrink-0"
