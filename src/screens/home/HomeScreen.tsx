@@ -36,7 +36,7 @@ const HomeScreen = () => {
             y: 0,
             transition: { duration: 0.5, delay: 0.2 },
           }}
-          className="text-[20px] sm:text-[24px]"
+          className="text-[20px] sm:text-[24px] dark:text-[#EEE]"
         >
           Welcome to Prompt.me
         </motion.h2>
@@ -47,7 +47,7 @@ const HomeScreen = () => {
             y: 0,
             transition: { duration: 0.5, delay: 0.4 },
           }}
-          className="text-[16px] sm:text-[18px]"
+          className="text-[16px] sm:text-[18px] dark:text-[#EEE]/[0.8]"
         >
           This demo showcases the capabilities of Prompt.me, a powerful tool
           that allows you to run the same prompts across leading AI models
