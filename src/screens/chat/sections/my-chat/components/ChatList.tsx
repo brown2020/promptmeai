@@ -5,7 +5,7 @@ import ChatGroupedList from "./ChatGroupedList";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import Spinner from "@/components/Spinner";
 import EmptyChatList from "./EmptyChatList";
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 
 const ChatList = () => {
   const { isLoadingChat, chats, pinnedChats, activeTab } =
@@ -68,4 +68,4 @@ const ChatList = () => {
   );
 };
 
-export default ChatList;
+export default memo(ChatList);
