@@ -1,6 +1,6 @@
 "use client";
 
-import { ChatGroups, groupChatByDate } from "@/utils/chat";
+import { ChatGroups, groupChatByDate, sortChatByDateDesc } from "@/utils/chat";
 import ChatGroupedList from "./ChatGroupedList";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import Spinner from "@/components/Spinner";
@@ -13,10 +13,19 @@ const ChatList = () => {
 
   const [groupedData, setGroupedData] = useState<ChatGroups>();
 
-  const chatGroupedData = useMemo(() => groupChatByDate(chats), [chats]);
-  const pinnedChatGroupedData = useMemo(
-    () => groupChatByDate(pinnedChats),
+  const sortedChats = useMemo(() => sortChatByDateDesc(chats), [chats]);
+  const sortedPinnedChats = useMemo(
+    () => sortChatByDateDesc(pinnedChats),
     [pinnedChats]
+  );
+
+  const chatGroupedData = useMemo(
+    () => groupChatByDate(sortedChats),
+    [sortedChats]
+  );
+  const pinnedChatGroupedData = useMemo(
+    () => groupChatByDate(sortedPinnedChats),
+    [sortedPinnedChats]
   );
 
   useEffect(() => {
