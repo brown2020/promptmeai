@@ -94,7 +94,7 @@ const PaymentCheckout = ({ amount }: PaymentCheckoutProps) => {
         </div>
         <form
           onSubmit={handleSubmit}
-          className="bg-white p-2 rounded-md w-full"
+          className="bg-white dark:bg-[#40424A] p-2 rounded-md w-full"
         >
           {clientSecret && <PaymentElement />}
 

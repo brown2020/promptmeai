@@ -15,7 +15,10 @@ const ChatResponseList = () => {
   const { messages, setMessages } = useChatStore();
   const { activeChatId } = useChatSideBarStore();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isAutoScrollEnabled = useRef(true);
 
+  // Handle initial chat load
   useEffect(() => {
     const updateMessages = async (userId: string, activeChatId: string) => {
       const result = await getChat(userId, activeChatId);
@@ -30,13 +33,40 @@ const ChatResponseList = () => {
     }
   }, [activeChatId, setMessages, user?.id]);
 
-  // Scroll to the bottom whenever messages change
+  // Handle scroll events to detect if user has scrolled up
   useEffect(() => {
-    endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const scrolledToBottom = scrollHeight - scrollTop - clientHeight < 100;
+      isAutoScrollEnabled.current = scrolledToBottom;
+    };
+
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Handle auto-scrolling during streaming
+  useEffect(() => {
+    if (!isAutoScrollEnabled.current) return;
+
+    const scrollToBottom = () => {
+      if (endOfMessagesRef.current) {
+        endOfMessagesRef.current.scrollIntoView({ behavior: "auto" });
+      }
+    };
+
+    // Use requestAnimationFrame for smooth scrolling during streaming
+    requestAnimationFrame(scrollToBottom);
+  }, [messages]); // This will trigger on every message update, including streaming updates
 
   return (
-    <div className="h-full w-full overflow-y-auto flex flex-col gap-[24px] pr-[8px]">
+    <div
+      ref={containerRef}
+      className="h-full w-full overflow-y-auto flex flex-col gap-[24px] pr-[8px]"
+    >
       {messages.length === 0 && <ChatResponseEmptyState />}
       {messages.length > 0 &&
         messages.map((message, i) => (
@@ -71,7 +101,6 @@ const ChatResponseList = () => {
             })}
           </Fragment>
         ))}
-      {/* Ref to scroll to the bottom */}
       <div ref={endOfMessagesRef} />
     </div>
   );
