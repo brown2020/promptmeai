@@ -131,6 +131,7 @@ export async function getAllChatDetails(userId: string): Promise<ChatDetail[]> {
       id: doc.id,
       name: doc.data().name || "Unnamed Chat",
       timestamp: doc.data().timestamp,
+      pinned: doc.data().pinned,
     }));
   } catch (error) {
     handleFirestoreError(error, "Error getting chat details");
@@ -153,6 +154,40 @@ export async function updateChatName(
     return true;
   } catch (error) {
     handleFirestoreError(error, "Error updating chat name");
+    return false;
+  }
+}
+
+// Function to pin chat
+export async function pinChat(
+  userId: string,
+  chatId: string
+): Promise<boolean> {
+  try {
+    await updateDoc(doc(db, COLLECTION_NAME, userId, "chat", chatId), {
+      timestamp: serverTimestamp(),
+      pinned: true,
+    });
+    return true;
+  } catch (error) {
+    handleFirestoreError(error, "Error pin chat name");
+    return false;
+  }
+}
+
+// Function to remove pinned chat
+export async function removePinnedChat(
+  userId: string,
+  chatId: string
+): Promise<boolean> {
+  try {
+    await updateDoc(doc(db, COLLECTION_NAME, userId, "chat", chatId), {
+      timestamp: serverTimestamp(),
+      pinned: false,
+    });
+    return true;
+  } catch (error) {
+    handleFirestoreError(error, "Error remove pinned chat name");
     return false;
   }
 }

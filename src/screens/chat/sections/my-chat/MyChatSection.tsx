@@ -11,11 +11,17 @@ import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { useChatStore } from "@/zustand/useChatStore";
 import { useAuthStore } from "@/zustand/useAuthStore";
 import { WarningChangingMessage } from "@/components/modals";
+import { sortChatByDateDesc } from "@/utils/chat";
 
 const MyChatSection = () => {
   const { uid, firebaseUid } = useAuthStore();
-  const { isDrawerOpen, setDrawerOpen, setChats, setActiveChatId } =
-    useChatSideBarStore();
+  const {
+    isDrawerOpen,
+    setDrawerOpen,
+    setChats,
+    setPinnedChats,
+    setActiveChatId,
+  } = useChatSideBarStore();
   const { setMessages, isLoading: anotherActiveRequest } = useChatStore();
 
   const [showWarning, setShowWarning] = useState<boolean>(false);
@@ -23,8 +29,14 @@ const MyChatSection = () => {
   useEffect(() => {
     const getAllChatList = async (userId: string) => {
       try {
-        const chatDetails = await getAllChatDetails(userId);
-        setChats(chatDetails);
+        const chats = await getAllChatDetails(userId);
+        const sortedChats = sortChatByDateDesc(chats);
+
+        const nonPinnedChats = sortedChats.filter((chat) => !chat.pinned);
+        const pinnedChats = sortedChats.filter((chat) => chat.pinned);
+
+        setChats(nonPinnedChats);
+        setPinnedChats(pinnedChats);
       } catch (error) {
         console.error("Error fetching all chat details: ", error);
       }
@@ -33,7 +45,7 @@ const MyChatSection = () => {
     if (uid && firebaseUid) {
       getAllChatList(uid);
     }
-  }, [firebaseUid, setChats, uid]);
+  }, [firebaseUid, setChats, setPinnedChats, uid]);
 
   const addNewChat = useCallback(() => {
     setActiveChatId("");
@@ -53,13 +65,13 @@ const MyChatSection = () => {
 
       {/* Drawer */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-[320px] bg-white p-[15px] flex flex-col gap-[16px] transform transition-transform lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-[320px] bg-white dark:bg-[#272A2E] p-[15px] flex flex-col gap-[16px] transform transition-transform lg:static lg:translate-x-0 ${
           isDrawerOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Top section */}
         <div className="flex justify-between items-center gap-[10px]">
-          <h2 className="text-[20px] font-bold">My Chats</h2>
+          <h2 className="text-[20px] font-bold dark:text-[#FFF]">My Chats</h2>
           <ButtonIcon
             icon={HiOutlinePlus}
             type="primary"

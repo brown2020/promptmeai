@@ -18,7 +18,14 @@ import { FaStopCircle } from "react-icons/fa";
 import { CoreMessage } from "ai";
 import { readStreamableValue } from "ai/rsc";
 import { useRouter } from "next/navigation";
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import {
+  Fragment,
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { PiPaperPlaneTilt } from "react-icons/pi";
 import { Spinner } from "@nextui-org/react";
 
@@ -35,7 +42,7 @@ const ChatInput = () => {
     setAbortController,
     abortController,
   } = useChatStore();
-  const { addChat, setActiveChatId } = useChatSideBarStore();
+  const { addChat, setActiveChatId, setActiveTab } = useChatSideBarStore();
 
   const [isAlertAPIKeysNotWorking, setIsAlertAPIKeysNotWorking] =
     useState<boolean>(false);
@@ -150,6 +157,7 @@ const ChatInput = () => {
     };
     addMessage(newUserMessage);
     setInput("");
+    setActiveTab("chats");
 
     saveChatFunction();
 
@@ -213,10 +221,10 @@ const ChatInput = () => {
   return (
     <Fragment>
       <div className="self-end w-full max-w-[720px] h-[56px] flex-shrink-0 flex gap-[16px] justify-center items-center">
-        <div className="w-full bg-white rounded-xl shadow px-[16px] py-[12px] flex gap-[12px] items-center">
+        <div className="w-full bg-white dark:bg-[#4B4F5B] rounded-xl shadow px-[16px] py-[12px] flex gap-[12px] items-center">
           <input
             ref={inputRef}
-            className="w-full text-[16px] text-[#A0A7BB] outline-none"
+            className="w-full text-[16px] dark:bg-[#4B4F5B] text-[#A0A7BB] outline-none"
             placeholder="Type your question here..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -252,4 +260,4 @@ const ChatInput = () => {
   );
 };
 
-export default ChatInput;
+export default memo(ChatInput);

@@ -17,7 +17,7 @@ const Select = ({ label, options, ...props }: SelectProps) => {
 
       <div className="relative">
         <select
-          className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 border py-[12px] px-[14px] rounded-md transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer"
+          className="w-full bg-transparent dark:bg-[#4B4F5B] placeholder:text-slate-400 text-slate-700 dark:text-[#A0A7BB] border dark:border-[#4B4F5B] py-[12px] px-[14px] rounded-md transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer"
           {...props}
         >
           {options.map((option) => (
@@ -32,7 +32,7 @@ const Select = ({ label, options, ...props }: SelectProps) => {
           viewBox="0 0 24 24"
           strokeWidth="1.2"
           stroke="currentColor"
-          className="h-5 w-5 ml-1 absolute top-[13.5px] right-2.5 text-slate-700"
+          className="h-5 w-5 ml-1 absolute top-[13.5px] right-2.5 text-slate-700 dark:text-[#A0A7BB]"
         >
           <path
             strokeLinecap="round"
