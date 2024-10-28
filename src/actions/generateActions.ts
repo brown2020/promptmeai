@@ -37,7 +37,7 @@ async function getModel(modelName: string, apiKeys: APIKeys | UsageMode) {
           apiKeys === UsageMode.Credits
             ? process.env.ANTHROPIC_API_KEY
             : (apiKeys as APIKeys)?.anthropic || "",
-      })("claude-3-5-sonnet-20240620");
+      })("claude-3-5-sonnet-20241022");
     case "llama-v3p1-405b":
       return createOpenAI({
         apiKey:
