@@ -10,6 +10,7 @@ const ClerkAppProvider = ({ children }: PropsWithChildren) => {
 
   return (
     <ClerkProvider
+      dynamic
       appearance={{
         ...(theme === "dark" ? { baseTheme: dark } : {}),
       }}

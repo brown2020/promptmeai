@@ -3,6 +3,7 @@ import Divider from "@/components/Divider";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import UserProfileButton from "@/components/UserProfileButton";
 import { NavigationList } from "./navigation-buttons";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const LeftPanel = () => {
   return (
@@ -15,7 +16,9 @@ const LeftPanel = () => {
 
       {/* Bottom section */}
       <div className="flex flex-col gap-[25px] justify-center items-center">
-        <UserProfileButton />
+        <ClerkProvider dynamic>
+          <UserProfileButton />
+        </ClerkProvider>
 
         <Divider />
         <ThemeSwitcher />
