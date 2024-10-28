@@ -3,12 +3,14 @@
 import { Button } from "@/components/buttons";
 import CardContent from "@/components/CardContent";
 import Spinner from "@/components/Spinner";
+import { isIOSReactNativeWebView } from "@/utils/platform";
 import { cn } from "@/utils/tailwind";
+import { usePaymentsStore } from "@/zustand/usePaymentsStore";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 import { useUser } from "@clerk/nextjs";
 import { CircularProgress } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 
 const CreditInformation = () => {
   const { user } = useUser();
@@ -18,6 +20,41 @@ const CreditInformation = () => {
 
   const [credits, setCredits] = useState(0);
   const [totalCredits, setTotalCredits] = useState(0);
+  const [showCreditsSection, setShowCreditsSection] = useState(true);
+  const { addPayment } = usePaymentsStore(
+    (state) => state
+  );
+  const addCredits = useProfileStore((state) => state.addCredits);
+
+  useEffect(() => {
+    setShowCreditsSection(!isIOSReactNativeWebView());
+  }, []);
+
+  useEffect(() => {
+    const handleMessageFromRN = async (event: MessageEvent) => {
+      // Process the message sent from React Native
+      const message = event.data;
+      if (message?.type === "IAP_SUCCESS") {
+        await addPayment({
+          id: message.message,
+          amount: message.amount,
+          status: "succeeded",
+          mode: "iap",
+          platform: message.platform,
+          productId: message.productId,
+          currency: message.currency,
+        });
+        await addCredits(10000);
+      }
+    };
+
+    // Listen for messages from the RN WebView
+    window.addEventListener("message", handleMessageFromRN);
+
+    return () => {
+      window.removeEventListener("message", handleMessageFromRN);
+    };
+  }, [addCredits, addPayment]);
 
   useEffect(() => {
     if (profile.totalCredits) setTotalCredits(profile.totalCredits);
@@ -40,6 +77,14 @@ const CreditInformation = () => {
   const creditPercentage = useMemo(() => {
     return totalCredits > 0 ? (credits / totalCredits) * 100 : 0;
   }, [credits, totalCredits]);
+
+  const handleBuyClick = useCallback(() => {
+    if (showCreditsSection) {
+      router.push("/payment-attempt")
+    } else {
+      window.ReactNativeWebView?.postMessage("INIT_IAP");
+    }
+  }, [showCreditsSection, router]);
 
   return (
     <CardContent
@@ -96,7 +141,7 @@ const CreditInformation = () => {
           <h4 className="self-center">{`Credit usage: ${creditUsage} from ${totalCredits}`}</h4>
         </div>
       )}
-      <Button onClick={() => router.push("/payment-attempt")}>
+      <Button onClick={handleBuyClick}>
         Buy 10,000 Credits
       </Button>
     </CardContent>

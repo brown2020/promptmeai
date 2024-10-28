@@ -61,6 +61,10 @@ const PaymentSuccess = () => {
             id: data.id,
             amount: data.amount,
             status: data.status,
+            mode: "stripe",
+            platform: "web",
+            productId: "payment_gateway",
+            currency: "$",
           });
 
           // Add credits to profile

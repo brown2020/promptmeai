@@ -16,6 +16,10 @@ export type PaymentType = {
   amount: number;
   createdAt: Timestamp | null;
   status: string;
+  mode: string;
+  platform: string;
+  productId: string;
+  currency: string;
 };
 
 interface PaymentsStoreState {
@@ -49,6 +53,10 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
         amount: doc.data().amount,
         createdAt: doc.data().createdAt,
         status: doc.data().status,
+        mode: doc.data().mode,
+        platform: doc.data().platform,
+        productId: doc.data().productId,
+        currency: doc.data().currency,
       }));
 
       // Sort payments by createdAt with newest at the top
@@ -93,6 +101,10 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
           amount: payment.amount,
           createdAt: Timestamp.now(),
           status: payment.status,
+          mode: payment.mode,
+          platform: payment.platform,
+          productId: payment.productId,
+          currency: payment.currency,
         }
       );
 
@@ -101,6 +113,10 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
         amount: payment.amount,
         createdAt: Timestamp.now(),
         status: payment.status,
+        mode: payment.mode,
+        platform: payment.platform,
+        productId: payment.productId,
+        currency: payment.currency,
       };
 
       set((state) => {
