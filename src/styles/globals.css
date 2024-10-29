@@ -15,6 +15,19 @@
     overflow-y: auto; /* Ensure vertical scroll is enabled */
   }
 
+  .text-wrapper {
+    @apply flex flex-col space-y-3 max-w-4xl mx-auto;
+  }
+  .text-wrapper h3 {
+    @apply text-2xl;
+  }
+  .text-wrapper h4 {
+    @apply text-lg;
+  }
+  .text-wrapper ul {
+    @apply list-disc mx-4 space-y-3;
+  }
+
   ::-webkit-scrollbar {
     width: 5px;
     height: 5px;

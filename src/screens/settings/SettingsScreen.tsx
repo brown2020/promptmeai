@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import CreditInformation from "./sections/CreditInformation";
 import InputAPIKeys from "./sections/InputAPIKeys";
@@ -7,6 +7,7 @@ import GreenWhiteLayout from "@/layouts/GreenWhiteLayout";
 import UsageSelection from "./sections/UsageSelection";
 import { isIOSReactNativeWebView } from "@/utils/platform";
 import { useEffect, useState } from "react";
+import Footer from "@/components/Footer";
 
 const SettingsScreen = () => {
   const [isRnWebView, setRnWebview] = useState(false);
@@ -26,6 +27,7 @@ const SettingsScreen = () => {
           <CreditInformation />
           {!isRnWebView && <InputAPIKeys />}
           <PaymentHistory />
+          <Footer />
         </div>
       </div>
     </GreenWhiteLayout>
