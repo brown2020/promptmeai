@@ -2,18 +2,18 @@
 
 import { GiBrainTentacle } from "react-icons/gi";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@clerk/nextjs";
 import { isIOSReactNativeWebView } from "@/utils/platform";
+import { useAuthStore } from "@/zustand/useAuthStore";
 
 const Logo = () => {
   const router = useRouter();
-  const { isSignedIn } = useAuth();
+  const uid = useAuthStore((state) => state.uid);
 
   return (
     <div
       className="group cursor-pointer w-[32px] h-[32px] hover:bg-white bg-[#909090] flex justify-center items-center rounded-lg transition-transform duration-150 scale-100"
       onClick={() => {
-        if (isSignedIn || !isIOSReactNativeWebView()) {
+        if (uid || !isIOSReactNativeWebView()) {
           router.push("/chat");
         }
       }}
