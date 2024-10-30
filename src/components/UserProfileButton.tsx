@@ -4,7 +4,7 @@ import { auth } from "@/firebase/firebaseClient";
 import { useIsClient } from "@/hooks";
 import { useAuthStore } from "@/zustand/useAuthStore";
 import { useInitializeStores } from "@/zustand/useInitializeStores";
-import { useAuth, useClerk, UserButton, useUser } from "@clerk/nextjs";
+import { useClerk, UserButton, useSession, useUser } from "@clerk/nextjs";
 import { Spinner } from "@nextui-org/react";
 import { signInWithCustomToken, signOut, updateProfile } from "firebase/auth";
 import { serverTimestamp, Timestamp } from "firebase/firestore";
@@ -13,8 +13,8 @@ import { FaUserAstronaut } from "react-icons/fa6";
 
 const UserProfileButton = () => {
   const isClient = useIsClient();
-  const { getToken, isSignedIn } = useAuth();
-  const { user } = useUser();
+  const { session } = useSession();
+  const { user, isSignedIn } = useUser();
   const setAuthDetails = useAuthStore((state) => state.setAuthDetails);
   const clearAuthDetails = useAuthStore((state) => state.clearAuthDetails);
   useInitializeStores();
@@ -22,9 +22,11 @@ const UserProfileButton = () => {
 
   useEffect(() => {
     const syncAuthState = async () => {
-      if (isSignedIn && user) {
+      if (isSignedIn && user && session) {
         try {
-          const token = await getToken({ template: "integration_firebase" });
+          const token = await session.getToken({
+            template: "integration_firebase",
+          });
           const userCredentials = await signInWithCustomToken(
             auth,
             token || ""
@@ -58,7 +60,7 @@ const UserProfileButton = () => {
     };
 
     syncAuthState();
-  }, [clearAuthDetails, getToken, isSignedIn, setAuthDetails, user]);
+  }, [clearAuthDetails, session, isSignedIn, setAuthDetails, user]);
 
   if (!isClient) return <Spinner color="default" />;
 
