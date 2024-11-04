@@ -26,7 +26,12 @@ const CompleteSignIn = () => {
             window.location.href
           );
 
-          await signIn("credentials", { email: result.user?.email || "" });
+          const accessToken = await result.user.getIdToken();
+
+          await signIn("credentials", {
+            email: result.user?.email || "",
+            accessToken: accessToken,
+          });
           setMessage("Sign-in complete! Redirecting...");
           router.push("/chat");
         } catch (error) {
