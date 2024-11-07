@@ -20,32 +20,32 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
+  // const session = await auth();
 
-  console.log("session", session);
+  // console.log("session", session);
 
-  const foundUsers = await fetchUsersByAuthEmail("real.risman@gmail.com");
+  // const foundUsers = await fetchUsersByAuthEmail("real.risman@gmail.com");
 
-  if (session?.user?.id && foundUsers.length > 0) {
-    const oldId = foundUsers[0].id;
-    const newId = session.user.id;
+  // if (session?.user?.id && foundUsers.length > 0) {
+  //   const oldId = foundUsers[0].id;
+  //   const newId = session.user.id;
 
-    await moveDocumentWithoutFields(
-      `users/${oldId}/profile/userData`,
-      `users/${newId}`,
-      ["contactEmail", "displayName", "email", "emailVerified", "photoUrl"]
-    );
+  //   await moveDocumentWithoutFields(
+  //     `users/${oldId}/profile/userData`,
+  //     `users/${newId}`,
+  //     ["contactEmail", "displayName", "email", "emailVerified", "photoUrl"]
+  //   );
 
-    await moveCollection(
-      `users/${oldId}/payments`,
-      `payments/${newId}/transactions`
-    );
+  //   await moveCollection(
+  //     `users/${oldId}/payments`,
+  //     `payments/${newId}/transactions`
+  //   );
 
-    await moveCollection(
-      `promptme_chats/${oldId}/chat`,
-      `promptme_chats/${newId}/chats`
-    );
-  }
+  //   await moveCollection(
+  //     `promptme_chats/${oldId}/chat`,
+  //     `promptme_chats/${newId}/chats`
+  //   );
+  // }
 
   return (
     <html lang="en">
