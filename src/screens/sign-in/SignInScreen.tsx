@@ -1,6 +1,7 @@
 import { providerMap, signIn } from "@/auth";
 import { Button } from "@/components/buttons";
 import { AuthError } from "next-auth";
+import Image from "next/image";
 import { GiBrainTentacle } from "react-icons/gi";
 
 const SignInScreen = () => {
@@ -55,10 +56,16 @@ const SignInScreen = () => {
                 >
                   <Button
                     type="submit"
-                    className="w-full py-3 px-6"
+                    className="w-full py-3 px-6 flex justify-between items-center"
                     variant="outlined"
                   >
-                    <span>Sign in with {provider.name}</span>
+                    <span>Continue with {provider.name}</span>
+                    <Image
+                      src={`https://authjs.dev/img/providers/${provider.id}.svg`}
+                      alt={`Oauth ${provider.id}`}
+                      width={24}
+                      height={24}
+                    />
                   </Button>
                 </form>
               ))}
@@ -102,13 +109,10 @@ const SignInScreen = () => {
             </form>
 
             <p className="dark:text-[#EEE] text-center">
-              Don&apos;t have an account{" "}
-              <a
-                href="javascript:void(0);"
-                className="dark:text-[#EEE] font-semibold underline ml-1"
-              >
+              Don&apos;t have an account
+              <span className="dark:text-[#EEE] font-semibold underline ml-1 cursor-pointer">
                 Register here
-              </a>
+              </span>
             </p>
           </div>
         </div>
