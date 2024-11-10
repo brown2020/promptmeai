@@ -1,5 +1,6 @@
 "use client";
 
+import AuthComponent from "@/components/AuthComponent";
 import Spinner from "@/components/Spinner";
 import { useIsClient } from "@/hooks";
 import { SignInButton } from "@clerk/nextjs";
@@ -55,7 +56,7 @@ const HomeScreen = () => {
           each model, or learn more about how Prompt.me can help you make
           informed decisions in your AI projects.
         </motion.p>
-
+        <AuthComponent />
         <SignInButton forceRedirectUrl="/chat" mode="modal">
           <motion.button
             initial={{ opacity: 0 }}
