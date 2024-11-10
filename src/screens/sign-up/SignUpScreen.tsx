@@ -3,10 +3,10 @@ import { Button } from "@/components/buttons";
 import { AuthError } from "next-auth";
 import Image from "next/image";
 
-const SignInScreen = () => {
+const SignUpScreen = () => {
   return (
     <div className="bg-white rounded-xl px-6 py-8 space-y-6 max-w-md lg:ml-auto w-full">
-      <h3 className="text-3xl font-extrabold mb-12">Sign in</h3>
+      <h3 className="text-3xl font-extrabold mb-12">Sign up</h3>
 
       <div className="flex flex-col gap-4 justify-center">
         {Object.values(providerMap).map((provider) => (
@@ -56,6 +56,14 @@ const SignInScreen = () => {
 
       <form className="space-y-6">
         <input
+          name="name"
+          type="string"
+          autoComplete="name"
+          required
+          className="bg-gray-100 focus:bg-transparent w-full text-sm px-4 py-3.5 rounded-md outline-gray-800"
+          placeholder="Full name"
+        />
+        <input
           name="email"
           type="email"
           autoComplete="email"
@@ -71,30 +79,22 @@ const SignInScreen = () => {
           className="bg-gray-100 focus:bg-transparent w-full text-sm px-4 py-3.5 rounded-md outline-gray-800"
           placeholder="Password"
         />
-        <div className="text-sm text-right">
-          <a
-            href="jajvascript:void(0);"
-            className="text-blue-600 font-semibold hover:underline"
-          >
-            Forgot your password?
-          </a>
-        </div>
         <button
           type="button"
           className="w-full shadow-xl py-3 px-6 text-sm font-semibold rounded-md text-white dark:text-[#EEE] bg-gray-800 hover:bg-[#222] focus:outline-none"
         >
-          Log in
+          Sign up
         </button>
       </form>
 
       <p className="dark:text-[#EEE] text-center">
-        Don&apos;t have an account
+        Already have an account
         <span className="dark:text-[#EEE] font-semibold underline ml-1 cursor-pointer">
-          Register here
+          Sign in here
         </span>
       </p>
     </div>
   );
 };
 
-export default SignInScreen;
+export default SignUpScreen;
