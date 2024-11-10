@@ -1,56 +1,11 @@
-import { providerMap, signIn } from "@/auth";
-import { Button } from "@/components/buttons";
-import { AuthError } from "next-auth";
-import Image from "next/image";
+import OAuthList from "@/components/OAuthList";
 
 const SignUpScreen = () => {
   return (
     <div className="bg-white rounded-xl px-6 py-8 space-y-6 max-w-md lg:ml-auto w-full">
       <h3 className="text-3xl font-extrabold mb-12">Sign up</h3>
 
-      <div className="flex flex-col gap-4 justify-center">
-        {Object.values(providerMap).map((provider) => (
-          <form
-            key={provider.id}
-            action={async () => {
-              "use server";
-              try {
-                await signIn(provider.id);
-              } catch (error) {
-                // Signin can fail for a number of reasons, such as the user
-                // not existing, or the user not having the correct role.
-                // In some cases, you may want to redirect to a custom error
-                if (error instanceof AuthError) {
-                  // return redirect(
-                  //   `${SIGNIN_ERROR_URL}?error=${error.type}`
-                  // );
-                }
-
-                // Otherwise if a redirects happens Next.js can handle it
-                // so you can just re-thrown the error and let Next.js handle it.
-                // Docs:
-                // https://nextjs.org/docs/app/api-reference/functions/redirect#server-component
-                throw error;
-              }
-            }}
-            className="w-full"
-          >
-            <Button
-              type="submit"
-              className="w-full py-3 px-6 flex justify-between items-center"
-              variant="outlined"
-            >
-              <span>Continue with {provider.name}</span>
-              <Image
-                src={`https://authjs.dev/img/providers/${provider.id}.svg`}
-                alt={`Oauth ${provider.id}`}
-                width={24}
-                height={24}
-              />
-            </Button>
-          </form>
-        ))}
-      </div>
+      <OAuthList />
 
       <p className="my-6 text-sm text-gray-400 text-center">or continue with</p>
 
