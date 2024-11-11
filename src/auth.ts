@@ -57,7 +57,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (token.sub) {
           session.user.id = token.sub;
 
-          const firebaseToken = await adminAuth.createCustomToken(token.sub);
+          const additionalClaims = {
+            email: token.email,
+          };
+
+          const firebaseToken = await adminAuth.createCustomToken(
+            token.sub,
+            additionalClaims
+          );
+
           session.firebaseToken = firebaseToken;
         }
       }
