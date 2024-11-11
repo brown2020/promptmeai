@@ -1,4 +1,5 @@
 import OAuthList from "@/components/OAuthList";
+import Link from "next/link";
 
 const SignInScreen = () => {
   return (
@@ -29,7 +30,7 @@ const SignInScreen = () => {
         <div className="text-sm text-right">
           <a
             href="jajvascript:void(0);"
-            className="text-blue-600 font-semibold hover:underline"
+            className="font-semibold hover:underline"
           >
             Forgot your password?
           </a>
@@ -42,11 +43,14 @@ const SignInScreen = () => {
         </button>
       </form>
 
-      <p className="dark:text-[#EEE] text-center">
-        Don&apos;t have an account
-        <span className="dark:text-[#EEE] font-semibold underline ml-1 cursor-pointer">
+      <p className="text-center">
+        Don&apos;t have an account?
+        <Link
+          href="/auth/sign-up"
+          className="font-semibold underline ml-1 cursor-pointer"
+        >
           Register here
-        </span>
+        </Link>
       </p>
     </div>
   );

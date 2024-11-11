@@ -1,4 +1,5 @@
 import OAuthList from "@/components/OAuthList";
+import Link from "next/link";
 
 const SignUpScreen = () => {
   return (
@@ -42,11 +43,14 @@ const SignUpScreen = () => {
         </button>
       </form>
 
-      <p className="dark:text-[#EEE] text-center">
-        Already have an account
-        <span className="dark:text-[#EEE] font-semibold underline ml-1 cursor-pointer">
+      <p className="text-center">
+        Already have an account?
+        <Link
+          href="/auth/sign-in"
+          className="font-semibold underline ml-1 cursor-pointer"
+        >
           Sign in here
-        </span>
+        </Link>
       </p>
     </div>
   );
