@@ -3,17 +3,17 @@
 import { Button } from "@/components/buttons";
 import CardContent from "@/components/CardContent";
 import Spinner from "@/components/Spinner";
+import { auth } from "@/firebase/firebaseClient";
 import { isIOSReactNativeWebView } from "@/utils/platform";
 import { cn } from "@/utils/tailwind";
 import { usePaymentsStore } from "@/zustand/usePaymentsStore";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
-import { useUser } from "@clerk/nextjs";
 import { CircularProgress } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useMemo, useCallback } from "react";
 
 const CreditInformation = () => {
-  const { user } = useUser();
+  const user = auth.currentUser;
   const { profile, isLoading, isDefaultData, updateProfile } =
     useProfileStore();
   const router = useRouter();

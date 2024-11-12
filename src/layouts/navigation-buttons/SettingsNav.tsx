@@ -2,14 +2,13 @@
 
 import { ButtonIcon } from "@/components/buttons";
 import { isIOSReactNativeWebView } from "@/utils/platform";
-import { useUser } from "@clerk/nextjs";
 import { usePathname, useRouter } from "next/navigation";
 import { RiListSettingsFill } from "react-icons/ri";
 
 const SettingsNav = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const { isSignedIn } = useUser();
+  const  isSignedIn  = false;
 
   return (
     <ButtonIcon

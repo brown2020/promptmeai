@@ -14,7 +14,7 @@ import { WarningChangingMessage } from "@/components/modals";
 import { sortChatByDateDesc } from "@/utils/chat";
 
 const MyChatSection = () => {
-  const { uid, firebaseUid } = useAuthStore();
+  const { uid } = useAuthStore();
   const {
     isDrawerOpen,
     setDrawerOpen,
@@ -42,10 +42,10 @@ const MyChatSection = () => {
       }
     };
 
-    if (uid && firebaseUid) {
+    if (uid) {
       getAllChatList(uid);
     }
-  }, [firebaseUid, setChats, setPinnedChats, uid]);
+  }, [setChats, setPinnedChats, uid]);
 
   const addNewChat = useCallback(() => {
     setActiveChatId("");

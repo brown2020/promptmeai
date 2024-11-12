@@ -3,13 +3,12 @@
 import { usePathname, useRouter } from "next/navigation";
 import { ButtonIcon } from "@/components/buttons";
 import { PiChatsCircle } from "react-icons/pi";
-import { useUser } from "@clerk/nextjs";
 import { isIOSReactNativeWebView } from "@/utils/platform";
 
 const ChatNav = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const { isSignedIn } = useUser();
+  const  isSignedIn  = false;
 
   return (
     <ButtonIcon

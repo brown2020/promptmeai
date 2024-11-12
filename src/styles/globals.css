@@ -161,7 +161,7 @@
     @apply cursor-pointer flex outline-none items-center gap-2 mt-2 px-6 py-2 bg-black/20 text-black font-semibold hover:bg-black/30 rounded-full disabled:bg-white/10 disabled:hover:bg-white/10 disabled:cursor-not-allowed;
   }
   .btn-secondary {
-    @apply cursor-pointer flex outline-none items-center gap-2 mt-2 px-6 py-2 bg-white/10 text-black/50 font-semibold hover:bg-white/30 ml-auto rounded-full;
+    @apply cursor-pointer flex outline-none items-center gap-2 mt-2 px-6 py-2 bg-[#1A8F70] text-black/50 font-semibold hover:bg-[#1A8F70]/30 ml-auto rounded-full;
   }
 
   .input-primary {

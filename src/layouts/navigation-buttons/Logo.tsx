@@ -2,12 +2,11 @@
 
 import { GiBrainTentacle } from "react-icons/gi";
 import { useRouter } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
 import { isIOSReactNativeWebView } from "@/utils/platform";
 
 const Logo = () => {
   const router = useRouter();
-  const { isSignedIn } = useUser();
+  const  isSignedIn  = false;
 
   return (
     <div

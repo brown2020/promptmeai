@@ -13,7 +13,6 @@ import {
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { PromptCoreMessage, useChatStore } from "@/zustand/useChatStore";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
-import { useUser } from "@clerk/nextjs";
 import { FaStopCircle } from "react-icons/fa";
 import { CoreMessage } from "ai";
 import { readStreamableValue } from "ai/rsc";
@@ -28,10 +27,11 @@ import {
 } from "react";
 import { PiPaperPlaneTilt } from "react-icons/pi";
 import { Spinner } from "@nextui-org/react";
+import { auth } from "@/firebase/firebaseClient";
 
 const ChatInput = () => {
   const router = useRouter();
-  const { user } = useUser();
+  const user = auth.currentUser;
   const { profile, isDefaultData, reduceCredits } = useProfileStore();
   const {
     messages,
@@ -115,7 +115,7 @@ const ChatInput = () => {
   );
 
   const saveChatFunction = async () => {
-    if (user?.id) {
+    if (user?.uid) {
       try {
         const newMessages = [...useChatStore.getState().messages];
         const lastIndex = newMessages.length - 1;
@@ -129,11 +129,11 @@ const ChatInput = () => {
         const activeChatId = useChatSideBarStore.getState().activeChatId;
 
         if (activeChatId) {
-          await updateChat(user.id, activeChatId, newMessages);
+          await updateChat(user.uid, activeChatId, newMessages);
         } else {
           const chatData = await saveChat(
-            user.id,
-            user.fullName || "",
+            user.uid,
+            user.displayName || "",
             newMessages
           );
           if (chatData?.id) {
