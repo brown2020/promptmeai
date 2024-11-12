@@ -55,16 +55,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     session: async ({ session, token }) => {
       if (session?.user) {
         if (token.sub) {
-          session.user.id = token.sub;
+          const uid = token.sub;
+          const email = session.user.email;
 
-          const additionalClaims = {
-            email: token.email,
-          };
+          session.user.id = uid;
 
-          const firebaseToken = await adminAuth.createCustomToken(
-            token.sub,
-            additionalClaims
-          );
+          const findUser = await admin.auth().getUser(uid);
+
+          if (findUser) {
+            if (findUser.email !== email) {
+              // Update user email
+              await admin.auth().updateUser(uid, {
+                email,
+              });
+            }
+          } else {
+            // Create the user with both uid and email set from the start
+            await admin.auth().createUser({
+              uid,
+              email,
+            });
+          }
+
+          const firebaseToken = await adminAuth.createCustomToken(uid);
 
           session.firebaseToken = firebaseToken;
         }
