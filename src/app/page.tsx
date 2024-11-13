@@ -5,7 +5,7 @@ import HomeScreen from "@/screens/home";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
 
-const HomePage = async () => {
+const HomePage = () => {
   const user = auth.currentUser;
 
   useEffect(() => {
