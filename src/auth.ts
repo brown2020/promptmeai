@@ -5,6 +5,24 @@ import { FirestoreAdapter } from "@auth/firebase-adapter";
 import { admin, adminAuth, adminDb } from "./firebase/firebaseAdmin";
 import type { Provider } from "next-auth/providers";
 
+async function getUserById(userId: string) {
+  try {
+    const userDoc = await adminDb.collection("users").doc(userId).get();
+
+    if (!userDoc.exists) {
+      console.log("No user found with the given ID.");
+      return null;
+    }
+
+    // Access the user data
+    const userData = userDoc.data();
+    return userData;
+  } catch (error) {
+    console.error("Error getting user document:", error);
+    throw error;
+  }
+}
+
 const providers: Provider[] = [
   Google,
   Credentials({
@@ -16,20 +34,29 @@ const providers: Provider[] = [
     authorize: async (credentials) => {
       const { email, accessToken } = credentials;
 
-      console.log("proccess email", email);
-      console.log("proccess accessToken", accessToken);
-
       try {
         const decodedToken = await admin
           .auth()
           .verifyIdToken(accessToken as string);
 
-        console.log("Token verified successfully", decodedToken);
+        if (decodedToken && decodedToken.email === email) {
+          const user = await getUserById(decodedToken.uid);
 
-        return null;
+          if (user) {
+            return {
+              id: decodedToken.uid,
+              name: user.name,
+              email: user.email,
+            };
+          } else {
+            throw new Error("User not found.");
+          }
+        } else {
+          throw new Error("Invalid credentials.");
+        }
       } catch (error) {
-        console.error("Error verifying token:", error);
-        throw error;
+        console.error("Failed to decode the credit token", error);
+        throw new Error("Invalid credentials.");
       }
     },
   }),
