@@ -8,6 +8,7 @@ import useAuthToken from "@/hooks/useAuthToken";
 import { useEffect } from "react";
 import { useInitializeStores } from "@/zustand/useInitializeStores";
 import FirebaseAuthProvider from "./firebase-auth-provider";
+import { SessionProvider } from "next-auth/react";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const { loading, uid } = useAuthToken(process.env.NEXT_PUBLIC_COOKIE_NAME!);
@@ -33,7 +34,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <NextUIProvider>
       <NextThemesProvider attribute="class" defaultTheme="system">
-        <FirebaseAuthProvider>{children}</FirebaseAuthProvider>
+        <SessionProvider>
+          <FirebaseAuthProvider>{children}</FirebaseAuthProvider>
+        </SessionProvider>
         <CookieConsent>
           This app uses cookies to enhance the user experience.
         </CookieConsent>
