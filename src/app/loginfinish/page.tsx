@@ -72,9 +72,9 @@ export default function LoginFinishPage() {
                 console.log("ERROR", errorMessage);
                 alert(errorMessage);
             } finally {
-                window.localStorage.removeItem("grademeEmail");
-                window.localStorage.removeItem("grademeName");
-                router.replace("/tools");
+                window.localStorage.removeItem("generateEmail");
+                window.localStorage.removeItem("generateName");
+                router.replace("/");
             }
         }
 
