@@ -4,18 +4,20 @@ import { usePathname, useRouter } from "next/navigation";
 import { ButtonIcon } from "@/components/buttons";
 import { PiChatsCircle } from "react-icons/pi";
 import { isIOSReactNativeWebView } from "@/utils/platform";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/firebase/firebaseClient";
 
 const ChatNav = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const  isSignedIn  = false;
+  const [user] = useAuthState(auth);
+  const isSignedIn = user?.uid;
 
   return (
     <ButtonIcon
       icon={PiChatsCircle}
       isActive={pathname.includes("chat")}
       onClick={() => {
-        console.log(isSignedIn, 'isSignedInisSignedInisSignedIn')
         if (isSignedIn || !isIOSReactNativeWebView()) {
           router.push("/chat");
         }

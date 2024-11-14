@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "me.prompt.app",
+      "sha256_cert_fingerprints": [
+        "5D:CC:4D:21:B1:4F:63:54:2F:57:F5:35:0F:38:EB:5C:76:F6:2B:54:89:0B:D7:FB:84:C1:EF:8B:A9:9B:D8:86"
+      ]
+    }
+  }
+]

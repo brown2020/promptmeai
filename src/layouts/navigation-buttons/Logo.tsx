@@ -3,10 +3,13 @@
 import { GiBrainTentacle } from "react-icons/gi";
 import { useRouter } from "next/navigation";
 import { isIOSReactNativeWebView } from "@/utils/platform";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/firebase/firebaseClient";
 
 const Logo = () => {
   const router = useRouter();
-  const  isSignedIn  = false;
+  const [user] = useAuthState(auth);
+  const isSignedIn = user?.uid;
 
   return (
     <div
