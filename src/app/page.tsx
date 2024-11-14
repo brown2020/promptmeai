@@ -1,13 +1,18 @@
+"use client";
+
+import { auth } from "@/firebase/firebaseClient";
 import HomeScreen from "@/screens/home";
-import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { useEffect } from "react";
 
-const HomePage = async () => {
-  const { userId } = await auth();
+const HomePage = () => {
+  const user = auth.currentUser;
 
-  if (userId) {
-    return redirect("/chat");
-  }
+  useEffect(() => {
+    if (user?.uid) {
+      return redirect("/chat");
+    }
+  }, [user?.uid]);
 
   return <HomeScreen />;
 };

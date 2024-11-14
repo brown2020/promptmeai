@@ -5,13 +5,13 @@ import ChatResponseEmptyState from "./ChatResponseEmptyState";
 import { Fragment, useEffect, useRef } from "react";
 import { MODEL_NAMES } from "@/constants/modelNames";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
-import { useUser } from "@clerk/nextjs";
 import { getChat } from "@/services/chatService";
 import ChatResponseCard from "./ChatResponseCard";
 import { UsageMode } from "@/zustand/useProfileStore";
+import { auth } from "@/firebase/firebaseClient";
 
 const ChatResponseList = () => {
-  const { user } = useUser();
+  const user = auth.currentUser;
   const { messages, setMessages } = useChatStore();
   const { activeChatId } = useChatSideBarStore();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
@@ -28,10 +28,10 @@ const ChatResponseList = () => {
       }
     };
 
-    if (user?.id && activeChatId) {
-      updateMessages(user.id, activeChatId);
+    if (user?.uid && activeChatId) {
+      updateMessages(user.uid, activeChatId);
     }
-  }, [activeChatId, setMessages, user?.id]);
+  }, [activeChatId, setMessages, user?.uid]);
 
   // Handle scroll events to detect if user has scrolled up
   useEffect(() => {

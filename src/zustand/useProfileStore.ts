@@ -1,7 +1,8 @@
 import { create } from "zustand";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { useAuthStore } from "./useAuthStore";
 import { db } from "@/firebase/firebaseClient";
+import { deleteUser, getAuth } from "firebase/auth";
 
 export enum UsageMode {
   Credits = "CREDITS",
@@ -54,6 +55,7 @@ interface ProfileState {
   updateProfile: (newProfile: Partial<ProfileType>) => Promise<void>;
   reduceCredits: (amount: number) => Promise<boolean>;
   addCredits: (amount: number) => Promise<void>;
+  deleteAccount: () => Promise<void>;
 }
 
 const useProfileStore = create<ProfileState>((set, get) => ({
@@ -174,6 +176,27 @@ const useProfileStore = create<ProfileState>((set, get) => ({
       }));
     } catch (error) {
       console.error("Error adding credits:", error);
+    }
+  },
+
+  deleteAccount: async () => {
+    const auth = getAuth(); // Get Firebase auth instance
+    const currentUser = auth.currentUser;
+
+    const uid = useAuthStore.getState().uid;
+    if (!uid || !currentUser) return;
+
+    try {
+      const userRef = doc(db, `users/${uid}/profile/userData`);
+      // Delete the user profile data from Firestore
+      await deleteDoc(userRef);
+
+      //Delete the user from Firebase Authentication
+      await deleteUser(currentUser);
+
+      console.log("Account deleted successfully");
+    } catch (error) {
+      console.error("Error deleting account:", error);
     }
   },
 }));

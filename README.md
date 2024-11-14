@@ -80,10 +80,6 @@ ANTHROPIC_API_KEY=your_anthropic_api_key
 GOOGLE_GENERATIVE_AI_API_KEY=your_google_generative_ai_api_key
 MISTRAL_API_KEY=your_mistral_api_key
 FIREWORKS_API_KEY=your_fireworks_api_key
-GROQ_API_KEY=your_groq_api_key
-
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_public_key
-CLERK_SECRET_KEY=your_clerk_secret_key
 
 NEXT_PUBLIC_STRIPE_PRODUCT_NAME=your_stripe_product_name
 NEXT_PUBLIC_STRIPE_KEY=your_stripe_key
@@ -115,7 +111,6 @@ FIREBASE_UNIVERSE_DOMAIN=your_firebase_universe_domain
 To learn more about the technologies used in this project, refer to the following documentation:
 
 - [Next.js Documentation](https://nextjs.org/docs)
-- [Clerk Documentation](https://clerk.dev/docs)
 - [Zustand Documentation](https://docs.pmnd.rs)
 - [Stripe Documentation](https://stripe.com/docs)
 - [Firebase Documentation](https://firebase.google.com/docs)
