@@ -37,9 +37,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <SessionProvider>
           <FirebaseAuthProvider>{children}</FirebaseAuthProvider>
         </SessionProvider>
-        <CookieConsent>
-          This app uses cookies to enhance the user experience.
-        </CookieConsent>
+        {typeof window !== "undefined" && !window.ReactNativeWebView && (
+          <CookieConsent>
+            This app uses cookies to enhance the user experience.
+          </CookieConsent>
+        )}
       </NextThemesProvider>
     </NextUIProvider>
   );

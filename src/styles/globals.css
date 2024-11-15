@@ -138,7 +138,7 @@
     @apply flex items-center justify-center px-3 py-2 hover:opacity-50 rounded-md gap-1 disabled:opacity-50;
   }
   .btn-primary {
-    @apply cursor-pointer flex w-full outline-none text-center justify-center items-center gap-2 mt-2 px-6 py-2 bg-[#2563EB] text-white font-semibold hover:bg-[#2563EB]/30 rounded-full disabled:bg-[#2563EB]/30 disabled:hover:bg-[#2563EB]/30 disabled:cursor-not-allowed;
+    @apply cursor-pointer flex w-full outline-none text-center justify-center items-center gap-2 mt-2 px-6 py-2 bg-[#1A8F70] text-white font-semibold hover:bg-[#1A8F70]/30 rounded-full disabled:bg-[#1A8F70]/30 disabled:hover:bg-[#1A8F70]/30 disabled:cursor-not-allowed;
   }
 
   .btn-blue {
