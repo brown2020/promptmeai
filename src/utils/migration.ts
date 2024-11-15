@@ -63,8 +63,8 @@ export async function moveDocumentWithoutFields<
     );
 
     // Optionally, delete the source document
-    await adminDb.doc(sourcePath).delete();
-    console.log(`Source document at ${sourcePath} deleted.`);
+    // await adminDb.doc(sourcePath).delete();
+    // console.log(`Source document at ${sourcePath} deleted.`);
   } catch (error) {
     console.error("Error moving document without specific fields:", error);
   }
@@ -89,7 +89,7 @@ export async function moveCollection(
       const targetDocRef = adminDb.collection(targetCollectionPath).doc(doc.id);
 
       batch.set(targetDocRef, data); // Add document data to the target collection
-      batch.delete(doc.ref); // Optionally delete the source document
+      // batch.delete(doc.ref); // Optionally delete the source document
     });
 
     await batch.commit();
