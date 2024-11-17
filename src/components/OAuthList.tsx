@@ -1,7 +1,8 @@
-import { providerMap, signIn } from "@/auth";
+import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
 import { Button } from "./buttons";
 import Image from "next/image";
+import { providerMap } from "@/auth.config";
 
 const OAuthList = () => {
   return (
