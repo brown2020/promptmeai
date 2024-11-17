@@ -1,84 +1,27 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
-import Credentials from "next-auth/providers/credentials";
+import authConfig from "./auth.config";
 import { FirestoreAdapter } from "@auth/firebase-adapter";
 import { admin, adminAuth, adminDb } from "./firebase/firebaseAdmin";
-import type { Provider } from "next-auth/providers";
-
-async function getUserById(userId: string) {
-  try {
-    const userDoc = await adminDb.collection("users").doc(userId).get();
-
-    if (!userDoc.exists) {
-      console.log("No user found with the given ID.");
-      return null;
-    }
-
-    // Access the user data
-    const userData = userDoc.data();
-    return userData;
-  } catch (error) {
-    console.error("Error getting user document:", error);
-    throw error;
-  }
-}
-
-const providers: Provider[] = [
-  Google,
-  Credentials({
-    name: "Email Link",
-    credentials: {
-      email: { label: "Email", type: "text" },
-      accessToken: { label: "Access Token", type: "text" },
-    },
-    authorize: async (credentials) => {
-      const { email, accessToken } = credentials;
-
-      try {
-        const decodedToken = await admin
-          .auth()
-          .verifyIdToken(accessToken as string);
-
-        if (decodedToken && decodedToken.email === email) {
-          const user = await getUserById(decodedToken.uid);
-
-          if (user) {
-            return {
-              id: decodedToken.uid,
-              name: user.name,
-              email: user.email,
-            };
-          } else {
-            throw new Error("User not found.");
-          }
-        } else {
-          throw new Error("Invalid credentials.");
-        }
-      } catch (error) {
-        console.error("Failed to decode the credit token", error);
-        throw new Error("Invalid credentials.");
-      }
-    },
-  }),
-];
-
-export const providerMap = providers
-  .map((provider) => {
-    if (typeof provider === "function") {
-      const providerData = provider();
-      return { id: providerData.id, name: providerData.name };
-    } else {
-      return { id: provider.id, name: provider.name };
-    }
-  })
-  .filter((provider) => provider.id !== "credentials");
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers,
+  pages: {
+    signIn: "/auth/sign-in",
+  },
   session: {
     strategy: "jwt",
   },
   callbacks: {
+    authorized({ auth, request: { nextUrl } }) {
+      const isLoggedIn = !!auth?.user;
+      const isOnChat = nextUrl.pathname.startsWith("/chat");
+      if (isOnChat) {
+        if (isLoggedIn) return true;
+        return false; // Redirect unauthenticated users to login page
+      } else if (isLoggedIn) {
+        return Response.redirect(new URL("/chat", nextUrl));
+      }
+      return true;
+    },
     session: async ({ session, token }) => {
       if (session?.user) {
         if (token.sub) {
@@ -121,4 +64,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
   adapter: FirestoreAdapter(adminDb),
+  ...authConfig,
 });
