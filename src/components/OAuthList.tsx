@@ -2,7 +2,7 @@ import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
 import { Button } from "./buttons";
 import Image from "next/image";
-import { providerMap } from "@/auth.config";
+import { providerMap } from "@/auth.providers";
 
 const OAuthList = () => {
   return (
