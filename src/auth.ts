@@ -68,6 +68,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   callbacks: {
     ...authClientConfig.callbacks,
+    jwt: async ({ user, token }) => {
+      if (user) {
+        token.sub = user.id;
+      }
+
+      return token;
+    },
     session: async ({ session, token }) => {
       if (session?.user) {
         if (token.sub) {
@@ -76,37 +83,36 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           session.user.id = uid;
 
-          const findUser = await admin.auth().getUser(uid);
+          try {
+            const findUser = await admin.auth().getUserByEmail(email);
 
-          if (findUser) {
-            if (findUser.email !== email) {
-              // Update user email
-              await admin.auth().updateUser(uid, {
+            if (findUser) {
+              if (findUser.uid !== uid) {
+                // Replace old user with new user from AuthJS integration
+                await admin.auth().deleteUser(findUser.uid);
+                await admin.auth().createUser({
+                  uid,
+                  email,
+                });
+              }
+            } else {
+              // Create the user with both uid and email set from the start
+              await admin.auth().createUser({
+                uid,
                 email,
               });
             }
-          } else {
-            // Create the user with both uid and email set from the start
-            await admin.auth().createUser({
-              uid,
-              email,
-            });
+
+            const firebaseToken = await adminAuth.createCustomToken(uid);
+
+            session.firebaseToken = firebaseToken;
+          } catch (error) {
+            console.error("Failed to find user", error);
           }
-
-          const firebaseToken = await adminAuth.createCustomToken(uid);
-
-          session.firebaseToken = firebaseToken;
         }
       }
 
       return session;
-    },
-    jwt: async ({ user, token }) => {
-      if (user) {
-        token.sub = user.id;
-      }
-
-      return token;
     },
   },
   adapter: FirestoreAdapter(adminDb),
