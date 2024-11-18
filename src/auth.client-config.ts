@@ -1,5 +1,7 @@
 import type { NextAuthConfig } from "next-auth";
 
+const protectedUrls = ["/chat", "/settings"];
+
 export default {
   pages: {
     signIn: "/auth/sign-in",
@@ -7,13 +9,24 @@ export default {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnChat = nextUrl.pathname.startsWith("/chat");
-      if (isOnChat) {
+      const isProtectedUrl = protectedUrls.some((url) =>
+        nextUrl.pathname.startsWith(url)
+      );
+
+      if (isProtectedUrl) {
+        // Allow access if logged in
         if (isLoggedIn) return true;
-        return false; // Redirect unauthenticated users to login page
-      } else if (isLoggedIn) {
+
+        // Redirect unauthenticated users to the login page
+        return false;
+      }
+
+      // If not a protected URL and user is logged in, redirect to a default page (e.g., '/chat')
+      if (isLoggedIn) {
         return Response.redirect(new URL("/chat", nextUrl));
       }
+
+      // Allow access to other routes
       return true;
     },
   },
