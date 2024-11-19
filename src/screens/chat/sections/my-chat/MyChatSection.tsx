@@ -9,12 +9,14 @@ import { Fragment, useCallback, useEffect, useState } from "react";
 import { getAllChatDetails } from "@/services/chatService";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { useChatStore } from "@/zustand/useChatStore";
-import { useAuthStore } from "@/zustand/useAuthStore";
 import { WarningChangingMessage } from "@/components/modals";
 import { sortChatByDateDesc } from "@/utils/chat";
 
-const MyChatSection = () => {
-  const { uid } = useAuthStore();
+type MyChatSectionProps = {
+  userId: string;
+};
+
+const MyChatSection = ({ userId }: MyChatSectionProps) => {
   const {
     isDrawerOpen,
     setDrawerOpen,
@@ -42,10 +44,10 @@ const MyChatSection = () => {
       }
     };
 
-    if (uid) {
-      getAllChatList(uid);
+    if (userId) {
+      getAllChatList(userId);
     }
-  }, [setChats, setPinnedChats, uid]);
+  }, [setChats, setPinnedChats, userId]);
 
   const addNewChat = useCallback(() => {
     setActiveChatId("");
