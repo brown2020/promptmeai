@@ -44,7 +44,7 @@ const CreditInformation = ({ userId }: CreditInformationProps) => {
           productId: message.productId,
           currency: message.currency,
         });
-        await addCredits(10000);
+        await addCredits(userId, 10000);
       }
     };
 

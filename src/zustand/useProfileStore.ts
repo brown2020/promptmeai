@@ -55,7 +55,7 @@ interface ProfileState {
     newProfile: Partial<ProfileType>
   ) => Promise<void>;
   reduceCredits: (userId: string, amount: number) => Promise<boolean>;
-  addCredits: (amount: number) => Promise<void>;
+  addCredits: (userId: string, amount: number) => Promise<void>;
   deleteAccount: () => Promise<void>;
 }
 
@@ -126,24 +126,25 @@ const useProfileStore = create<ProfileState>((set, get) => ({
     }
   },
 
-  addCredits: async (amount: number) => {
-    // const uid = useAuthStore.getState().uid;
-    // if (!uid) return;
-    // const profile = get().profile;
-    // const newCredits = profile.credits + amount;
-    // try {
-    //   const userRef = doc(db, `users/${uid}/profile/userData`);
-    //   const newData = {
-    //     credits: newCredits,
-    //     totalCredits: newCredits,
-    //   };
-    //   await updateDoc(userRef, { ...newData });
-    //   set((state) => ({
-    //     profile: { ...state.profile, ...newData },
-    //   }));
-    // } catch (error) {
-    //   console.error("Error adding credits:", error);
-    // }
+  addCredits: async (userId, amount) => {
+    if (!userId) return;
+
+    const profile = get().profile;
+    const newCredits = profile.credits + amount;
+
+    try {
+      const userRef = doc(db, `users/${userId}`);
+      const newData = {
+        credits: newCredits,
+        totalCredits: newCredits,
+      };
+      await updateDoc(userRef, { ...newData });
+      set((state) => ({
+        profile: { ...state.profile, ...newData },
+      }));
+    } catch (error) {
+      console.error("Error adding credits:", error);
+    }
   },
 
   deleteAccount: async () => {

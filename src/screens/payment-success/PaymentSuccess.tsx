@@ -74,7 +74,7 @@ const PaymentSuccess = ({ userId }: PaymentSuccessProps) => {
 
           // Add credits to profile
           const creditsToAdd = data.amount + 1;
-          await addCredits(creditsToAdd);
+          await addCredits(userId, creditsToAdd);
         } else {
           setMessage("Payment validation failed");
         }
