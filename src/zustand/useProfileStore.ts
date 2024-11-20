@@ -19,10 +19,9 @@ export type APIKeys = {
 
 export interface ProfileType {
   email: string;
-  contactEmail: string;
-  displayName: string;
-  photoUrl: string;
-  emailVerified: boolean;
+  name: string;
+  image: string;
+  emailVerified: Date | null;
   credits: number;
   totalCredits: number;
   usageMode: UsageMode;
@@ -31,10 +30,9 @@ export interface ProfileType {
 
 const defaultProfile: ProfileType = {
   email: "",
-  contactEmail: "",
-  displayName: "",
-  photoUrl: "",
-  emailVerified: false,
+  name: "",
+  image: "",
+  emailVerified: null,
   credits: 0,
   totalCredits: 1000,
   usageMode: UsageMode.Credits,
@@ -51,7 +49,7 @@ interface ProfileState {
   profile: ProfileType;
   isLoading: boolean;
   isDefaultData: boolean;
-  fetchProfile: () => void;
+  fetchProfile: (userId: string) => void;
   updateProfile: (newProfile: Partial<ProfileType>) => Promise<void>;
   reduceCredits: (amount: number) => Promise<boolean>;
   addCredits: (amount: number) => Promise<void>;
@@ -63,18 +61,15 @@ const useProfileStore = create<ProfileState>((set, get) => ({
   isLoading: false,
   isDefaultData: true,
 
-  fetchProfile: async () => {
-    const uid = useAuthStore.getState().uid;
-    if (!uid) return;
+  fetchProfile: async (userId) => {
+    if (!userId) return;
 
     try {
       set({ isLoading: true });
-      const userRef = doc(db, `users/${uid}/profile/userData`);
+      const userRef = doc(db, `users/${userId}`);
       const docSnap = await getDoc(userRef);
-
       if (docSnap.exists()) {
         const profileData = docSnap.data() as ProfileType;
-
         const newProfile = {
           ...profileData,
           totalCredits:
@@ -82,25 +77,10 @@ const useProfileStore = create<ProfileState>((set, get) => ({
           usageMode: profileData?.usageMode || defaultProfile.usageMode,
           APIKeys: profileData?.APIKeys || defaultProfile.APIKeys,
         };
-
         set({ profile: newProfile, isDefaultData: false });
       } else {
-        const newProfile = {
-          email: useAuthStore.getState().authEmail || "",
-          contactEmail: useAuthStore.getState().authEmail || "",
-          displayName: useAuthStore.getState().authDisplayName || "",
-          photoUrl: useAuthStore.getState().authPhotoUrl || "",
-          emailVerified: useAuthStore.getState().authEmailVerified || false,
-          credits: 1000,
-          totalCredits: 1000,
-          usageMode: UsageMode.Credits,
-          APIKeys: defaultProfile.APIKeys,
-        };
-
-        await setDoc(userRef, newProfile);
-        set({ profile: newProfile, isDefaultData: false });
+        console.error("User profile is not found!");
       }
-
       set({ isLoading: false });
     } catch (error) {
       console.error("Error fetching or creating profile:", error);
@@ -109,95 +89,77 @@ const useProfileStore = create<ProfileState>((set, get) => ({
   },
 
   updateProfile: async (newProfile: Partial<ProfileType>) => {
-    const uid = useAuthStore.getState().uid;
-    if (!uid) return;
-
-    console.log("Updating profile:", newProfile);
-
-    try {
-      const userRef = doc(db, `users/${uid}/profile/userData`);
-
-      set((state) => ({
-        profile: { ...state.profile, ...newProfile },
-      }));
-
-      await updateDoc(userRef, { ...newProfile });
-      console.log("Profile updated successfully");
-    } catch (error) {
-      console.error("Error updating profile:", error);
-    }
+    // const uid = useAuthStore.getState().uid;
+    // if (!uid) return;
+    // console.log("Updating profile:", newProfile);
+    // try {
+    //   const userRef = doc(db, `users/${uid}/profile/userData`);
+    //   set((state) => ({
+    //     profile: { ...state.profile, ...newProfile },
+    //   }));
+    //   await updateDoc(userRef, { ...newProfile });
+    //   console.log("Profile updated successfully");
+    // } catch (error) {
+    //   console.error("Error updating profile:", error);
+    // }
   },
 
   reduceCredits: async (amount: number) => {
-    const uid = useAuthStore.getState().uid;
-    if (!uid) return false;
-
-    const profile = get().profile;
-    if (profile.credits < amount) {
-      return false;
-    }
-
-    try {
-      const newCredits = profile.credits - amount;
-      const userRef = doc(db, `users/${uid}/profile/userData`);
-
-      await updateDoc(userRef, { credits: newCredits });
-
-      set((state) => ({
-        profile: { ...state.profile, credits: newCredits },
-      }));
-
-      return true;
-    } catch (error) {
-      console.error("Error using credits:", error);
-      return false;
-    }
+    // const uid = useAuthStore.getState().uid;
+    // if (!uid) return false;
+    // const profile = get().profile;
+    // if (profile.credits < amount) {
+    //   return false;
+    // }
+    // try {
+    //   const newCredits = profile.credits - amount;
+    //   const userRef = doc(db, `users/${uid}/profile/userData`);
+    //   await updateDoc(userRef, { credits: newCredits });
+    //   set((state) => ({
+    //     profile: { ...state.profile, credits: newCredits },
+    //   }));
+    //   return true;
+    // } catch (error) {
+    //   console.error("Error using credits:", error);
+    //   return false;
+    // }
   },
 
   addCredits: async (amount: number) => {
-    const uid = useAuthStore.getState().uid;
-    if (!uid) return;
-
-    const profile = get().profile;
-    const newCredits = profile.credits + amount;
-
-    try {
-      const userRef = doc(db, `users/${uid}/profile/userData`);
-
-      const newData = {
-        credits: newCredits,
-        totalCredits: newCredits,
-      };
-
-      await updateDoc(userRef, { ...newData });
-
-      set((state) => ({
-        profile: { ...state.profile, ...newData },
-      }));
-    } catch (error) {
-      console.error("Error adding credits:", error);
-    }
+    // const uid = useAuthStore.getState().uid;
+    // if (!uid) return;
+    // const profile = get().profile;
+    // const newCredits = profile.credits + amount;
+    // try {
+    //   const userRef = doc(db, `users/${uid}/profile/userData`);
+    //   const newData = {
+    //     credits: newCredits,
+    //     totalCredits: newCredits,
+    //   };
+    //   await updateDoc(userRef, { ...newData });
+    //   set((state) => ({
+    //     profile: { ...state.profile, ...newData },
+    //   }));
+    // } catch (error) {
+    //   console.error("Error adding credits:", error);
+    // }
   },
 
   deleteAccount: async () => {
-    const auth = getAuth(); // Get Firebase auth instance
-    const currentUser = auth.currentUser;
-
-    const uid = useAuthStore.getState().uid;
-    if (!uid || !currentUser) return;
-
-    try {
-      const userRef = doc(db, `users/${uid}/profile/userData`);
-      // Delete the user profile data from Firestore
-      await deleteDoc(userRef);
-
-      //Delete the user from Firebase Authentication
-      await deleteUser(currentUser);
-
-      console.log("Account deleted successfully");
-    } catch (error) {
-      console.error("Error deleting account:", error);
-    }
+    // const auth = getAuth(); // Get Firebase auth instance
+    // const currentUser = auth.currentUser;
+    // const uid = useAuthStore.getState().uid;
+    // if (!uid || !currentUser) return;
+    // try {
+    //   const userRef = doc(db, `users/${uid}/profile/userData`);
+    //   // Delete the user profile data from Firestore
+    //   await deleteDoc(userRef);
+    //   //Delete the user from Firebase Authentication
+    //   await deleteUser(currentUser);
+    //   console.log("Account deleted successfully");
+    // } catch (error) {
+    //   console.error("Error deleting account:", error);
+    // }
   },
 }));
 
