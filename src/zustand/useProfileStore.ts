@@ -1,6 +1,5 @@
 import { create } from "zustand";
-import { deleteDoc, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { useAuthStore } from "./useAuthStore";
+import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebase/firebaseClient";
 import { deleteUser, getAuth } from "firebase/auth";
 
@@ -56,7 +55,7 @@ interface ProfileState {
   ) => Promise<void>;
   reduceCredits: (userId: string, amount: number) => Promise<boolean>;
   addCredits: (userId: string, amount: number) => Promise<void>;
-  deleteAccount: () => Promise<void>;
+  deleteAccount: (userId: string) => Promise<void>;
 }
 
 const useProfileStore = create<ProfileState>((set, get) => ({
@@ -147,21 +146,22 @@ const useProfileStore = create<ProfileState>((set, get) => ({
     }
   },
 
-  deleteAccount: async () => {
-    // const auth = getAuth(); // Get Firebase auth instance
-    // const currentUser = auth.currentUser;
-    // const uid = useAuthStore.getState().uid;
-    // if (!uid || !currentUser) return;
-    // try {
-    //   const userRef = doc(db, `users/${uid}/profile/userData`);
-    //   // Delete the user profile data from Firestore
-    //   await deleteDoc(userRef);
-    //   //Delete the user from Firebase Authentication
-    //   await deleteUser(currentUser);
-    //   console.log("Account deleted successfully");
-    // } catch (error) {
-    //   console.error("Error deleting account:", error);
-    // }
+  deleteAccount: async (userId) => {
+    const auth = getAuth(); // Get Firebase auth instance
+    const currentUser = auth.currentUser;
+
+    if (!userId || !currentUser) return;
+
+    try {
+      const userRef = doc(db, `users/${userId}`);
+      // Delete the user profile data from Firestore
+      await deleteDoc(userRef);
+      //Delete the user from Firebase Authentication
+      await deleteUser(currentUser);
+      console.log("Account deleted successfully");
+    } catch (error) {
+      console.error("Error deleting account:", error);
+    }
   },
 }));
 
