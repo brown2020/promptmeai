@@ -5,7 +5,6 @@ import Spinner from "@/components/Spinner";
 import Table from "@/components/Table";
 import { formatNumber, subcurrencyToNumber } from "@/utils/number";
 import { capitalize } from "@/utils/text";
-import { useAuthStore } from "@/zustand/useAuthStore";
 import { PaymentType, usePaymentsStore } from "@/zustand/usePaymentsStore";
 import { Timestamp } from "firebase/firestore";
 import { useEffect } from "react";
@@ -15,15 +14,18 @@ type TableData = {
   product: string;
 } & PaymentType;
 
-const PaymentHistory = () => {
-  const uid = useAuthStore((state) => state.uid);
+type PaymentHistoryProps = {
+  userId: string;
+};
+
+const PaymentHistory = ({ userId }: PaymentHistoryProps) => {
   const { payments, paymentsLoading, fetchPayments } = usePaymentsStore();
 
   useEffect(() => {
-    if (uid) {
+    if (userId) {
       fetchPayments();
     }
-  }, [uid, fetchPayments]);
+  }, [userId, fetchPayments]);
 
   const tableData: TableData[] = payments.map((payment, i) => ({
     ...payment,
@@ -36,7 +38,7 @@ const PaymentHistory = () => {
       title="Payment History"
       overrideStyles="col-span-1 lg:col-span-2 xl:col-span-3"
     >
-      {paymentsLoading || !uid ? (
+      {paymentsLoading || !userId ? (
         <Spinner />
       ) : (
         <Table

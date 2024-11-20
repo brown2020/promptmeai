@@ -10,7 +10,11 @@ import { useEffect, useState } from "react";
 import Footer from "@/components/Footer";
 import SettingOption from "./sections/SettingOption";
 
-const SettingsScreen = () => {
+type SettingsScreenProps = {
+  userId: string;
+};
+
+const SettingsScreen = ({ userId }: SettingsScreenProps) => {
   const [isRnWebView, setRnWebview] = useState(false);
 
   useEffect(() => {
@@ -28,7 +32,7 @@ const SettingsScreen = () => {
           <CreditInformation />
           {!isRnWebView && <InputAPIKeys />}
           <SettingOption />
-          <PaymentHistory />
+          <PaymentHistory userId={userId} />
           <Footer />
         </div>
       </div>
