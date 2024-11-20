@@ -8,10 +8,13 @@ import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { getChat } from "@/services/chatService";
 import ChatResponseCard from "./ChatResponseCard";
 import { UsageMode } from "@/zustand/useProfileStore";
-import { auth } from "@/firebase/firebaseClient";
+import { User } from "next-auth";
 
-const ChatResponseList = () => {
-  const user = auth.currentUser;
+type ChatResponseListProps = {
+  user?: User;
+};
+
+const ChatResponseList = ({ user }: ChatResponseListProps) => {
   const { messages, setMessages } = useChatStore();
   const { activeChatId } = useChatSideBarStore();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
@@ -28,10 +31,10 @@ const ChatResponseList = () => {
       }
     };
 
-    if (user?.uid && activeChatId) {
-      updateMessages(user.uid, activeChatId);
+    if (user?.id && activeChatId) {
+      updateMessages(user.id, activeChatId);
     }
-  }, [activeChatId, setMessages, user?.uid]);
+  }, [activeChatId, setMessages, user?.id]);
 
   // Handle scroll events to detect if user has scrolled up
   useEffect(() => {
@@ -67,7 +70,7 @@ const ChatResponseList = () => {
       ref={containerRef}
       className="h-full w-full overflow-y-auto flex flex-col gap-[24px] pr-[8px]"
     >
-      {messages.length === 0 && <ChatResponseEmptyState />}
+      {messages.length === 0 && <ChatResponseEmptyState user={user} />}
       {messages.length > 0 &&
         messages.map((message, i) => (
           <Fragment key={i}>
