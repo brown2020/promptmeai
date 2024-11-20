@@ -50,7 +50,10 @@ interface ProfileState {
   isLoading: boolean;
   isDefaultData: boolean;
   fetchProfile: (userId: string) => void;
-  updateProfile: (newProfile: Partial<ProfileType>) => Promise<void>;
+  updateProfile: (
+    userId: string,
+    newProfile: Partial<ProfileType>
+  ) => Promise<void>;
   reduceCredits: (amount: number) => Promise<boolean>;
   addCredits: (amount: number) => Promise<void>;
   deleteAccount: () => Promise<void>;
@@ -88,20 +91,19 @@ const useProfileStore = create<ProfileState>((set, get) => ({
     }
   },
 
-  updateProfile: async (newProfile: Partial<ProfileType>) => {
-    // const uid = useAuthStore.getState().uid;
-    // if (!uid) return;
-    // console.log("Updating profile:", newProfile);
-    // try {
-    //   const userRef = doc(db, `users/${uid}/profile/userData`);
-    //   set((state) => ({
-    //     profile: { ...state.profile, ...newProfile },
-    //   }));
-    //   await updateDoc(userRef, { ...newProfile });
-    //   console.log("Profile updated successfully");
-    // } catch (error) {
-    //   console.error("Error updating profile:", error);
-    // }
+  updateProfile: async (userId, newProfile: Partial<ProfileType>) => {
+    if (!userId) return;
+
+    try {
+      const userRef = doc(db, `users/${userId}`);
+      set((state) => ({
+        profile: { ...state.profile, ...newProfile },
+      }));
+      await updateDoc(userRef, { ...newProfile });
+      console.log("Profile updated successfully");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
   },
 
   reduceCredits: async (amount: number) => {

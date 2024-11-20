@@ -27,9 +27,9 @@ const SettingsScreen = ({ userId }: SettingsScreenProps) => {
           Account Settings
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 overflow-auto scrollable-container">
-          <UsageSelection hideKey={isRnWebView} />
+          <UsageSelection userId={userId} hideKey={isRnWebView} />
           <CreditInformation userId={userId} />
-          {!isRnWebView && <InputAPIKeys />}
+          {!isRnWebView && <InputAPIKeys userId={userId} />}
           <PaymentHistory userId={userId} />
           <Footer />
         </div>

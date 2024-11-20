@@ -63,11 +63,11 @@ const CreditInformation = ({ userId }: CreditInformationProps) => {
 
   useEffect(() => {
     if (!isDefaultData && totalCredits < credits) {
-      updateProfile({ totalCredits: credits }).then(() =>
+      updateProfile(userId, { totalCredits: credits }).then(() =>
         setTotalCredits(credits)
       );
     }
-  }, [credits, isDefaultData, totalCredits, updateProfile]);
+  }, [credits, isDefaultData, totalCredits, updateProfile, userId]);
 
   const creditUsage = useMemo(
     () => totalCredits - credits,
