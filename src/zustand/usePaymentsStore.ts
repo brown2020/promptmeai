@@ -27,7 +27,10 @@ interface PaymentsStoreState {
   paymentsLoading: boolean;
   paymentsError: string | null;
   fetchPayments: (userId: string) => Promise<void>;
-  addPayment: (payment: Omit<PaymentType, "createdAt">) => Promise<void>;
+  addPayment: (
+    userId: string,
+    payment: Omit<PaymentType, "createdAt">
+  ) => Promise<void>;
   checkIfPaymentProcessed: (paymentId: string) => Promise<PaymentType | null>;
 }
 
@@ -38,7 +41,7 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
 
   fetchPayments: async (userId) => {
     if (!userId) {
-      console.error("Invalid UID for fetchPayments");
+      console.error("Invalid User ID for fetchPayments");
       return;
     }
 
@@ -70,10 +73,9 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
     }
   },
 
-  addPayment: async (payment) => {
-    const uid = useAuthStore.getState().uid;
-    if (!uid) {
-      console.error("Invalid UID for addPayment");
+  addPayment: async (userId, payment) => {
+    if (!userId) {
+      console.error("Invalid User ID for addPayment");
       return;
     }
 
@@ -82,7 +84,7 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
     try {
       // Query to check if the payment with the same id already exists
       const q = query(
-        collection(db, "users", uid, "payments"),
+        collection(db, "payments", userId, "transactions"),
         where("id", "==", payment.id)
       );
       const querySnapshot = await getDocs(q);
@@ -94,7 +96,7 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
       }
 
       const newPaymentDoc = await addDoc(
-        collection(db, "users", uid, "payments"),
+        collection(db, "payments", userId, "transactions"),
         {
           id: payment.id,
           amount: payment.amount,

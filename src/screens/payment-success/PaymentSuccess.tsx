@@ -59,7 +59,7 @@ const PaymentSuccess = ({ userId }: PaymentSuccessProps) => {
           setAmount(data.amount);
 
           // Add payment to store
-          await addPayment({
+          await addPayment(userId, {
             id: data.id,
             amount: data.amount,
             status: data.status,

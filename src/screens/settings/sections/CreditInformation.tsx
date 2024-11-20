@@ -3,7 +3,6 @@
 import { Button } from "@/components/buttons";
 import CardContent from "@/components/CardContent";
 import Spinner from "@/components/Spinner";
-import { auth } from "@/firebase/firebaseClient";
 import { isIOSReactNativeWebView } from "@/utils/platform";
 import { cn } from "@/utils/tailwind";
 import { usePaymentsStore } from "@/zustand/usePaymentsStore";
@@ -12,8 +11,11 @@ import { CircularProgress } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useMemo, useCallback } from "react";
 
-const CreditInformation = () => {
-  const user = auth.currentUser;
+type CreditInformationProps = {
+  userId: string;
+};
+
+const CreditInformation = ({ userId }: CreditInformationProps) => {
   const { profile, isLoading, isDefaultData, updateProfile } =
     useProfileStore();
   const router = useRouter();
@@ -21,9 +23,7 @@ const CreditInformation = () => {
   const [credits, setCredits] = useState(0);
   const [totalCredits, setTotalCredits] = useState(0);
   const [showCreditsSection, setShowCreditsSection] = useState(true);
-  const { addPayment } = usePaymentsStore(
-    (state) => state
-  );
+  const { addPayment } = usePaymentsStore((state) => state);
   const addCredits = useProfileStore((state) => state.addCredits);
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const CreditInformation = () => {
       // Process the message sent from React Native
       const message = event.data;
       if (message?.type === "IAP_SUCCESS") {
-        await addPayment({
+        await addPayment(userId, {
           id: message.message,
           amount: message.amount,
           status: "succeeded",
@@ -54,7 +54,7 @@ const CreditInformation = () => {
     return () => {
       window.removeEventListener("message", handleMessageFromRN);
     };
-  }, [addCredits, addPayment]);
+  }, [addCredits, addPayment, userId]);
 
   useEffect(() => {
     if (profile.totalCredits) setTotalCredits(profile.totalCredits);
@@ -80,7 +80,7 @@ const CreditInformation = () => {
 
   const handleBuyClick = useCallback(() => {
     if (showCreditsSection) {
-      router.push("/payment-attempt")
+      router.push("/payment-attempt");
     } else {
       window.ReactNativeWebView?.postMessage("INIT_IAP");
     }
@@ -91,7 +91,7 @@ const CreditInformation = () => {
       title="Conversation Credits"
       isActive={profile.usageMode === UsageMode.Credits}
     >
-      {isLoading || !user || isDefaultData ? (
+      {isLoading || !userId || isDefaultData ? (
         <Spinner />
       ) : (
         <div className="flex flex-col items-center justify-center">
@@ -141,9 +141,7 @@ const CreditInformation = () => {
           <h4 className="self-center">{`Credit usage: ${creditUsage} from ${totalCredits}`}</h4>
         </div>
       )}
-      <Button onClick={handleBuyClick}>
-        Buy 10,000 Credits
-      </Button>
+      <Button onClick={handleBuyClick}>Buy 10,000 Credits</Button>
     </CardContent>
   );
 };
