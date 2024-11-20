@@ -4,8 +4,13 @@ import { PropsWithChildren } from "react";
 import LeftPanel from "./LeftPanel";
 import BottomPanel from "./BottomPanel";
 import { usePathname } from "next/navigation";
+import { User } from "next-auth";
 
-const Layout = ({ children }: PropsWithChildren) => {
+type LayoutProps = {
+  user?: User;
+} & PropsWithChildren;
+
+const Layout = ({ user, children }: LayoutProps) => {
   const pathname = usePathname();
   const hidePanelPaths = ["/privacy", "/terms", "/support"];
 
@@ -19,7 +24,7 @@ const Layout = ({ children }: PropsWithChildren) => {
 
   return (
     <div className="flex flex-col sm:flex-row h-screen w-screen dark:bg-[#272A2E]">
-      <LeftPanel />
+      <LeftPanel user={user} />
       {children}
       <BottomPanel />
     </div>
