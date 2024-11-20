@@ -8,7 +8,6 @@ import UsageSelection from "./sections/UsageSelection";
 import { isIOSReactNativeWebView } from "@/utils/platform";
 import { useEffect, useState } from "react";
 import Footer from "@/components/Footer";
-import SettingOption from "./sections/SettingOption";
 
 type SettingsScreenProps = {
   userId: string;
@@ -31,7 +30,6 @@ const SettingsScreen = ({ userId }: SettingsScreenProps) => {
           <UsageSelection hideKey={isRnWebView} />
           <CreditInformation />
           {!isRnWebView && <InputAPIKeys />}
-          <SettingOption />
           <PaymentHistory userId={userId} />
           <Footer />
         </div>
