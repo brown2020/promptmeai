@@ -7,7 +7,6 @@ import {
   getDocs,
   Timestamp,
 } from "firebase/firestore";
-import { useAuthStore } from "./useAuthStore";
 import toast from "react-hot-toast";
 import { db } from "@/firebase/firebaseClient";
 
@@ -31,7 +30,10 @@ interface PaymentsStoreState {
     userId: string,
     payment: Omit<PaymentType, "createdAt">
   ) => Promise<void>;
-  checkIfPaymentProcessed: (paymentId: string) => Promise<PaymentType | null>;
+  checkIfPaymentProcessed: (
+    userId: string,
+    paymentId: string
+  ) => Promise<PaymentType | null>;
 }
 
 export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
@@ -140,11 +142,10 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
     }
   },
 
-  checkIfPaymentProcessed: async (paymentId) => {
-    const uid = useAuthStore.getState().uid;
-    if (!uid) return null;
+  checkIfPaymentProcessed: async (userId, paymentId) => {
+    if (!userId) return null;
 
-    const paymentsRef = collection(db, "users", uid, "payments");
+    const paymentsRef = collection(db, "payments", userId, "transactions");
     const q = query(
       paymentsRef,
       where("id", "==", paymentId),

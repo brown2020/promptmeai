@@ -44,7 +44,10 @@ const PaymentSuccess = ({ userId }: PaymentSuccessProps) => {
 
         if (data.status === "succeeded") {
           // Check if payment is already processed
-          const existingPayment = await checkIfPaymentProcessed(data.id);
+          const existingPayment = await checkIfPaymentProcessed(
+            userId,
+            data.id
+          );
           if (existingPayment) {
             setMessage("Payment has already been processed.");
 
