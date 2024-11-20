@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { Session } from "next-auth";
 import { signInWithCustomToken } from "firebase/auth";
 import { auth } from "@/firebase/firebaseClient";
+import useProfileStore from "@/zustand/useProfileStore";
 
 const syncFirebaseAuth = async (session: Session) => {
   if (session && session.firebaseToken) {
@@ -19,13 +20,19 @@ const syncFirebaseAuth = async (session: Session) => {
 };
 
 const FirebaseAuthProvider = ({ children }: PropsWithChildren) => {
+  const { fetchProfile } = useProfileStore();
   const { data: session } = useSession();
+  const userId = session?.user?.id;
 
   useEffect(() => {
     if (!session) return;
 
     syncFirebaseAuth(session);
-  }, [session]);
+
+    if (userId) {
+      fetchProfile(userId);
+    }
+  }, [fetchProfile, session, userId]);
 
   return <>{children}</>;
 };
