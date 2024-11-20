@@ -26,7 +26,7 @@ interface PaymentsStoreState {
   payments: PaymentType[];
   paymentsLoading: boolean;
   paymentsError: string | null;
-  fetchPayments: () => Promise<void>;
+  fetchPayments: (userId: string) => Promise<void>;
   addPayment: (payment: Omit<PaymentType, "createdAt">) => Promise<void>;
   checkIfPaymentProcessed: (paymentId: string) => Promise<PaymentType | null>;
 }
@@ -36,9 +36,8 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
   paymentsLoading: false,
   paymentsError: null,
 
-  fetchPayments: async () => {
-    const uid = useAuthStore.getState().uid;
-    if (!uid) {
+  fetchPayments: async (userId) => {
+    if (!userId) {
       console.error("Invalid UID for fetchPayments");
       return;
     }
@@ -46,7 +45,7 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
     set({ paymentsLoading: true });
 
     try {
-      const q = query(collection(db, "users", uid, "payments"));
+      const q = query(collection(db, "payments", userId, "transactions"));
       const querySnapshot = await getDocs(q);
       const payments = querySnapshot.docs.map((doc) => ({
         id: doc.id,

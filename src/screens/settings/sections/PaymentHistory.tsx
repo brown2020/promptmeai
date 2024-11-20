@@ -23,7 +23,7 @@ const PaymentHistory = ({ userId }: PaymentHistoryProps) => {
 
   useEffect(() => {
     if (userId) {
-      fetchPayments();
+      fetchPayments(userId);
     }
   }, [userId, fetchPayments]);
 
