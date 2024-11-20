@@ -26,7 +26,7 @@ const Layout = ({ user, children }: LayoutProps) => {
     <div className="flex flex-col sm:flex-row h-screen w-screen dark:bg-[#272A2E]">
       <LeftPanel user={user} />
       {children}
-      <BottomPanel />
+      <BottomPanel user={user} />
     </div>
   );
 };

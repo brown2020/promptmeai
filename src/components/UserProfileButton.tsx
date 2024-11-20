@@ -12,8 +12,8 @@ const UserProfileButton = ({ user }: UserProfileButtonProps) => {
   return user && user?.image ? (
     <Image
       src={user?.image}
-      width="28"
-      height="28"
+      width="32"
+      height="32"
       alt="Profile Image"
       className="cursor-pointer rounded-full hover:border hover:border-neutral-300"
     />
