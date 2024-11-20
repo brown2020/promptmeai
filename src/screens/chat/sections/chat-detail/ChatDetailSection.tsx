@@ -8,8 +8,13 @@ import ChatResponseList from "./components/ChatResponseList";
 import { useTypingEffect } from "@/hooks";
 import { trimText } from "@/utils/text";
 import { RxHamburgerMenu } from "react-icons/rx";
+import { User } from "next-auth";
 
-const ChatDetailSection = () => {
+type ChatDetailSectionProps = {
+  user?: User;
+};
+
+const ChatDetailSection = ({ user }: ChatDetailSectionProps) => {
   const {
     activeChatId,
     chats,
@@ -53,7 +58,7 @@ const ChatDetailSection = () => {
         {/* Wrapper */}
         <div className="h-full w-full max-w-[736px] flex flex-col gap-[18px] sm:gap-[24px] justify-between items-center py-[18px] sm:py-[24px]">
           <ChatResponseList />
-          <ChatInput />
+          <ChatInput user={user} />
         </div>
       </div>
     </div>

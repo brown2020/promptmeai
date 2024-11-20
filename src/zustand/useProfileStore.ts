@@ -54,7 +54,7 @@ interface ProfileState {
     userId: string,
     newProfile: Partial<ProfileType>
   ) => Promise<void>;
-  reduceCredits: (amount: number) => Promise<boolean>;
+  reduceCredits: (userId: string, amount: number) => Promise<boolean>;
   addCredits: (amount: number) => Promise<void>;
   deleteAccount: () => Promise<void>;
 }
@@ -91,7 +91,7 @@ const useProfileStore = create<ProfileState>((set, get) => ({
     }
   },
 
-  updateProfile: async (userId, newProfile: Partial<ProfileType>) => {
+  updateProfile: async (userId, newProfile) => {
     if (!userId) return;
 
     try {
@@ -106,25 +106,24 @@ const useProfileStore = create<ProfileState>((set, get) => ({
     }
   },
 
-  reduceCredits: async (amount: number) => {
-    // const uid = useAuthStore.getState().uid;
-    // if (!uid) return false;
-    // const profile = get().profile;
-    // if (profile.credits < amount) {
-    //   return false;
-    // }
-    // try {
-    //   const newCredits = profile.credits - amount;
-    //   const userRef = doc(db, `users/${uid}/profile/userData`);
-    //   await updateDoc(userRef, { credits: newCredits });
-    //   set((state) => ({
-    //     profile: { ...state.profile, credits: newCredits },
-    //   }));
-    //   return true;
-    // } catch (error) {
-    //   console.error("Error using credits:", error);
-    //   return false;
-    // }
+  reduceCredits: async (userId, amount) => {
+    if (!userId) return false;
+    const profile = get().profile;
+    if (profile.credits < amount) {
+      return false;
+    }
+    try {
+      const newCredits = profile.credits - amount;
+      const userRef = doc(db, `users/${userId}`);
+      await updateDoc(userRef, { credits: newCredits });
+      set((state) => ({
+        profile: { ...state.profile, credits: newCredits },
+      }));
+      return true;
+    } catch (error) {
+      console.error("Error using credits:", error);
+      return false;
+    }
   },
 
   addCredits: async (amount: number) => {

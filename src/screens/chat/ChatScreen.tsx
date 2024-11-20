@@ -1,16 +1,17 @@
 import MyChatSection from "./sections/my-chat";
 import ChatDetailSection from "./sections/chat-detail";
 import { Fragment } from "react";
+import { User } from "next-auth";
 
 type ChatScreenProps = {
-  userId: string;
+  user?: User;
 };
 
-const ChatScreen = ({ userId }: ChatScreenProps) => {
+const ChatScreen = ({ user }: ChatScreenProps) => {
   return (
     <Fragment>
-      <MyChatSection userId={userId} />
-      <ChatDetailSection />
+      <MyChatSection userId={user?.id || ""} />
+      <ChatDetailSection user={user} />
     </Fragment>
   );
 };
