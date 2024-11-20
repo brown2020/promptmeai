@@ -46,7 +46,7 @@ export async function saveChat(
 
   try {
     const chatRef = await addDoc(
-      collection(db, COLLECTION_NAME, userId, "chat"),
+      collection(db, COLLECTION_NAME, userId, "conversations"),
       {
         userId,
         fullName,
@@ -83,7 +83,7 @@ export async function updateChat(
   if (!chatData) return;
 
   try {
-    await updateDoc(doc(db, COLLECTION_NAME, userId, "chat", chatId), {
+    await updateDoc(doc(db, COLLECTION_NAME, userId, "conversations", chatId), {
       docId: chatId,
       timestamp: serverTimestamp(),
       chat: chatData,
@@ -99,7 +99,7 @@ export async function getChat(
   chatId: string
 ): Promise<{ chat: Message[] } | null> {
   try {
-    const chatRef = doc(db, COLLECTION_NAME, userId, "chat", chatId);
+    const chatRef = doc(db, COLLECTION_NAME, userId, "conversations", chatId);
     const docSnap = await getDoc(chatRef);
 
     if (docSnap.exists()) {
@@ -124,7 +124,7 @@ export async function getChat(
 // Function to get all chat details
 export async function getAllChatDetails(userId: string): Promise<ChatDetail[]> {
   try {
-    const chatsRef = collection(db, COLLECTION_NAME, userId, "chat");
+    const chatsRef = collection(db, COLLECTION_NAME, userId, "conversations");
     const querySnapshot = await getDocs(chatsRef);
 
     return querySnapshot.docs.map((doc) => ({
@@ -146,7 +146,7 @@ export async function updateChatName(
   name: string
 ): Promise<boolean> {
   try {
-    await updateDoc(doc(db, COLLECTION_NAME, userId, "chat", chatId), {
+    await updateDoc(doc(db, COLLECTION_NAME, userId, "conversations", chatId), {
       docId: chatId,
       timestamp: serverTimestamp(),
       name: name,
@@ -164,7 +164,7 @@ export async function pinChat(
   chatId: string
 ): Promise<boolean> {
   try {
-    await updateDoc(doc(db, COLLECTION_NAME, userId, "chat", chatId), {
+    await updateDoc(doc(db, COLLECTION_NAME, userId, "conversations", chatId), {
       timestamp: serverTimestamp(),
       pinned: true,
     });
@@ -181,7 +181,7 @@ export async function removePinnedChat(
   chatId: string
 ): Promise<boolean> {
   try {
-    await updateDoc(doc(db, COLLECTION_NAME, userId, "chat", chatId), {
+    await updateDoc(doc(db, COLLECTION_NAME, userId, "conversations", chatId), {
       timestamp: serverTimestamp(),
       pinned: false,
     });
@@ -198,7 +198,13 @@ export async function deleteChat(
   chatId: string
 ): Promise<boolean> {
   try {
-    const chatDocRef = doc(db, COLLECTION_NAME, userId, "chat", chatId);
+    const chatDocRef = doc(
+      db,
+      COLLECTION_NAME,
+      userId,
+      "conversations",
+      chatId
+    );
     await deleteDoc(chatDocRef);
     return true;
   } catch (error) {
