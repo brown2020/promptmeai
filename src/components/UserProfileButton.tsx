@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  cn,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -13,6 +14,7 @@ import Image from "next/image";
 import { FaUserAstronaut } from "react-icons/fa";
 import { useWindowSize } from "react-use";
 import ThemeSwitcher from "./ThemeSwitcher";
+import { useState } from "react";
 
 type UserProfileButtonProps = {
   user?: UserType;
@@ -20,9 +22,14 @@ type UserProfileButtonProps = {
 
 const UserProfileButton = ({ user }: UserProfileButtonProps) => {
   const { width } = useWindowSize();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const handleOpenChange = (open: boolean) => {
+    setIsDropdownOpen(open);
+  };
 
   return (
-    <Dropdown>
+    <Dropdown isOpen={isDropdownOpen} onOpenChange={handleOpenChange}>
       <DropdownTrigger>
         {user?.image ? (
           <Image
@@ -30,7 +37,12 @@ const UserProfileButton = ({ user }: UserProfileButtonProps) => {
             width="32"
             height="32"
             alt="Profile Image"
-            className="cursor-pointer rounded-full hover:outline hover:outline-2 hover:outline-[#0CA37F]"
+            className={cn(
+              "cursor-pointer rounded-full hover:outline hover:outline-2 hover:outline-[#0CA37F]",
+              {
+                "outline outline-2 outline-[#0CA37F]": isDropdownOpen,
+              }
+            )}
           />
         ) : (
           <FaUserAstronaut
