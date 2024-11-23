@@ -1,5 +1,6 @@
 "use client";
 
+import Spinner from "@/components/Spinner";
 import { auth } from "@/firebase/firebaseClient";
 import { isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
 import { signIn } from "next-auth/react";
@@ -28,7 +29,7 @@ const CompleteSignIn = () => {
 
           const accessToken = await result.user.getIdToken();
 
-          await signIn("credentials", {
+          await signIn("email-link", {
             email: result.user?.email || "",
             accessToken: accessToken,
           });
@@ -44,7 +45,12 @@ const CompleteSignIn = () => {
     completeSignIn();
   }, [router]);
 
-  return <p>{message}</p>;
+  return (
+    <div className="bg-white rounded-xl px-6 py-8 space-y-6 max-w-md lg:ml-auto w-full h-[400px] flex flex-col items-center justify-center gap-2">
+      <Spinner />
+      <p>{message}</p>
+    </div>
+  );
 };
 
 export default CompleteSignIn;
