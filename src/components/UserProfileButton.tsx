@@ -29,6 +29,8 @@ const UserProfileButton = ({ user }: UserProfileButtonProps) => {
   const [openManageProfile, setOpenManageProfile] = useState<boolean>(false);
 
   const handleOpenChange = (open: boolean) => {
+    if (!user) return;
+
     setIsDropdownOpen(open);
   };
 
