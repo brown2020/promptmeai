@@ -37,10 +37,12 @@ const UserProfileButton = ({ user }: UserProfileButtonProps) => {
     switch (key) {
       case "manage-profile": {
         setOpenManageProfile(true);
+        return;
       }
       case "logout": {
         signOut();
         auth.signOut();
+        return;
       }
     }
   };
