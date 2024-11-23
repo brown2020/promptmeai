@@ -67,7 +67,7 @@ const MyChatSection = ({ userId }: MyChatSectionProps) => {
 
       {/* Drawer */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-[320px] bg-white dark:bg-[#272A2E] p-[15px] flex flex-col gap-[16px] transform transition-transform lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 w-[320px] bg-white dark:bg-[#272A2E] p-[15px] flex flex-col gap-[16px] transform transition-transform lg:static lg:translate-x-0 ${
           isDrawerOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
