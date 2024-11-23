@@ -4,6 +4,9 @@ import { FirestoreAdapter } from "@auth/firebase-adapter";
 import { admin, adminAuth, adminDb } from "./firebase/firebaseAdmin";
 import Credentials from "next-auth/providers/credentials";
 import { OAuthProviders } from "./auth.providers";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth as firebaseAuth } from "./firebase/firebaseClient";
+import { FirebaseError } from "firebase/app";
 
 async function getUserById(userId: string) {
   try {
@@ -60,6 +63,52 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         } catch (error) {
           console.error("Failed to decode the credit token", error);
           throw new Error("Invalid credentials.");
+        }
+      },
+    }),
+    Credentials({
+      id: "login-password",
+      name: "Login Password",
+      credentials: {
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "text" },
+      },
+      authorize: async (credentials) => {
+        const { email, password } = credentials;
+
+        try {
+          const userCredential = await signInWithEmailAndPassword(
+            firebaseAuth,
+            email as string,
+            password as string
+          );
+
+          const user = userCredential.user;
+
+          return {
+            id: user.uid,
+            name: user.displayName || "",
+            email: user.email,
+            image: user.photoURL || "",
+          };
+        } catch (error) {
+          if (error instanceof FirebaseError) {
+            // Handle Firebase specific errors
+            switch (error.code) {
+              case "auth/invalid-credential":
+                throw new Error(
+                  "User not found. Please check your credentials."
+                );
+              case "auth/wrong-password":
+                throw new Error("Incorrect password. Please try again.");
+              default:
+                throw new Error("An error occurred. Please try again.");
+            }
+          } else {
+            // Handle non-Firebase errors
+            console.error("Unexpected error:", error);
+            throw new Error("An unexpected error occurred.");
+          }
         }
       },
     }),
