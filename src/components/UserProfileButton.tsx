@@ -16,6 +16,8 @@ import { useWindowSize } from "react-use";
 import ThemeSwitcher from "./ThemeSwitcher";
 import { useState } from "react";
 import { ManageProfile } from "./modals";
+import { signOut } from "next-auth/react";
+import { auth } from "@/firebase/firebaseClient";
 
 type UserProfileButtonProps = {
   user?: UserType;
@@ -34,6 +36,10 @@ const UserProfileButton = ({ user }: UserProfileButtonProps) => {
     switch (key) {
       case "manage-profile": {
         setOpenManageProfile(true);
+      }
+      case "logout": {
+        signOut();
+        auth.signOut();
       }
     }
   };
