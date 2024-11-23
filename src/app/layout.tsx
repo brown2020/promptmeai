@@ -20,7 +20,17 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Toaster />
+        <Toaster
+          toastOptions={{
+            style: {
+              padding: "12px 16px",
+              width: "auto",
+              maxWidth: "90%",
+              whiteSpace: "nowrap",
+              borderRadius: "8px",
+            },
+          }}
+        />
         <Providers>
           <Layout user={session?.user}>{children}</Layout>
         </Providers>
