@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Avatar,
   cn,
   Dropdown,
   DropdownItem,
@@ -10,8 +11,6 @@ import {
   User,
 } from "@nextui-org/react";
 import { User as UserType } from "next-auth";
-import Image from "next/image";
-import { FaUserAstronaut } from "react-icons/fa";
 import { useWindowSize } from "react-use";
 import ThemeSwitcher from "./ThemeSwitcher";
 import { useState } from "react";
@@ -50,26 +49,14 @@ const UserProfileButton = ({ user }: UserProfileButtonProps) => {
     <>
       <Dropdown isOpen={isDropdownOpen} onOpenChange={handleOpenChange}>
         <DropdownTrigger>
-          {user?.image ? (
-            <Image
-              src={user?.image}
-              width="32"
-              height="32"
-              alt="Profile Image"
-              className={cn(
-                "cursor-pointer rounded-full hover:outline hover:outline-2 hover:outline-[#0CA37F]",
-                {
-                  "outline outline-2 outline-[#0CA37F]": isDropdownOpen,
-                }
-              )}
-            />
-          ) : (
-            <FaUserAstronaut
-              size={24}
-              color="#255148"
-              className="cursor-pointer"
-            />
-          )}
+          <Avatar
+            size="sm"
+            src={user?.image || ""}
+            showFallback
+            className={cn("cursor-pointer", {
+              "outline outline-2 outline-[#0CA37F]": isDropdownOpen,
+            })}
+          />
         </DropdownTrigger>
         <DropdownMenu
           aria-label="Profile menu list"
@@ -106,6 +93,7 @@ const UserProfileButton = ({ user }: UserProfileButtonProps) => {
                 avatarProps={{
                   size: "sm",
                   src: user?.image || "",
+                  showFallback: true,
                 }}
               />
             </DropdownItem>
