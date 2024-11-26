@@ -63,7 +63,7 @@ const SignUpForm = () => {
         )}
         disabled={isPending}
       >
-        Submit
+        {isPending ? "Please wait..." : "Submit"}
       </button>
     </form>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { authenticateLoginPassword } from "@/lib/actions";
+import { cn } from "@/utils/tailwind";
 import { useActionState, useEffect } from "react";
 import toast from "react-hot-toast";
 
@@ -46,10 +47,15 @@ const SignInForm = () => {
       </div>
       <button
         type="submit"
-        className="w-full shadow-xl py-3 px-6 text-sm font-semibold rounded-md text-white dark:text-[#EEE] bg-gray-800 hover:bg-[#222] focus:outline-none"
-        aria-disabled={isPending}
+        className={cn(
+          "w-full shadow-xl py-3 px-6 text-sm font-semibold rounded-md text-white dark:text-[#EEE] bg-gray-800 hover:bg-[#222] focus:outline-none",
+          {
+            "opacity-50 cursor-not-allowed": isPending,
+          }
+        )}
+        disabled={isPending}
       >
-        Log in
+        {isPending ? "Please wait..." : "Log in"}
       </button>
     </form>
   );
