@@ -166,12 +166,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             // Handle Firebase specific errors
             console.log("error code", error.code);
             switch (error.code) {
-              case "auth/invalid-credential":
+              case "auth/email-already-in-use":
                 throw new Error(
-                  "User not found. Please check your credentials."
+                  "Email already in use, please signin using other method."
                 );
-              case "auth/wrong-password":
-                throw new Error("Incorrect password. Please try again.");
+              case "auth/weak-password":
+                throw new Error(
+                  "Password is weak, please change the password."
+                );
               default:
                 throw new Error("An error occurred. Please try again.");
             }
