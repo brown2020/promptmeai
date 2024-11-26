@@ -1,5 +1,6 @@
 import OAuthList from "@/components/OAuthList";
 import Link from "next/link";
+import SignUpForm from "./SignUpForm";
 
 const SignUpScreen = () => {
   return (
@@ -10,38 +11,7 @@ const SignUpScreen = () => {
 
       <p className="my-6 text-sm text-gray-400 text-center">or continue with</p>
 
-      <form className="space-y-6">
-        <input
-          name="name"
-          type="string"
-          autoComplete="name"
-          required
-          className="bg-gray-100 focus:bg-transparent w-full text-sm px-4 py-3.5 rounded-md outline-gray-800"
-          placeholder="Full name"
-        />
-        <input
-          name="email"
-          type="email"
-          autoComplete="email"
-          required
-          className="bg-gray-100 focus:bg-transparent w-full text-sm px-4 py-3.5 rounded-md outline-gray-800"
-          placeholder="Email address"
-        />
-        <input
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          required
-          className="bg-gray-100 focus:bg-transparent w-full text-sm px-4 py-3.5 rounded-md outline-gray-800"
-          placeholder="Password"
-        />
-        <button
-          type="button"
-          className="w-full shadow-xl py-3 px-6 text-sm font-semibold rounded-md text-white dark:text-[#EEE] bg-gray-800 hover:bg-[#222] focus:outline-none"
-        >
-          Sign up
-        </button>
-      </form>
+      <SignUpForm />
 
       <p className="text-center">
         Already have an account?
