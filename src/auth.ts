@@ -114,17 +114,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             switch (error.code) {
               case "auth/invalid-credential":
                 throw new Error(
-                  "User not found. Please check your credentials."
+                  "Invalid credentials. Please check and try again."
                 );
               case "auth/wrong-password":
                 throw new Error("Incorrect password. Please try again.");
               default:
-                throw new Error("An error occurred. Please try again.");
+                throw new Error(
+                  "Something went wrong. Please try again later."
+                );
             }
           } else {
             // Handle non-Firebase errors
             console.error("Unexpected error:", error);
-            throw new Error("An unexpected error occurred.");
+            throw new Error(
+              "An unexpected error occurred. Please try again later."
+            );
           }
         }
       },
@@ -168,19 +172,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             switch (error.code) {
               case "auth/email-already-in-use":
                 throw new Error(
-                  "Email already in use, please signin using other method."
+                  "This email is already registered. Please sign in or use a different email."
                 );
               case "auth/weak-password":
                 throw new Error(
-                  "Password is weak, please change the password."
+                  "Your password is too weak. Please choose a stronger password."
                 );
               default:
-                throw new Error("An error occurred. Please try again.");
+                throw new Error(
+                  "Something went wrong. Please try again later."
+                );
             }
           } else {
             // Handle non-Firebase errors
             console.error("Unexpected error:", error);
-            throw new Error("An unexpected error occurred.");
+            throw new Error("An unexpected error occurred. Please try again.");
           }
         }
       },
