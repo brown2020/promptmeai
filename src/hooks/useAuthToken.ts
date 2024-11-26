@@ -22,11 +22,15 @@ const useAuthToken = (cookieName = "authToken") => {
 
   const refreshAuthToken = async () => {
     try {
-      if (!auth.currentUser) throw new Error("No user found");
+      if (!auth.currentUser) {
+        console.warn("No user found while attempting to refresh auth token.");
+        return;
+      }
       const idTokenResult = await getIdToken(auth.currentUser, true);
 
       if (!isValidCookieName(cookieName)) {
-        throw new Error(`Invalid cookie name: ${cookieName}`);
+        console.error(`Invalid cookie name: ${cookieName}`);
+        return;
       }
 
       setCookie(cookieName, idTokenResult, {
@@ -38,10 +42,10 @@ const useAuthToken = (cookieName = "authToken") => {
         window.localStorage.setItem(lastTokenRefresh, Date.now().toString());
       }
     } catch (err) {
-      console.error(
-        err instanceof Error ? err.message : "Error refreshing token"
-      );
-      deleteCookie(cookieName);
+      console.error("Error refreshing token:", err);
+      if (isValidCookieName(cookieName)) {
+        deleteCookie(cookieName);
+      }
     }
   };
 
@@ -85,7 +89,9 @@ const useAuthToken = (cookieName = "authToken") => {
       });
     } else {
       clearAuthDetails();
-      deleteCookie(cookieName);
+      if (isValidCookieName(cookieName)) {
+        deleteCookie(cookieName);
+      }
     }
   }, [user, setAuthDetails, clearAuthDetails, cookieName]);
 
