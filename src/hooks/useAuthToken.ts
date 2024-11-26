@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getIdToken, onAuthStateChanged } from "firebase/auth";
+import { getIdToken } from "firebase/auth";
 import { deleteCookie, setCookie } from "cookies-next";
 import { debounce } from "lodash";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -8,57 +8,46 @@ import { auth } from "@/firebase/firebaseClient";
 
 const useAuthToken = (cookieName = "authToken") => {
   const [user, loading, error] = useAuthState(auth);
-  
   const setAuthDetails = useAuthStore((state) => state.setAuthDetails);
   const clearAuthDetails = useAuthStore((state) => state.clearAuthDetails);
-
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      console.log(user, 'useruseruser');
-      if (user) {
-        console.log(user, 'useruseruser');
-        
-      } else {
-        // User is signed out
-        // ...
-      }
-    });
-    
-  }, [])
+  const [activityTimeout, setActivityTimeout] = useState<NodeJS.Timeout | null>(
+    null
+  );
 
   const refreshInterval = 50 * 60 * 1000; // 50 minutes
   const lastTokenRefresh = `lastTokenRefresh_${cookieName}`;
 
-  const [activityTimeout, setActivityTimeout] = useState<NodeJS.Timeout | null>(
-    null
-  );
+  // Validate cookie name to prevent invalid arguments
+  const isValidCookieName = (name: string) => /^[a-zA-Z0-9-_]+$/.test(name);
 
   const refreshAuthToken = async () => {
     try {
       if (!auth.currentUser) throw new Error("No user found");
       const idTokenResult = await getIdToken(auth.currentUser, true);
 
+      if (!isValidCookieName(cookieName)) {
+        throw new Error(`Invalid cookie name: ${cookieName}`);
+      }
+
       setCookie(cookieName, idTokenResult, {
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
       });
+
       if (!window.ReactNativeWebView) {
         window.localStorage.setItem(lastTokenRefresh, Date.now().toString());
       }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      } else {
-        console.error("Error refreshing token");
-      }
+    } catch (err) {
+      console.error(
+        err instanceof Error ? err.message : "Error refreshing token"
+      );
       deleteCookie(cookieName);
     }
   };
 
   const scheduleTokenRefresh = () => {
-    if (activityTimeout) {
-      clearTimeout(activityTimeout);
-    }
+    if (activityTimeout) clearTimeout(activityTimeout);
+
     if (document.visibilityState === "visible") {
       const timeoutId = setTimeout(refreshAuthToken, refreshInterval);
       setActivityTimeout(timeoutId);
@@ -78,9 +67,7 @@ const useAuthToken = (cookieName = "authToken") => {
 
     return () => {
       window.removeEventListener("storage", handleStorageChange);
-      if (activityTimeout) {
-        clearTimeout(activityTimeout);
-      }
+      if (activityTimeout) clearTimeout(activityTimeout);
       handleStorageChange.cancel();
     };
   }, [activityTimeout, handleStorageChange]);
@@ -100,7 +87,7 @@ const useAuthToken = (cookieName = "authToken") => {
       clearAuthDetails();
       deleteCookie(cookieName);
     }
-  }, [clearAuthDetails, cookieName, setAuthDetails, user]);
+  }, [user, setAuthDetails, clearAuthDetails, cookieName]);
 
   return { uid: user?.uid, loading, error };
 };
