@@ -59,7 +59,7 @@ export async function continueConversation(
 ) {
   const model = await getModel(modelName, apiKeys);
 
-  const result = await streamText({
+  const result = streamText({
     model,
     messages,
   });
@@ -87,7 +87,7 @@ export async function generateResponse(
     },
   ];
 
-  const result = await streamText({
+  const result = streamText({
     model,
     messages,
   });

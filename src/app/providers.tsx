@@ -5,29 +5,37 @@ import CookieConsent from "react-cookie-consent";
 import { usePathname, useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import useAuthToken from "@/hooks/useAuthToken";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useInitializeStores } from "@/zustand/useInitializeStores";
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const { loading, uid } = useAuthToken(process.env.NEXT_PUBLIC_COOKIE_NAME!);
+  const [isHydrated, setIsHydrated] = useState(false);
+  const { loading, uid } = useAuthToken(
+    process.env.NEXT_PUBLIC_COOKIE_NAME || ""
+  );
   const router = useRouter();
   const pathname = usePathname();
 
   useInitializeStores();
 
   useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  useEffect(() => {
     if (
       !loading &&
       !uid &&
-      pathname != "/" &&
-      !pathname.includes("/about") &&
-      !pathname.includes("/terms") &&
-      !pathname.includes("/privacy") &&
-      !pathname.includes("/support")
+      pathname !== "/" &&
+      !["/about", "/terms", "/privacy", "/support"].some((path) =>
+        pathname.includes(path)
+      )
     ) {
       router.push("/");
     }
   }, [loading, pathname, router, uid]);
+
+  if (!isHydrated) return null; // Prevent rendering until hydrated
 
   return (
     <NextUIProvider>
