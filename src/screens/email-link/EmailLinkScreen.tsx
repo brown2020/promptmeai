@@ -1,9 +1,12 @@
 import Link from "next/link";
+import EmailLinkForm from "./EmailLinkForm";
 
 const EmailLinkScreen = () => {
   return (
     <div className="bg-white rounded-xl px-6 py-8 space-y-6 max-w-md lg:ml-auto w-full">
       <h3 className="text-3xl font-extrabold mb-8 text-center">Email Link</h3>
+
+      <EmailLinkForm />
 
       <p className="text-center">
         Already have an account?

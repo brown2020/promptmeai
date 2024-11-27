@@ -33,7 +33,11 @@ const CompleteSignIn = () => {
             email: result.user?.email || "",
             accessToken: accessToken,
           });
+
+          window.localStorage.removeItem("emailForSignIn");
+
           setMessage("Sign-in complete! Redirecting...");
+
           router.push("/chat");
         } catch (error) {
           console.error("Error completing sign-in: ", error);
