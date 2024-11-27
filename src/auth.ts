@@ -10,7 +10,11 @@ import {
 } from "firebase/auth";
 import { auth as firebaseAuth } from "./firebase/firebaseClient";
 import { FirebaseError } from "firebase/app";
-import { getUserById, updateUserName } from "./services/authService";
+import {
+  createUser,
+  getUserById,
+  updateUserName,
+} from "./services/authService";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authClientConfig,
@@ -120,17 +124,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             password as string
           );
 
-          const user = userCredential.user;
+          const user = { ...userCredential.user };
+          user.displayName = String(name);
 
           const findUser = await getUserById(user.uid);
 
           if (findUser) {
             await updateUserName(findUser.id, String(name));
+          } else {
+            await createUser(user);
+            await updateUserName(user.uid, String(name));
           }
 
           return {
             id: user.uid,
-            name: user.displayName || String(name) || "",
+            name: user.displayName || "",
             email: user.email,
             image: user.photoURL || "",
           };
