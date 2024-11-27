@@ -5,6 +5,7 @@ const authUrls = [
   "/api/auth/signin",
   "/auth/sign-in",
   "/auth/sign-up",
+  "/auth/email-link",
   "/auth/complete-signin",
 ];
 
