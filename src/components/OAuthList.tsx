@@ -4,6 +4,7 @@ import { Button } from "./buttons";
 import Image from "next/image";
 import { providerMap } from "@/auth.providers";
 import { SiMinutemailer } from "react-icons/si";
+import Link from "next/link";
 
 const OAuthList = () => {
   return (
@@ -49,13 +50,15 @@ const OAuthList = () => {
           </Button>
         </form>
       ))}
-      <Button
-        className="w-full py-3 px-6 flex justify-between items-center"
-        variant="outlined"
-      >
-        Continue with Email Link
-        <SiMinutemailer size={24} />
-      </Button>
+      <Link href="/auth/email-link">
+        <Button
+          className="w-full py-3 px-6 flex justify-between items-center"
+          variant="outlined"
+        >
+          Continue with Email Link
+          <SiMinutemailer size={24} />
+        </Button>
+      </Link>
     </div>
   );
 };
