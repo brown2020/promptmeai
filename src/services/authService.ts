@@ -1,4 +1,18 @@
 import { admin, adminDb } from "@/firebase/firebaseAdmin";
+import { User } from "firebase/auth";
+
+export const createUser = async (authUser: User) => {
+  try {
+    const userRef = adminDb.collection("users").doc(authUser.uid);
+    await userRef.set({
+      name: authUser.displayName,
+      email: authUser.email,
+      image: authUser.photoURL,
+    });
+  } catch (error) {
+    console.error("Error creating user:", error);
+  }
+};
 
 export const getUserById = async (userId: string) => {
   try {
