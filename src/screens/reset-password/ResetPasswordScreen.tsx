@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import ResetPasswordForm from "./ResetPasswordForm";
 
 const ResetPasswordScreen = () => {
   const router = useRouter();
@@ -22,6 +23,8 @@ const ResetPasswordScreen = () => {
       <h3 className="text-3xl font-extrabold mb-8 text-center">
         Reset Password
       </h3>
+
+      <ResetPasswordForm />
 
       <p className="text-center">
         Already have an account?
