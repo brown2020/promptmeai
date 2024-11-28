@@ -74,12 +74,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           );
 
           const user = userCredential.user;
+          const userProfile = await getUserById(user.uid);
 
           return {
             id: user.uid,
-            name: user.displayName || "",
-            email: user.email,
-            image: user.photoURL || "",
+            name: userProfile?.name || user?.displayName || "",
+            email: userProfile?.email || user.email || "",
+            image: userProfile?.image || user.photoURL || "",
           };
         } catch (error) {
           if (error instanceof FirebaseError) {
