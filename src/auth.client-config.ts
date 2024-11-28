@@ -7,6 +7,7 @@ const authUrls = [
   "/auth/sign-up",
   "/auth/email-link",
   "/auth/complete-signin",
+  "/auth/reset-password",
 ];
 
 export default {

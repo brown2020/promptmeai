@@ -2,6 +2,7 @@
 
 import { authenticateLoginPassword } from "@/lib/actions";
 import { cn } from "@/utils/tailwind";
+import Link from "next/link";
 import { useActionState, useEffect } from "react";
 import toast from "react-hot-toast";
 
@@ -38,12 +39,12 @@ const SignInForm = () => {
         placeholder="Password"
       />
       <div className="text-sm text-right">
-        <a
-          href="jajvascript:void(0);"
+        <Link
+          href="/auth/reset-password"
           className="font-semibold hover:underline"
         >
           Forgot your password?
-        </a>
+        </Link>
       </div>
       <button
         type="submit"
