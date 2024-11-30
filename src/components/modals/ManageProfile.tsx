@@ -14,6 +14,7 @@ import { Button } from "../buttons";
 import { CgTrash } from "react-icons/cg";
 import { HiOutlinePencilAlt } from "react-icons/hi";
 import { useState } from "react";
+import { FaUserCircle } from "react-icons/fa";
 
 type ManageProfileProps = {
   user?: User;
@@ -44,13 +45,20 @@ const ManageProfile = ({ user, isOpen, onClose }: ManageProfileProps) => {
           <>
             <ModalHeader className="border-b dark:border-[#19181B] flex justify-between items-center h-[72px]" />
             <ModalBody className="bg-[#FFF] dark:bg-[#19181B]">
-              <Image
-                src={user?.image || ""}
-                alt="User Image"
-                width={72}
-                height={72}
-                className="rounded-full absolute top-[36px] m-auto left-0 right-0 outline outline-2 outline-[#FFF] dark:outline-[#19181B] drop-shadow"
-              />
+              <div className="rounded-full absolute top-[36px] left-1/2 transform -translate-x-1/2 outline outline-2 outline-[#FFF] dark:outline-[#19181B] drop-shadow">
+                {user?.image ? (
+                  <Image
+                    src={user?.image || ""}
+                    alt="User Image"
+                    width={72}
+                    height={72}
+                    className="rounded-full"
+                  />
+                ) : (
+                  <FaUserCircle size={72} className="" />
+                )}
+              </div>
+
               <div className="mt-6 flex flex-col gap-2">
                 <Input
                   type="string"
