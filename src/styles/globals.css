@@ -24,6 +24,9 @@
   .text-wrapper h4 {
     @apply text-lg font-bold;
   }
+  .text-wrapper span {
+    @apply text-[#7C7C7C] font-medium;
+  }
   .text-wrapper ul {
     @apply list-disc mx-4 space-y-3;
   }

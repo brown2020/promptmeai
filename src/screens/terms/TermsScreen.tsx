@@ -17,7 +17,7 @@ const TermsScreen = ({
     <GreenWhiteLayout>
       <div className="text-wrapper">
         <h3>Terms of Service</h3>
-        <h5 className="text-[#7C7C7C]">Last Updated: {updatedAt}</h5>
+        <span>Last Updated: {updatedAt}</span>
 
         <p>
           Welcome and thank you for your interest in {companyName} services and
