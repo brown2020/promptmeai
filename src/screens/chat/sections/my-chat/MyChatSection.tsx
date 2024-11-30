@@ -11,12 +11,14 @@ import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { useChatStore } from "@/zustand/useChatStore";
 import { WarningChangingMessage } from "@/components/modals";
 import { sortChatByDateDesc } from "@/utils/chat";
+import useProfileStore from "@/zustand/useProfileStore";
+import { User } from "next-auth";
 
 type MyChatSectionProps = {
-  userId: string;
+  user: User | undefined;
 };
 
-const MyChatSection = ({ userId }: MyChatSectionProps) => {
+const MyChatSection = ({ user }: MyChatSectionProps) => {
   const {
     isDrawerOpen,
     setDrawerOpen,
@@ -25,6 +27,7 @@ const MyChatSection = ({ userId }: MyChatSectionProps) => {
     setActiveChatId,
   } = useChatSideBarStore();
   const { setMessages, isLoading: anotherActiveRequest } = useChatStore();
+  const { profile } = useProfileStore();
 
   const [showWarning, setShowWarning] = useState<boolean>(false);
 
@@ -44,10 +47,12 @@ const MyChatSection = ({ userId }: MyChatSectionProps) => {
       }
     };
 
-    if (userId) {
-      getAllChatList(userId);
+    if (user && profile.email === user.email) {
+      if (user.id) {
+        getAllChatList(user.id);
+      }
     }
-  }, [setChats, setPinnedChats, userId]);
+  }, [profile.email, setChats, setPinnedChats, user]);
 
   const addNewChat = useCallback(() => {
     setActiveChatId("");

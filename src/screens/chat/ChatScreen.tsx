@@ -10,7 +10,7 @@ type ChatScreenProps = {
 const ChatScreen = ({ user }: ChatScreenProps) => {
   return (
     <Fragment>
-      <MyChatSection userId={user?.id || ""} />
+      <MyChatSection user={user} />
       <ChatDetailSection user={user} />
     </Fragment>
   );
