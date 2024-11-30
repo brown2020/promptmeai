@@ -2,7 +2,8 @@
 
 import { authenticateAccountRegister } from "@/lib/actions";
 import { cn } from "@/utils/tailwind";
-import { useActionState, useEffect } from "react";
+import { Checkbox } from "@nextui-org/react";
+import { useActionState, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const SignUpForm = () => {
@@ -10,6 +11,7 @@ const SignUpForm = () => {
     authenticateAccountRegister,
     { success: false }
   );
+  const [isPrivacyAccepted, setIsPrivacyAccepted] = useState(false);
 
   useEffect(() => {
     if (!isPending) {
@@ -27,11 +29,24 @@ const SignUpForm = () => {
     }
   }, [authResult.message, authResult.success, isPending]);
 
+  const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
+    if (!isPrivacyAccepted) {
+      e.preventDefault();
+      toast.error("You must accept the Terms and Privacy Policy to proceed.", {
+        id: "privacy-policy-error",
+      });
+    }
+  };
+
   return (
-    <form className="flex flex-col gap-6" action={formAction}>
+    <form
+      className="flex flex-col gap-6"
+      action={formAction}
+      onSubmit={handleSubmit}
+    >
       <input
         name="name"
-        type="string"
+        type="text"
         autoComplete="name"
         required
         className="bg-gray-100 focus:bg-transparent w-full text-sm px-4 py-3.5 rounded-md outline-gray-800"
@@ -53,6 +68,25 @@ const SignUpForm = () => {
         className="bg-gray-100 focus:bg-transparent w-full text-sm px-4 py-3.5 rounded-md outline-gray-800"
         placeholder="Password"
       />
+      <div className="flex items-center">
+        <Checkbox
+          id="privacyPolicy"
+          checked={isPrivacyAccepted}
+          onChange={(e) => setIsPrivacyAccepted(e.target.checked)}
+        >
+          <span className="text-black">
+            I accept the{" "}
+            <a href="/terms" className="text-blue-500 underline">
+              Terms
+            </a>{" "}
+            and{" "}
+            <a href="/privacy" className="text-blue-500 underline">
+              Privacy Policy
+            </a>
+            .
+          </span>
+        </Checkbox>
+      </div>
       <button
         type="submit"
         className={cn(
