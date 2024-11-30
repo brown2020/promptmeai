@@ -36,13 +36,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             .verifyIdToken(accessToken as string);
 
           if (decodedToken && decodedToken.email === email) {
-            const user = await getUserById(decodedToken.uid);
+            const userProfile = await getUserById(decodedToken.uid);
 
-            if (user) {
+            if (userProfile) {
               return {
                 id: decodedToken.uid,
-                name: user.name,
-                email: user.email,
+                name: userProfile?.name || "",
+                email: userProfile?.email || "",
+                image: userProfile?.image || "",
               };
             } else {
               throw new Error("User not found.");
