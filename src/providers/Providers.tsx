@@ -1,16 +1,23 @@
 import { NextUIProvider } from "@nextui-org/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import FirebaseAuthProvider from "./FirebaseAuthProvider";
-import { SessionProvider } from "next-auth/react";
 import CookieProvider from "./CookieProvider";
+import { Session } from "next-auth";
+import { PropsWithChildren } from "react";
+import AuthSessionProvider from "./AuthSessionProvider";
 
-const Providers = ({ children }: { children: React.ReactNode }) => {
+type ProvidersProps = {
+  session: Session | null;
+  sessionKey: number;
+} & PropsWithChildren;
+
+const Providers = ({ session, sessionKey, children }: ProvidersProps) => {
   return (
     <NextUIProvider>
       <NextThemesProvider attribute="class" defaultTheme="system">
-        <SessionProvider>
+        <AuthSessionProvider session={session} sessionKey={sessionKey}>
           <FirebaseAuthProvider>{children}</FirebaseAuthProvider>
-        </SessionProvider>
+        </AuthSessionProvider>
         <CookieProvider />
       </NextThemesProvider>
     </NextUIProvider>

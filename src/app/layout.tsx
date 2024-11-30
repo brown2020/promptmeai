@@ -16,6 +16,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await auth();
+  const sessionKey = new Date().valueOf();
 
   return (
     <html lang="en">
@@ -31,7 +32,7 @@ export default async function RootLayout({
             },
           }}
         />
-        <Providers>
+        <Providers session={session} sessionKey={sessionKey}>
           <Layout user={session?.user}>{children}</Layout>
         </Providers>
       </body>
