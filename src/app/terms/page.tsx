@@ -1,12 +1,14 @@
-import TermsPage from "@/components/TermsPage";
+import TermsScreen from "@/screens/terms";
 
-export default function Terms() {
+const TermsPage = () => {
   return (
-    <TermsPage
+    <TermsScreen
       companyName="Prompt.me"
       companyEmail="info@ignitechannel.com"
       updatedAt={"September 1, 2024"}
       privacyLink={"/privacy"}
     />
   );
-}
+};
+
+export default TermsPage;

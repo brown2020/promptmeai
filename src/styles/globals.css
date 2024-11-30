@@ -16,13 +16,13 @@
   }
 
   .text-wrapper {
-    @apply flex flex-col space-y-3 max-w-4xl mx-auto;
+    @apply flex flex-col space-y-3 max-w-4xl mx-auto overflow-auto p-4 m-4 text-[#494949];
   }
   .text-wrapper h3 {
-    @apply text-2xl;
+    @apply text-2xl font-bold;
   }
   .text-wrapper h4 {
-    @apply text-lg;
+    @apply text-lg font-bold;
   }
   .text-wrapper ul {
     @apply list-disc mx-4 space-y-3;
@@ -243,4 +243,3 @@
     color: #000000;
   }
 }
-
