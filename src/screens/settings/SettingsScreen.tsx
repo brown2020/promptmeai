@@ -7,7 +7,6 @@ import GreenWhiteLayout from "@/layouts/GreenWhiteLayout";
 import UsageSelection from "./sections/UsageSelection";
 import { isIOSReactNativeWebView } from "@/utils/platform";
 import { useEffect, useState } from "react";
-import Footer from "@/components/Footer";
 
 type SettingsScreenProps = {
   userId: string;
@@ -31,7 +30,6 @@ const SettingsScreen = ({ userId }: SettingsScreenProps) => {
           <CreditInformation userId={userId} />
           {!isRnWebView && <InputAPIKeys userId={userId} />}
           <PaymentHistory userId={userId} />
-          <Footer />
         </div>
       </div>
     </GreenWhiteLayout>
