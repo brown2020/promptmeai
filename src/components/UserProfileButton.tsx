@@ -17,18 +17,23 @@ import { useState } from "react";
 import { ManageProfile } from "./modals";
 import { signOut } from "next-auth/react";
 import { auth } from "@/firebase/firebaseClient";
+import { useRouter } from "next/navigation";
 
 type UserProfileButtonProps = {
   user?: UserType;
 };
 
 const UserProfileButton = ({ user }: UserProfileButtonProps) => {
+  const router = useRouter();
   const { width } = useWindowSize();
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const [openManageProfile, setOpenManageProfile] = useState<boolean>(false);
 
   const handleOpenChange = (open: boolean) => {
-    if (!user) return;
+    if (!user) {
+      router.push("/auth/sign-in");
+      return;
+    }
 
     setIsDropdownOpen(open);
   };
