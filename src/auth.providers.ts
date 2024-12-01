@@ -1,7 +1,9 @@
 import { Provider } from "next-auth/providers";
 import Google from "next-auth/providers/google";
 
-export const OAuthProviders: Provider[] = [Google];
+export const OAuthProviders: Provider[] = [
+  Google({ allowDangerousEmailAccountLinking: true }),
+];
 
 export const providerMap = OAuthProviders.map((provider) => {
   if (typeof provider === "function") {
