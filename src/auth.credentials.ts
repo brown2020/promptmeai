@@ -4,6 +4,7 @@ import Credentials from "next-auth/providers/credentials";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  User,
 } from "firebase/auth";
 import { auth as firebaseAuth } from "./firebase/firebaseClient";
 import { FirebaseError } from "firebase/app";
@@ -41,7 +42,21 @@ export const AuthCredentials: Provider[] = [
               image: userProfile?.image || "",
             };
           } else {
-            throw new Error("User not found.");
+            const newUser = {
+              uid: decodedToken.uid,
+              email: String(email),
+              displayName: "",
+              photoURL: "",
+            } as User;
+
+            await createUser(newUser);
+
+            return {
+              id: decodedToken.uid,
+              email: String(email),
+              name: "",
+              image: "",
+            };
           }
         } else {
           throw new Error("Invalid credentials.");
