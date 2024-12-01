@@ -16,7 +16,7 @@
   }
 
   .text-wrapper {
-    @apply flex flex-col space-y-3 max-w-4xl mx-auto overflow-auto p-4 m-4 text-[#494949];
+    @apply flex flex-col space-y-3 max-w-4xl mx-auto overflow-auto p-4 m-4 text-[#494949] dark:text-[#E4E4E7];
   }
   .text-wrapper h3 {
     @apply text-2xl font-bold;
@@ -25,7 +25,7 @@
     @apply text-lg font-bold;
   }
   .text-wrapper span {
-    @apply text-[#7C7C7C] font-medium;
+    @apply text-[#7C7C7C] dark:text-[#8D8D92] font-medium;
   }
   .text-wrapper ul {
     @apply list-disc mx-4 space-y-3;
