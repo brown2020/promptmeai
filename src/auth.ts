@@ -4,6 +4,7 @@ import { FirestoreAdapter } from "@auth/firebase-adapter";
 import { adminAuth, adminDb } from "./firebase/firebaseAdmin";
 import { OAuthProviders } from "./auth.providers";
 import { AuthCredentials } from "./auth.credentials";
+import { FirebaseError } from "firebase/app";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authClientConfig,
@@ -40,20 +41,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                   email,
                 });
               }
-            } else {
+            }
+          } catch (error) {
+            const firebaseError = error as FirebaseError;
+
+            if (firebaseError.code === "auth/user-not-found") {
               // Create the user with both uid and email set from the start
               await adminAuth.createUser({
                 uid,
                 email,
               });
             }
-
-            const firebaseToken = await adminAuth.createCustomToken(uid);
-
-            session.firebaseToken = firebaseToken;
-          } catch (error) {
-            console.error("Failed to find user", error);
           }
+
+          const firebaseToken = await adminAuth.createCustomToken(uid);
+
+          session.firebaseToken = firebaseToken;
         }
       }
 
