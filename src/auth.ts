@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import authClientConfig from "./auth.client-config";
 import { FirestoreAdapter } from "@auth/firebase-adapter";
-import { admin, adminAuth, adminDb } from "./firebase/firebaseAdmin";
+import { adminAuth, adminDb } from "./firebase/firebaseAdmin";
 import Credentials from "next-auth/providers/credentials";
 import { OAuthProviders } from "./auth.providers";
 import {
@@ -31,9 +31,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const { email, accessToken } = credentials;
 
         try {
-          const decodedToken = await admin
-            .auth()
-            .verifyIdToken(accessToken as string);
+          const decodedToken = await adminAuth.verifyIdToken(
+            accessToken as string
+          );
 
           if (decodedToken && decodedToken.email === email) {
             const userProfile = await getUserById(decodedToken.uid);
@@ -192,20 +192,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           session.user.id = uid;
 
           try {
-            const findUser = await admin.auth().getUserByEmail(email);
+            const findUser = await adminAuth.getUserByEmail(email);
 
             if (findUser) {
               if (findUser.uid !== uid) {
                 // Replace old user with new user from AuthJS integration
-                await admin.auth().deleteUser(findUser.uid);
-                await admin.auth().createUser({
+                await adminAuth.deleteUser(findUser.uid);
+                await adminAuth.createUser({
                   uid,
                   email,
                 });
               }
             } else {
               // Create the user with both uid and email set from the start
-              await admin.auth().createUser({
+              await adminAuth.createUser({
                 uid,
                 email,
               });
