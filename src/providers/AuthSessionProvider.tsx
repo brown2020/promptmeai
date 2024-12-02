@@ -15,10 +15,8 @@ const AuthSessionProvider = ({
   children,
 }: AuthSessionProviderProps) => {
   const memoizedSessionKey = useMemo(() => {
-    console.log("session changed >>> ", session);
-
     return sessionKey;
-  }, [session, sessionKey]);
+  }, [sessionKey]);
 
   return (
     <SessionProvider key={memoizedSessionKey} session={session}>
