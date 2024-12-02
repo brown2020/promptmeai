@@ -25,7 +25,7 @@
     "clsx": "^2.1.1",
     "cookies-next": "^5.0.2",
     "firebase": "^11.0.1",
-    "firebase-admin": "^13.0.1",
+    "firebase-admin": "^12.7.0",
     "framer-motion": "^11.9.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.461.0",
