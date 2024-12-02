@@ -1,7 +1,10 @@
+import { auth } from "@/auth";
 import PaymentSuccessScreen from "@/screens/payment-success";
 
-const PaymentSuccessPage = () => {
-  return <PaymentSuccessScreen />;
+const PaymentSuccessPage = async () => {
+  const session = await auth();
+
+  return <PaymentSuccessScreen userId={session?.user?.id || ""} />;
 };
 
 export default PaymentSuccessPage;

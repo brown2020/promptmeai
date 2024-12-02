@@ -1,9 +1,9 @@
 import logo from "@/app/icon.svg";
-import SupportPage from "@/components/SupportPage";
+import SupportScreen from "@/screens/support";
 
-export default function page() {
+const SupportPage = () => {
   return (
-    <SupportPage
+    <SupportScreen
       companyName="Prompt.me"
       companyEmail="info@ignitechannel.com"
       companyAddress={"30765 Pacific Coast Hwy #354"}
@@ -12,4 +12,6 @@ export default function page() {
       companyLogo={logo}
     />
   );
-}
+};
+
+export default SupportPage;

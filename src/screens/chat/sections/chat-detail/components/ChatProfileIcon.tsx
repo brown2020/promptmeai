@@ -1,15 +1,15 @@
-import { useAuthStore } from "@/zustand/useAuthStore";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { CgProfile } from "react-icons/cg";
 
 const ChatProfileIcon = () => {
-  const { authPhotoUrl } = useAuthStore((state) => state);
+  const { data: session } = useSession();
 
   return (
     <div className="absolute top-[8px] left-[-16px]">
-      {authPhotoUrl ? (
+      {session?.user?.image ? (
         <Image
-          src={authPhotoUrl}
+          src={session?.user?.image}
           width={32}
           height={32}
           alt="Profile Picture"

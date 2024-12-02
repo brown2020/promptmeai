@@ -1,8 +1,8 @@
-import PrivacyPage from "@/components/PrivacyPage";
+import PrivacyScreen from "@/screens/privacy";
 
-export default function page() {
+const PrivacyPage = () => {
   return (
-    <PrivacyPage
+    <PrivacyScreen
       companyName="Prompt.me"
       companyEmail="info@ignitechannel.com"
       companyAddress={"30765 Pacific Coast Hwy #354"}
@@ -10,4 +10,6 @@ export default function page() {
       updatedAt={"September 1, 2024"}
     />
   );
-}
+};
+
+export default PrivacyPage;

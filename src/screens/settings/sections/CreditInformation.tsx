@@ -2,8 +2,6 @@
 
 import { Button } from "@/components/buttons";
 import CardContent from "@/components/CardContent";
-import Spinner from "@/components/Spinner";
-import { auth } from "@/firebase/firebaseClient";
 import { isIOSReactNativeWebView } from "@/utils/platform";
 import { cn } from "@/utils/tailwind";
 import { usePaymentsStore } from "@/zustand/usePaymentsStore";
@@ -12,18 +10,18 @@ import { CircularProgress } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useMemo, useCallback } from "react";
 
-const CreditInformation = () => {
-  const user = auth.currentUser;
-  const { profile, isLoading, isDefaultData, updateProfile } =
-    useProfileStore();
+type CreditInformationProps = {
+  userId: string;
+};
+
+const CreditInformation = ({ userId }: CreditInformationProps) => {
+  const { profile, isDefaultData, updateProfile } = useProfileStore();
   const router = useRouter();
 
   const [credits, setCredits] = useState(0);
   const [totalCredits, setTotalCredits] = useState(0);
   const [showCreditsSection, setShowCreditsSection] = useState(true);
-  const { addPayment } = usePaymentsStore(
-    (state) => state
-  );
+  const { addPayment } = usePaymentsStore((state) => state);
   const addCredits = useProfileStore((state) => state.addCredits);
 
   useEffect(() => {
@@ -35,7 +33,7 @@ const CreditInformation = () => {
       // Process the message sent from React Native
       const message = event.data;
       if (message?.type === "IAP_SUCCESS") {
-        await addPayment({
+        await addPayment(userId, {
           id: message.message,
           amount: message.amount,
           status: "succeeded",
@@ -44,7 +42,7 @@ const CreditInformation = () => {
           productId: message.productId,
           currency: message.currency,
         });
-        await addCredits(10000);
+        await addCredits(userId, 10000);
       }
     };
 
@@ -54,7 +52,7 @@ const CreditInformation = () => {
     return () => {
       window.removeEventListener("message", handleMessageFromRN);
     };
-  }, [addCredits, addPayment]);
+  }, [addCredits, addPayment, userId]);
 
   useEffect(() => {
     if (profile.totalCredits) setTotalCredits(profile.totalCredits);
@@ -63,11 +61,11 @@ const CreditInformation = () => {
 
   useEffect(() => {
     if (!isDefaultData && totalCredits < credits) {
-      updateProfile({ totalCredits: credits }).then(() =>
+      updateProfile(userId, { totalCredits: credits }).then(() =>
         setTotalCredits(credits)
       );
     }
-  }, [credits, isDefaultData, totalCredits, updateProfile]);
+  }, [credits, isDefaultData, totalCredits, updateProfile, userId]);
 
   const creditUsage = useMemo(
     () => totalCredits - credits,
@@ -80,7 +78,7 @@ const CreditInformation = () => {
 
   const handleBuyClick = useCallback(() => {
     if (showCreditsSection) {
-      router.push("/payment-attempt")
+      router.push("/payment-attempt");
     } else {
       window.ReactNativeWebView?.postMessage("INIT_IAP");
     }
@@ -91,59 +89,51 @@ const CreditInformation = () => {
       title="Conversation Credits"
       isActive={profile.usageMode === UsageMode.Credits}
     >
-      {isLoading || !user || isDefaultData ? (
-        <Spinner />
-      ) : (
-        <div className="flex flex-col items-center justify-center">
-          <CircularProgress
-            classNames={{
-              svg: "w-60 h-60 drop-shadow-md",
-              indicator: cn("stroke-default", {
-                "stroke-[#24C69E]":
-                  creditPercentage >= 60 && creditPercentage <= 100,
-                "stroke-[#F6CC19]":
-                  creditPercentage >= 40 && creditPercentage < 60,
-                "stroke-[#F58B1A]":
-                  creditPercentage >= 20 && creditPercentage < 40,
-                "stroke-[#EA4227]":
-                  creditPercentage >= 0 && creditPercentage < 20,
-              }),
-              track: cn("stroke-default/10", {
-                "stroke-[#24C69E]/10":
-                  creditPercentage >= 60 && creditPercentage <= 100,
-                "stroke-[#F6CC19]/10":
-                  creditPercentage >= 40 && creditPercentage < 60,
-                "stroke-[#F58B1A]/10":
-                  creditPercentage >= 20 && creditPercentage < 40,
-                "stroke-[#EA4227]/10":
-                  creditPercentage >= 0 && creditPercentage < 20,
-              }),
-              value: cn("text-3xl font-semibold text-default", {
-                "text-[#24C69E]":
-                  creditPercentage >= 60 && creditPercentage <= 100,
-                "text-[#F6CC19]":
-                  creditPercentage >= 40 && creditPercentage < 60,
-                "text-[#F58B1A]":
-                  creditPercentage >= 20 && creditPercentage < 40,
-                "text-[#EA4227]":
-                  creditPercentage >= 0 && creditPercentage < 20,
-              }),
-            }}
-            value={creditPercentage}
-            strokeWidth={4}
-            showValueLabel={true}
-            formatOptions={{
-              style: "percent",
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 2,
-            }}
-          />
-          <h4 className="self-center">{`Credit usage: ${creditUsage} from ${totalCredits}`}</h4>
-        </div>
-      )}
-      <Button onClick={handleBuyClick}>
-        Buy 10,000 Credits
-      </Button>
+      <div className="flex flex-col items-center justify-center">
+        <CircularProgress
+          classNames={{
+            svg: "w-60 h-60 drop-shadow-md",
+            indicator: cn("stroke-default", {
+              "stroke-[#24C69E]":
+                creditPercentage >= 60 && creditPercentage <= 100,
+              "stroke-[#F6CC19]":
+                creditPercentage >= 40 && creditPercentage < 60,
+              "stroke-[#F58B1A]":
+                creditPercentage >= 20 && creditPercentage < 40,
+              "stroke-[#EA4227]":
+                creditPercentage >= 0 && creditPercentage < 20,
+            }),
+            track: cn("stroke-default/10", {
+              "stroke-[#24C69E]/10":
+                creditPercentage >= 60 && creditPercentage <= 100,
+              "stroke-[#F6CC19]/10":
+                creditPercentage >= 40 && creditPercentage < 60,
+              "stroke-[#F58B1A]/10":
+                creditPercentage >= 20 && creditPercentage < 40,
+              "stroke-[#EA4227]/10":
+                creditPercentage >= 0 && creditPercentage < 20,
+            }),
+            value: cn("text-3xl font-semibold text-default", {
+              "text-[#24C69E]":
+                creditPercentage >= 60 && creditPercentage <= 100,
+              "text-[#F6CC19]": creditPercentage >= 40 && creditPercentage < 60,
+              "text-[#F58B1A]": creditPercentage >= 20 && creditPercentage < 40,
+              "text-[#EA4227]": creditPercentage >= 0 && creditPercentage < 20,
+            }),
+          }}
+          value={creditPercentage}
+          strokeWidth={4}
+          showValueLabel={true}
+          formatOptions={{
+            style: "percent",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+          }}
+        />
+        <h4 className="self-center">{`Credit usage: ${creditUsage} from ${totalCredits}`}</h4>
+      </div>
+
+      <Button onClick={handleBuyClick}>Buy 10,000 Credits</Button>
     </CardContent>
   );
 };

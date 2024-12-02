@@ -5,14 +5,17 @@ import { MdNightlightRound } from "react-icons/md";
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
 import { useIsClient } from "@/hooks";
+import { Skeleton } from "@nextui-org/react";
 
 const ThemeSwitcher = () => {
   const isClient = useIsClient();
   const { theme, setTheme } = useTheme();
 
-  if (!isClient) return null; // Avoid rendering if not mounted (prevents hydration mismatch)
+  if (!isClient)
+    return (
+      <Skeleton className="h-[32px] w-[60px] sm:h-[60px] sm:w-[32px] rounded-xl" />
+    ); // Avoid rendering if not mounted (prevents hydration mismatch)
 
-  // Handle switching theme and animate button movement
   const isDarkMode = theme === "dark";
 
   return (
@@ -25,9 +28,13 @@ const ThemeSwitcher = () => {
           isDarkMode ? "bg-[#64666D]" : "bg-[#FFF]"
         }`}
         style={{
-          top: isDarkMode ? "6.1px" : "unset", // Vertical movement for light/dark
+          // Horizontal movement for screens below sm
+          left: isDarkMode ? "6.1px" : "unset",
+          right: isDarkMode ? "unset" : "6.1px",
+
+          // Vertical movement for screens above sm
+          top: isDarkMode ? "6.1px" : "unset",
           bottom: isDarkMode ? "unset" : "6.1px",
-          left: "6.1px",
         }}
       ></motion.div>
 

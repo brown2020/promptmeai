@@ -1,6 +1,5 @@
 import { create } from "zustand";
-import { deleteDoc, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { useAuthStore } from "./useAuthStore";
+import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebase/firebaseClient";
 import { deleteUser, getAuth } from "firebase/auth";
 
@@ -19,10 +18,9 @@ export type APIKeys = {
 
 export interface ProfileType {
   email: string;
-  contactEmail: string;
-  displayName: string;
-  photoUrl: string;
-  emailVerified: boolean;
+  name: string;
+  image: string;
+  emailVerified: Date | null;
   credits: number;
   totalCredits: number;
   usageMode: UsageMode;
@@ -31,11 +29,10 @@ export interface ProfileType {
 
 const defaultProfile: ProfileType = {
   email: "",
-  contactEmail: "",
-  displayName: "",
-  photoUrl: "",
-  emailVerified: false,
-  credits: 0,
+  name: "",
+  image: "",
+  emailVerified: null,
+  credits: 1000,
   totalCredits: 1000,
   usageMode: UsageMode.Credits,
   APIKeys: {
@@ -51,11 +48,14 @@ interface ProfileState {
   profile: ProfileType;
   isLoading: boolean;
   isDefaultData: boolean;
-  fetchProfile: () => void;
-  updateProfile: (newProfile: Partial<ProfileType>) => Promise<void>;
-  reduceCredits: (amount: number) => Promise<boolean>;
-  addCredits: (amount: number) => Promise<void>;
-  deleteAccount: () => Promise<void>;
+  fetchProfile: (userId: string) => void;
+  updateProfile: (
+    userId: string,
+    newProfile: Partial<ProfileType>
+  ) => Promise<void>;
+  reduceCredits: (userId: string, amount: number) => Promise<boolean>;
+  addCredits: (userId: string, amount: number) => Promise<void>;
+  deleteAccount: (userId: string) => Promise<void>;
 }
 
 const useProfileStore = create<ProfileState>((set, get) => ({
@@ -63,44 +63,27 @@ const useProfileStore = create<ProfileState>((set, get) => ({
   isLoading: false,
   isDefaultData: true,
 
-  fetchProfile: async () => {
-    const uid = useAuthStore.getState().uid;
-    if (!uid) return;
+  fetchProfile: async (userId) => {
+    if (!userId) return;
 
     try {
       set({ isLoading: true });
-      const userRef = doc(db, `users/${uid}/profile/userData`);
+      const userRef = doc(db, `users/${userId}`);
       const docSnap = await getDoc(userRef);
-
       if (docSnap.exists()) {
         const profileData = docSnap.data() as ProfileType;
-
         const newProfile = {
           ...profileData,
+          credits: profileData?.credits || defaultProfile.credits,
           totalCredits:
             profileData?.totalCredits || defaultProfile.totalCredits,
           usageMode: profileData?.usageMode || defaultProfile.usageMode,
           APIKeys: profileData?.APIKeys || defaultProfile.APIKeys,
         };
-
         set({ profile: newProfile, isDefaultData: false });
       } else {
-        const newProfile = {
-          email: useAuthStore.getState().authEmail || "",
-          contactEmail: useAuthStore.getState().authEmail || "",
-          displayName: useAuthStore.getState().authDisplayName || "",
-          photoUrl: useAuthStore.getState().authPhotoUrl || "",
-          emailVerified: useAuthStore.getState().authEmailVerified || false,
-          credits: 1000,
-          totalCredits: 1000,
-          usageMode: UsageMode.Credits,
-          APIKeys: defaultProfile.APIKeys,
-        };
-
-        await setDoc(userRef, newProfile);
-        set({ profile: newProfile, isDefaultData: false });
+        console.error("User profile is not found!");
       }
-
       set({ isLoading: false });
     } catch (error) {
       console.error("Error fetching or creating profile:", error);
@@ -108,19 +91,14 @@ const useProfileStore = create<ProfileState>((set, get) => ({
     }
   },
 
-  updateProfile: async (newProfile: Partial<ProfileType>) => {
-    const uid = useAuthStore.getState().uid;
-    if (!uid) return;
-
-    console.log("Updating profile:", newProfile);
+  updateProfile: async (userId, newProfile) => {
+    if (!userId) return;
 
     try {
-      const userRef = doc(db, `users/${uid}/profile/userData`);
-
+      const userRef = doc(db, `users/${userId}`);
       set((state) => ({
         profile: { ...state.profile, ...newProfile },
       }));
-
       await updateDoc(userRef, { ...newProfile });
       console.log("Profile updated successfully");
     } catch (error) {
@@ -128,25 +106,19 @@ const useProfileStore = create<ProfileState>((set, get) => ({
     }
   },
 
-  reduceCredits: async (amount: number) => {
-    const uid = useAuthStore.getState().uid;
-    if (!uid) return false;
-
+  reduceCredits: async (userId, amount) => {
+    if (!userId) return false;
     const profile = get().profile;
     if (profile.credits < amount) {
       return false;
     }
-
     try {
       const newCredits = profile.credits - amount;
-      const userRef = doc(db, `users/${uid}/profile/userData`);
-
+      const userRef = doc(db, `users/${userId}`);
       await updateDoc(userRef, { credits: newCredits });
-
       set((state) => ({
         profile: { ...state.profile, credits: newCredits },
       }));
-
       return true;
     } catch (error) {
       console.error("Error using credits:", error);
@@ -154,23 +126,19 @@ const useProfileStore = create<ProfileState>((set, get) => ({
     }
   },
 
-  addCredits: async (amount: number) => {
-    const uid = useAuthStore.getState().uid;
-    if (!uid) return;
+  addCredits: async (userId, amount) => {
+    if (!userId) return;
 
     const profile = get().profile;
     const newCredits = profile.credits + amount;
 
     try {
-      const userRef = doc(db, `users/${uid}/profile/userData`);
-
+      const userRef = doc(db, `users/${userId}`);
       const newData = {
         credits: newCredits,
         totalCredits: newCredits,
       };
-
       await updateDoc(userRef, { ...newData });
-
       set((state) => ({
         profile: { ...state.profile, ...newData },
       }));
@@ -179,21 +147,18 @@ const useProfileStore = create<ProfileState>((set, get) => ({
     }
   },
 
-  deleteAccount: async () => {
+  deleteAccount: async (userId) => {
     const auth = getAuth(); // Get Firebase auth instance
     const currentUser = auth.currentUser;
 
-    const uid = useAuthStore.getState().uid;
-    if (!uid || !currentUser) return;
+    if (!userId || !currentUser) return;
 
     try {
-      const userRef = doc(db, `users/${uid}/profile/userData`);
+      const userRef = doc(db, `users/${userId}`);
       // Delete the user profile data from Firestore
       await deleteDoc(userRef);
-
       //Delete the user from Firebase Authentication
       await deleteUser(currentUser);
-
       console.log("Account deleted successfully");
     } catch (error) {
       console.error("Error deleting account:", error);

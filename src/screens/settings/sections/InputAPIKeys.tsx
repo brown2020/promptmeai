@@ -7,7 +7,11 @@ import { areObjectsEqual } from "@/utils/object";
 import useProfileStore, { APIKeys, UsageMode } from "@/zustand/useProfileStore";
 import { useEffect, useState } from "react";
 
-const InputAPIKeys = () => {
+type InputAPIKeysProps = {
+  userId: string;
+};
+
+const InputAPIKeys = ({ userId }: InputAPIKeysProps) => {
   const { profile, updateProfile } = useProfileStore();
   const [apiKeys, setApiKeys] = useState<APIKeys>({ ...profile.APIKeys });
 
@@ -25,7 +29,7 @@ const InputAPIKeys = () => {
   };
 
   const updateApiKeysHandler = () => {
-    updateProfile({ APIKeys: apiKeys });
+    updateProfile(userId, { APIKeys: apiKeys });
   };
 
   return (
