@@ -11,27 +11,67 @@ import {
 import { User } from "next-auth";
 import Image from "next/image";
 import { Button } from "../buttons";
-import { CgTrash } from "react-icons/cg";
 import { HiOutlinePencilAlt } from "react-icons/hi";
-import { useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
+import { useState } from "react";
+import { updateProfile } from "firebase/auth";
+import { doc, updateDoc } from "firebase/firestore";
+import { toast } from "react-hot-toast";
+import { useSession } from "next-auth/react";
+import { auth, db } from "@/firebase/firebaseClient";
 
 type ManageProfileProps = {
   user?: User;
   isOpen: boolean;
   onClose?: () => void;
-  onConfirm?: () => void;
 } & Omit<ModalProps, "children">;
 
 const ManageProfile = ({ user, isOpen, onClose }: ManageProfileProps) => {
   const [name, setName] = useState<string>(user?.name || "");
-  const [email, setEmail] = useState<string>(user?.email || "");
+  const [isSaving, setIsSaving] = useState(false);
+  const { update: updateSession } = useSession(); // Get session data
+
+  const handleSaveChanges = async () => {
+    if (!auth.currentUser) return;
+
+    // Validation
+    if (!name.trim()) {
+      toast.error("Name cannot be empty.");
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      // Update Firebase Auth
+      if (auth.currentUser.displayName !== name) {
+        await updateProfile(auth.currentUser, { displayName: name });
+      }
+
+      // Update Firestore
+      const userDocRef = doc(db, "users", auth.currentUser.uid);
+      await updateDoc(userDocRef, { name });
+
+      // Update NextAuth session
+      await updateSession({
+        name,
+      });
+
+      toast.success("Profile updated successfully!");
+      if (onClose) onClose();
+    } catch (error) {
+      console.error("Failed to update profile: ", error);
+      toast.error("Failed to update profile.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      isDismissable={true}
+      isDismissable
       hideCloseButton
       radius="lg"
       classNames={{
@@ -55,35 +95,38 @@ const ManageProfile = ({ user, isOpen, onClose }: ManageProfileProps) => {
                     className="rounded-full"
                   />
                 ) : (
-                  <FaUserCircle size={72} className="" />
+                  <FaUserCircle size={72} />
                 )}
               </div>
 
               <div className="mt-6 flex flex-col gap-2">
                 <Input
-                  type="string"
+                  type="text"
                   label="Name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   endContent={<HiOutlinePencilAlt color="#52525B" />}
+                  isRequired
                 />
                 <Input
                   type="email"
                   label="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  endContent={<HiOutlinePencilAlt color="#52525B" />}
+                  value={user?.email || ""}
+                  isDisabled
                 />
               </div>
-              <div className="flex justify-between items-center pt-4">
-                <button className="flex gap-1 items-center bg-white dark:bg-[#19181B] text-red-500 dark:text-red-400 py-2 px-4 rounded hover:bg-red-50 dark:hover:bg-gray-700 transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 focus:ring-offset-gray-100 dark:focus:ring-offset-gray-900">
+
+              <div className="flex justify-end items-center pt-4">
+                {/* <button className="flex gap-1 items-center bg-white dark:bg-[#19181B] text-red-500 dark:text-red-400 py-2 px-4 rounded hover:bg-red-50 dark:hover:bg-gray-700 transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 focus:ring-offset-gray-100 dark:focus:ring-offset-gray-900">
                   <CgTrash size={17} /> Delete
-                </button>
+                </button> */}
                 <div className="flex gap-2 items-center">
                   <Button variant="text" onClick={onClose}>
                     Cancel
                   </Button>
-                  <Button>Save Changes</Button>
+                  <Button onClick={handleSaveChanges} disabled={isSaving}>
+                    {isSaving ? "Saving..." : "Save Changes"}
+                  </Button>
                 </div>
               </div>
             </ModalBody>
