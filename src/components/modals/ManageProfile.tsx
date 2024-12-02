@@ -19,6 +19,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { toast } from "react-hot-toast";
 import { useSession } from "next-auth/react";
 import { auth, db } from "@/firebase/firebaseClient";
+import { useRouter } from "next/navigation";
 
 type ManageProfileProps = {
   user?: User;
@@ -27,9 +28,11 @@ type ManageProfileProps = {
 } & Omit<ModalProps, "children">;
 
 const ManageProfile = ({ user, isOpen, onClose }: ManageProfileProps) => {
+  const router = useRouter();
+  const { update: updateSession } = useSession();
+
   const [name, setName] = useState<string>(user?.name || "");
-  const [isSaving, setIsSaving] = useState(false);
-  const { update: updateSession } = useSession(); // Get session data
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const handleSaveChanges = async () => {
     if (!auth.currentUser) return;
@@ -58,7 +61,10 @@ const ManageProfile = ({ user, isOpen, onClose }: ManageProfileProps) => {
       });
 
       toast.success("Profile updated successfully!");
-      if (onClose) onClose();
+      if (onClose) {
+        onClose();
+      }
+      router.refresh();
     } catch (error) {
       console.error("Failed to update profile: ", error);
       toast.error("Failed to update profile.");
