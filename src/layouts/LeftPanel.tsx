@@ -3,8 +3,13 @@ import Divider from "@/components/Divider";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import UserProfileButton from "@/components/UserProfileButton";
 import { NavigationList } from "./navigation-buttons";
+import { User } from "next-auth";
 
-const LeftPanel = () => {
+type LeftPanelProps = {
+  user?: User;
+};
+
+const LeftPanel = ({ user }: LeftPanelProps) => {
   return (
     <div className="hidden sm:flex flex-col justify-between items-center w-[64px] flex-shrink-0 bg-white dark:bg-[#1E1F22] border-r border-[#EAEAEA] dark:border-[#1E1F22] p-[16px]">
       {/* Top section */}
@@ -15,7 +20,7 @@ const LeftPanel = () => {
 
       {/* Bottom section */}
       <div className="flex flex-col gap-[25px] justify-center items-center">
-        <UserProfileButton />
+        <UserProfileButton user={user} />
 
         <Divider />
         <ThemeSwitcher />

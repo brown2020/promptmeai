@@ -27,11 +27,14 @@ import {
 } from "react";
 import { PiPaperPlaneTilt } from "react-icons/pi";
 import { Spinner } from "@nextui-org/react";
-import { auth } from "@/firebase/firebaseClient";
+import { User } from "next-auth";
 
-const ChatInput = () => {
+type ChatInputProps = {
+  user?: User;
+};
+
+const ChatInput = ({ user }: ChatInputProps) => {
   const router = useRouter();
-  const user = auth.currentUser;
   const { profile, isDefaultData, reduceCredits } = useProfileStore();
   const {
     messages,
@@ -115,7 +118,7 @@ const ChatInput = () => {
   );
 
   const saveChatFunction = async () => {
-    if (user?.uid) {
+    if (user?.id) {
       try {
         const newMessages = [...useChatStore.getState().messages];
         const lastIndex = newMessages.length - 1;
@@ -129,11 +132,11 @@ const ChatInput = () => {
         const activeChatId = useChatSideBarStore.getState().activeChatId;
 
         if (activeChatId) {
-          await updateChat(user.uid, activeChatId, newMessages);
+          await updateChat(user.id, activeChatId, newMessages);
         } else {
           const chatData = await saveChat(
-            user.uid,
-            user.displayName || "",
+            user.id,
+            user.name || "",
             newMessages
           );
           if (chatData?.id) {
@@ -193,7 +196,7 @@ const ChatInput = () => {
 
         if (totalTokenUsage && profile.usageMode === UsageMode.Credits) {
           const totalCreditUse = calculateCreditCost(totalTokenUsage);
-          reduceCredits(totalCreditUse);
+          reduceCredits(user?.id || "", totalCreditUse);
         }
       } else {
         console.error("All promises failed.");

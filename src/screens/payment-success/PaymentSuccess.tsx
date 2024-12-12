@@ -6,14 +6,17 @@ import CardContent from "@/components/CardContent";
 import Spinner from "@/components/Spinner";
 import GreenWhiteLayout from "@/layouts/GreenWhiteLayout";
 import { formatNumber, subcurrencyToNumber } from "@/utils/number";
-import { useAuthStore } from "@/zustand/useAuthStore";
 import { usePaymentsStore } from "@/zustand/usePaymentsStore";
 import useProfileStore from "@/zustand/useProfileStore";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { LuCheckCircle, LuCoins, LuCreditCard } from "react-icons/lu";
 
-const PaymentSuccess = () => {
+type PaymentSuccessProps = {
+  userId: string;
+};
+
+const PaymentSuccess = ({ userId }: PaymentSuccessProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const paymentIntent = searchParams.get("payment_intent") || "";
@@ -22,7 +25,6 @@ const PaymentSuccess = () => {
     (state) => state
   );
   const addCredits = useProfileStore((state) => state.addCredits);
-  const uid = useAuthStore((state) => state.uid);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [id, setId] = useState<string>("");
@@ -42,7 +44,10 @@ const PaymentSuccess = () => {
 
         if (data.status === "succeeded") {
           // Check if payment is already processed
-          const existingPayment = await checkIfPaymentProcessed(data.id);
+          const existingPayment = await checkIfPaymentProcessed(
+            userId,
+            data.id
+          );
           if (existingPayment) {
             setMessage("Payment has already been processed.");
 
@@ -57,7 +62,7 @@ const PaymentSuccess = () => {
           setAmount(data.amount);
 
           // Add payment to store
-          await addPayment({
+          await addPayment(userId, {
             id: data.id,
             amount: data.amount,
             status: data.status,
@@ -69,7 +74,7 @@ const PaymentSuccess = () => {
 
           // Add credits to profile
           const creditsToAdd = data.amount + 1;
-          await addCredits(creditsToAdd);
+          await addCredits(userId, creditsToAdd);
         } else {
           setMessage("Payment validation failed");
         }
@@ -81,8 +86,8 @@ const PaymentSuccess = () => {
       }
     };
 
-    if (uid) handlePaymentSuccess();
-  }, [addPayment, checkIfPaymentProcessed, addCredits, uid, paymentIntent]);
+    if (userId) handlePaymentSuccess();
+  }, [addPayment, checkIfPaymentProcessed, addCredits, userId, paymentIntent]);
 
   return (
     <GreenWhiteLayout>

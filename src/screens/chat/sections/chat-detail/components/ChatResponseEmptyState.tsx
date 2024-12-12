@@ -2,14 +2,19 @@ import { MdWavingHand } from "react-icons/md";
 import { motion } from "framer-motion";
 import { Fragment } from "react";
 import Spinner from "@/components/Spinner";
-import { auth } from "@/firebase/firebaseClient";
+import { User } from "next-auth";
+import { useIsClient } from "@/hooks";
 
-const ChatResponseEmptyState = () => {
-  const user = auth.currentUser;
+type ChatResponseEmptyStateProps = {
+  user?: User;
+};
+
+const ChatResponseEmptyState = ({ user }: ChatResponseEmptyStateProps) => {
+  const isClient = useIsClient();
 
   return (
     <div className="h-full flex flex-col justify-center items-center gap-1">
-      {!user ? (
+      {!isClient ? (
         <Spinner message="Setting things up for you..." />
       ) : (
         <Fragment>
@@ -33,7 +38,7 @@ const ChatResponseEmptyState = () => {
               transition: { duration: 0.5, delay: 0.2 },
             }}
           >
-            Hi, {user && user.displayName}
+            Hi, {user && user.name}
           </motion.span>
           <motion.span
             className="text-xl text-[#53494D] dark:text-[#EEE]"

@@ -4,7 +4,12 @@ import CardContent from "@/components/CardContent";
 import Select from "@/components/Select";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 
-const UsageSelection = ({ hideKey }: { hideKey?: boolean }) => {
+type UsageSelectionProps = {
+  userId: string;
+  hideKey?: boolean;
+};
+
+const UsageSelection = ({ userId, hideKey }: UsageSelectionProps) => {
   const { updateProfile, profile } = useProfileStore();
 
   return (
@@ -24,7 +29,7 @@ const UsageSelection = ({ hideKey }: { hideKey?: boolean }) => {
         }
         value={profile.usageMode}
         onChange={(e) =>
-          updateProfile({ usageMode: e.target.value as UsageMode })
+          updateProfile(userId, { usageMode: e.target.value as UsageMode })
         }
       />
     </CardContent>

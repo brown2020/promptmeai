@@ -8,8 +8,13 @@ import ChatResponseList from "./components/ChatResponseList";
 import { useTypingEffect } from "@/hooks";
 import { trimText } from "@/utils/text";
 import { RxHamburgerMenu } from "react-icons/rx";
+import { User } from "next-auth";
 
-const ChatDetailSection = () => {
+type ChatDetailSectionProps = {
+  user?: User;
+};
+
+const ChatDetailSection = ({ user }: ChatDetailSectionProps) => {
   const {
     activeChatId,
     chats,
@@ -46,14 +51,14 @@ const ChatDetailSection = () => {
         <h3 className="text-[18px] whitespace-nowrap overflow-hidden text-ellipsis text-[#1E1F22] dark:text-[#EEE]">
           {isNewChat ? typedTitle : title}
         </h3>
-        <ChatDetailActions />
+        <ChatDetailActions user={user} />
       </div>
       {/* Main chat detail section */}
       <div className="bg-[#F5F5F5] dark:bg-[#3F424A] h-[calc(100%-48px)] w-[calc(100% + 32px)] rounded-lg lg:ml-[-16px] flex justify-center px-[18px] sm:px-[24px]">
         {/* Wrapper */}
         <div className="h-full w-full max-w-[736px] flex flex-col gap-[18px] sm:gap-[24px] justify-between items-center py-[18px] sm:py-[24px]">
-          <ChatResponseList />
-          <ChatInput />
+          <ChatResponseList user={user} />
+          <ChatInput user={user} />
         </div>
       </div>
     </div>

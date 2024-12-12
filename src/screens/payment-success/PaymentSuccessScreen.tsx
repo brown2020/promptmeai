@@ -2,10 +2,14 @@ import { Suspense } from "react";
 import PaymentSuccess from "./PaymentSuccess";
 import Spinner from "@/components/Spinner";
 
-const PaymentSuccessScreen = () => {
+type PaymentSuccessScreenProps = {
+  userId: string;
+};
+
+const PaymentSuccessScreen = ({ userId }: PaymentSuccessScreenProps) => {
   return (
     <Suspense fallback={<Spinner />}>
-      <PaymentSuccess />
+      <PaymentSuccess userId={userId} />
     </Suspense>
   );
 };

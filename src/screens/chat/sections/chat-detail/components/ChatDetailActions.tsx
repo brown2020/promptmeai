@@ -1,4 +1,3 @@
-import { auth } from "@/firebase/firebaseClient";
 import { deleteChat, pinChat, removePinnedChat } from "@/services/chatService";
 import { deleteChatById, moveChatById } from "@/utils/chat";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
@@ -10,12 +9,16 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/react";
+import { User } from "next-auth";
 import React, { useMemo } from "react";
 import toast from "react-hot-toast";
 import { BsThreeDots } from "react-icons/bs";
 
-const ChatDetailActions = () => {
-  const user = auth.currentUser;
+type ChatDetailActionsProps = {
+  user?: User;
+};
+
+const ChatDetailActions = ({ user }: ChatDetailActionsProps) => {
   const {
     activeChatId,
     chats,
@@ -41,9 +44,9 @@ const ChatDetailActions = () => {
   }, [activeChatId, isLoading]);
 
   const pinHandler = async () => {
-    if (!user?.uid || !activeChatId) return;
+    if (!user?.id || !activeChatId) return;
 
-    const result = await pinChat(user?.uid, activeChatId);
+    const result = await pinChat(user?.id, activeChatId);
 
     if (result) {
       toast.success("Chat pinned successfully.", {
@@ -69,9 +72,9 @@ const ChatDetailActions = () => {
   };
 
   const unpinHandler = async () => {
-    if (!user?.uid || !activeChatId) return;
+    if (!user?.id || !activeChatId) return;
 
-    const result = await removePinnedChat(user?.uid, activeChatId);
+    const result = await removePinnedChat(user?.id, activeChatId);
 
     if (result) {
       toast.success("Chat unpinned successfully.", {
@@ -97,9 +100,9 @@ const ChatDetailActions = () => {
   };
 
   const deleteHandler = async () => {
-    if (!user?.uid || !activeChatId) return;
+    if (!user?.id || !activeChatId) return;
 
-    const result = await deleteChat(user?.uid, activeChatId);
+    const result = await deleteChat(user?.id, activeChatId);
 
     if (result) {
       const chatData = activeTab === "chats" ? chats : pinnedChats;

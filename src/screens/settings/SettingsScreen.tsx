@@ -7,10 +7,12 @@ import GreenWhiteLayout from "@/layouts/GreenWhiteLayout";
 import UsageSelection from "./sections/UsageSelection";
 import { isIOSReactNativeWebView } from "@/utils/platform";
 import { useEffect, useState } from "react";
-import Footer from "@/components/Footer";
-import SettingOption from "./sections/SettingOption";
 
-const SettingsScreen = () => {
+type SettingsScreenProps = {
+  userId: string;
+};
+
+const SettingsScreen = ({ userId }: SettingsScreenProps) => {
   const [isRnWebView, setRnWebview] = useState(false);
 
   useEffect(() => {
@@ -24,12 +26,10 @@ const SettingsScreen = () => {
           Account Settings
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 overflow-auto scrollable-container">
-          <UsageSelection hideKey={isRnWebView} />
-          <CreditInformation />
-          {!isRnWebView && <InputAPIKeys />}
-          <SettingOption />
-          <PaymentHistory />
-          <Footer />
+          <UsageSelection userId={userId} hideKey={isRnWebView} />
+          <CreditInformation userId={userId} />
+          {!isRnWebView && <InputAPIKeys userId={userId} />}
+          <PaymentHistory userId={userId} />
         </div>
       </div>
     </GreenWhiteLayout>

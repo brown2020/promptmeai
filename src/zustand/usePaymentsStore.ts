@@ -7,7 +7,6 @@ import {
   getDocs,
   Timestamp,
 } from "firebase/firestore";
-import { useAuthStore } from "./useAuthStore";
 import toast from "react-hot-toast";
 import { db } from "@/firebase/firebaseClient";
 
@@ -26,9 +25,15 @@ interface PaymentsStoreState {
   payments: PaymentType[];
   paymentsLoading: boolean;
   paymentsError: string | null;
-  fetchPayments: () => Promise<void>;
-  addPayment: (payment: Omit<PaymentType, "createdAt">) => Promise<void>;
-  checkIfPaymentProcessed: (paymentId: string) => Promise<PaymentType | null>;
+  fetchPayments: (userId: string) => Promise<void>;
+  addPayment: (
+    userId: string,
+    payment: Omit<PaymentType, "createdAt">
+  ) => Promise<void>;
+  checkIfPaymentProcessed: (
+    userId: string,
+    paymentId: string
+  ) => Promise<PaymentType | null>;
 }
 
 export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
@@ -36,17 +41,16 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
   paymentsLoading: false,
   paymentsError: null,
 
-  fetchPayments: async () => {
-    const uid = useAuthStore.getState().uid;
-    if (!uid) {
-      console.error("Invalid UID for fetchPayments");
+  fetchPayments: async (userId) => {
+    if (!userId) {
+      console.error("Invalid User ID for fetchPayments");
       return;
     }
 
     set({ paymentsLoading: true });
 
     try {
-      const q = query(collection(db, "users", uid, "payments"));
+      const q = query(collection(db, "payments", userId, "transactions"));
       const querySnapshot = await getDocs(q);
       const payments = querySnapshot.docs.map((doc) => ({
         id: doc.id,
@@ -71,10 +75,9 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
     }
   },
 
-  addPayment: async (payment) => {
-    const uid = useAuthStore.getState().uid;
-    if (!uid) {
-      console.error("Invalid UID for addPayment");
+  addPayment: async (userId, payment) => {
+    if (!userId) {
+      console.error("Invalid User ID for addPayment");
       return;
     }
 
@@ -83,7 +86,7 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
     try {
       // Query to check if the payment with the same id already exists
       const q = query(
-        collection(db, "users", uid, "payments"),
+        collection(db, "payments", userId, "transactions"),
         where("id", "==", payment.id)
       );
       const querySnapshot = await getDocs(q);
@@ -95,7 +98,7 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
       }
 
       const newPaymentDoc = await addDoc(
-        collection(db, "users", uid, "payments"),
+        collection(db, "payments", userId, "transactions"),
         {
           id: payment.id,
           amount: payment.amount,
@@ -139,11 +142,10 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
     }
   },
 
-  checkIfPaymentProcessed: async (paymentId) => {
-    const uid = useAuthStore.getState().uid;
-    if (!uid) return null;
+  checkIfPaymentProcessed: async (userId, paymentId) => {
+    if (!userId) return null;
 
-    const paymentsRef = collection(db, "users", uid, "payments");
+    const paymentsRef = collection(db, "payments", userId, "transactions");
     const q = query(
       paymentsRef,
       where("id", "==", paymentId),
