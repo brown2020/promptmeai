@@ -11,7 +11,7 @@ import { usePaymentsStore } from "@/zustand/usePaymentsStore";
 import useProfileStore from "@/zustand/useProfileStore";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
-import { LuCheckCircle, LuCoins, LuCreditCard } from "react-icons/lu";
+import { LuCheck, LuCoins, LuCreditCard } from "react-icons/lu";
 
 const PaymentSuccess = () => {
   const router = useRouter();
@@ -94,7 +94,7 @@ const PaymentSuccess = () => {
             <Fragment>
               <div className="flex flex-col items-center gap-4">
                 <div className="bg-[#E7E7E8] w-16 h-16 rounded-full flex items-center justify-center">
-                  <LuCheckCircle size="36" className="dark:text-[#2E987D]" />
+                  <LuCheck size="36" className="dark:text-[#2E987D]" />
                 </div>
                 <h2 className="text-2xl font-bold">Payment Successful!</h2>
               </div>
