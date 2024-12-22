@@ -1,7 +1,12 @@
+// Mark this as a server component explicitly
+export const dynamic = "force-dynamic";
+
 import SignInScreen from "@/screens/sign-in";
 
-const SignInPage = () => {
-  return <SignInScreen />;
-};
-
-export default SignInPage;
+export default function SignInPage() {
+  return (
+    <div suppressHydrationWarning>
+      <SignInScreen />
+    </div>
+  );
+}

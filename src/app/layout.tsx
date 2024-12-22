@@ -19,7 +19,8 @@ export default async function RootLayout({
   const sessionKey = new Date().valueOf();
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head />
       <body>
         <Toaster
           toastOptions={{
