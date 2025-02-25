@@ -2,7 +2,7 @@ import Layout from "@/layouts/Layout";
 import { Providers } from "./providers";
 import { Toaster } from "react-hot-toast";
 
-import "@/styles/globals.css";
+import "./globals.css";
 
 export const metadata = {
   title: "Prompt.me",
