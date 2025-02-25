@@ -10,7 +10,7 @@ const Input = ({ title, ...props }: InputProps) => {
       <span className="text-[16px]">{title}</span>
       <input
         {...props}
-        className="dark:bg-[#4B4F5B] border dark:border-[#4B4F5B] dark:text-[#A0A7BB] dark:outline-none py-[10px] px-[14px] rounded-md"
+        className="dark:bg-[#4B4F5B] border dark:border-[#4B4F5B] dark:text-[#A0A7BB] dark:outline-hidden py-[10px] px-[14px] rounded-md"
       />
     </div>
   );

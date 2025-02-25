@@ -199,7 +199,7 @@ export default function AuthComponent() {
           onClick={showModal}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="w-full h-[40px] sm:h-[50px] bg-[#1A8F70] text-white rounded-lg text-[16px] sm:text-[18px] font-semibold shadow-md hover:bg-[#166854] focus:outline-none focus:ring-2 focus:ring-[#1A8F70] focus:ring-opacity-50 transition-all duration-300 ease-in-out"
+          className="w-full h-[40px] sm:h-[50px] bg-[#1A8F70] text-white rounded-lg text-[16px] sm:text-[18px] font-semibold shadow-md hover:bg-[#166854] focus:outline-hidden focus:ring-2 focus:ring-[#1A8F70] focus:ring-opacity-50 transition-all duration-300 ease-in-out"
         >
           Sign in
         </motion.button>
@@ -270,9 +270,9 @@ export default function AuthComponent() {
                       onClick={signInWithGoogle}
                     />
                     <div className="flex items-center justify-center w-full h-12">
-                      <hr className="flex-grow h-px bg-gray-400 border-0" />
+                      <hr className="grow h-px bg-gray-400 border-0" />
                       <span className="px-3">or</span>
-                      <hr className="flex-grow h-px bg-gray-400 border-0" />
+                      <hr className="grow h-px bg-gray-400 border-0" />
                     </div>
                   </>
                 )}
@@ -408,7 +408,7 @@ function AuthButton({
         objectFit="contain"
         style={{ marginTop: 0, marginBottom: 0 }}
       />
-      <span className="flex-grow text-center">{label}</span>
+      <span className="grow text-center">{label}</span>
     </button>
   );
 }

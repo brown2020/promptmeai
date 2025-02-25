@@ -10,7 +10,7 @@ const ChatAiIcon = ({ aiModel }: ChatAiIconProps) => {
     <div className="absolute top-[8px] left-[-16px]">
       <div
         className={cn(
-          "rounded-lg w-[32px] h-[32px] flex justify-center items-center shadow",
+          "rounded-lg w-[32px] h-[32px] flex justify-center items-center shadow-sm",
           {
             "bg-[#14A27F]": aiModel.toLowerCase().includes("gpt"),
             "bg-[#FF6F61]": aiModel.toLowerCase().includes("gemini"),

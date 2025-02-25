@@ -15,7 +15,7 @@ export default function Footer() {
   });
 
   return (
-    <div className="flex flex-wrap space-x-2 w-full h-14 items-center px-5 justify-center flex-shrink-0 col-span-1 lg:col-span-2 xl:col-span-3">
+    <div className="flex flex-wrap space-x-2 w-full h-14 items-center px-5 justify-center shrink-0 col-span-1 lg:col-span-2 xl:col-span-3">
       {menuItems.map((item) => (
         <Link
           key={item.label}

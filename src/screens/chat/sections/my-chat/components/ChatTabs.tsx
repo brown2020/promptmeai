@@ -16,7 +16,7 @@ const ChatTabs = () => {
   const gapBetweenButtons = 10;
 
   return (
-    <div className="bg-[#EEE] dark:bg-[#3F424A] rounded-xl border-[0.6px] border-[#E2E2E2] dark:border-[#3F424A] h-[48px] flex gap-[10px] flex-shrink-0 p-[4px] relative">
+    <div className="bg-[#EEE] dark:bg-[#3F424A] rounded-xl border-[0.6px] border-[#E2E2E2] dark:border-[#3F424A] h-[48px] flex gap-[10px] shrink-0 p-[4px] relative">
       <motion.div
         className="absolute top-[4px] bottom-[4px] left-[4px] w-[135.5px] bg-white dark:bg-[#1E1F22] rounded-lg shadow-lg"
         initial={false}
@@ -46,7 +46,7 @@ const ChatTabs = () => {
         />
         <span className="uppercase text-[12px]">Chats</span>
         <span
-          className={cn("rounded px-[4px] py-[2px] text-[10px] font-semibold", {
+          className={cn("rounded-sm px-[4px] py-[2px] text-[10px] font-semibold", {
             "bg-[#14B48D]/[0.15] dark:bg-[#23C69E]/[0.15]":
               activeTab === "chats",
             "bg-[#3B3B3B]/[0.11] dark:bg-[#EEE]/[0.15]": activeTab !== "chats",
@@ -76,7 +76,7 @@ const ChatTabs = () => {
         />
         <span className="uppercase text-[12px]">Pinned</span>
         <span
-          className={cn("rounded px-[4px] py-[2px] text-[10px] font-semibold", {
+          className={cn("rounded-sm px-[4px] py-[2px] text-[10px] font-semibold", {
             "bg-[#14B48D]/[0.15] dark:bg-[#23C69E]/[0.15]":
               activeTab === "pinned",
             "bg-[#3B3B3B]/[0.11] dark:bg-[#EEE]/[0.15]": activeTab !== "pinned",

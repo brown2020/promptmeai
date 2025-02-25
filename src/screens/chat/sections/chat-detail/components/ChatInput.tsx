@@ -220,18 +220,18 @@ const ChatInput = () => {
 
   return (
     <Fragment>
-      <div className="self-end w-full max-w-[720px] h-[56px] flex-shrink-0 flex gap-[16px] justify-center items-center">
-        <div className="w-full bg-white dark:bg-[#4B4F5B] rounded-xl shadow px-[16px] py-[12px] flex gap-[12px] items-center">
+      <div className="self-end w-full max-w-[720px] h-[56px] shrink-0 flex gap-[16px] justify-center items-center">
+        <div className="w-full bg-white dark:bg-[#4B4F5B] rounded-xl shadow-sm px-[16px] py-[12px] flex gap-[12px] items-center">
           <input
             ref={inputRef}
-            className="w-full text-[16px] dark:bg-[#4B4F5B] text-[#A0A7BB] outline-none"
+            className="w-full text-[16px] dark:bg-[#4B4F5B] text-[#A0A7BB] outline-hidden"
             placeholder="Type your question here..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && submitHandler()}
           />
           <div
-            className="flex items-center justify-center h-[32px] w-[32px] rounded-lg cursor-pointer flex-shrink-0 mr-[-4px]"
+            className="flex items-center justify-center h-[32px] w-[32px] rounded-lg cursor-pointer shrink-0 mr-[-4px]"
             onClick={() => (isLoading ? stopRequest() : submitHandler())}
           >
             {isLoading && !isStopRequest ? (

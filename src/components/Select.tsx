@@ -17,7 +17,7 @@ const Select = ({ label, options, ...props }: SelectProps) => {
 
       <div className="relative">
         <select
-          className="w-full bg-transparent dark:bg-[#4B4F5B] placeholder:text-slate-400 text-slate-700 dark:text-[#A0A7BB] border dark:border-[#4B4F5B] py-[12px] px-[14px] rounded-md transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer"
+          className="w-full bg-transparent dark:bg-[#4B4F5B] placeholder:text-slate-400 text-slate-700 dark:text-[#A0A7BB] border dark:border-[#4B4F5B] py-[12px] px-[14px] rounded-md transition duration-300 ease focus:outline-hidden focus:border-slate-400 hover:border-slate-400 shadow-xs focus:shadow-md appearance-none cursor-pointer"
           {...props}
         >
           {options.map((option) => (

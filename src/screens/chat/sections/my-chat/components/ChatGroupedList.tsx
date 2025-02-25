@@ -8,7 +8,7 @@ type ChatGroupedListProps = {
 
 const ChatGroupedList = ({ groupName, chatList }: ChatGroupedListProps) => {
   return (
-    <div className="flex flex-col flex-shrink-0 gap-[4px]">
+    <div className="flex flex-col shrink-0 gap-[4px]">
       <h3 className="text-[14px] font-medium text-[#1E1F22] dark:text-[#EEE]">
         {groupName}
       </h3>

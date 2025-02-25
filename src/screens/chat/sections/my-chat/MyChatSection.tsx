@@ -57,7 +57,7 @@ const MyChatSection = () => {
     <Fragment>
       {/* Drawer backdrop for mobile */}
       <div
-        className={`fixed inset-0 z-40 bg-black bg-opacity-50 transition-opacity lg:hidden ${
+        className={`fixed inset-0 z-40 bg-black/50 transition-opacity lg:hidden ${
           isDrawerOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={() => setDrawerOpen(false)}

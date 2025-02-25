@@ -40,7 +40,7 @@ const ChatDetailSection = () => {
       <div className="flex justify-between items-center gap-4 mt-[-4px]">
         <RxHamburgerMenu
           size={24}
-          className="lg:hidden cursor-pointer flex-shrink-0"
+          className="lg:hidden cursor-pointer shrink-0"
           onClick={() => setDrawerOpen(true)}
         />
         <h3 className="text-[18px] whitespace-nowrap overflow-hidden text-ellipsis text-[#1E1F22] dark:text-[#EEE]">

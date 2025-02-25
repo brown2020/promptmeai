@@ -28,9 +28,11 @@ export default function DeleteConfirmModal({
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-3">
+    <div className="fixed inset-0 flex items-center justify-center  bg-black/50 p-3">
       <div className="bg-white p-6 rounded-md shadow-lg">
-        <h3 className="text-lg">Are you sure you want to delete your account?</h3>
+        <h3 className="text-lg">
+          Are you sure you want to delete your account?
+        </h3>
         <p className="mb-4 mt-2">
           Please type <strong>DELETE ACCOUNT</strong> to confirm.
         </p>
