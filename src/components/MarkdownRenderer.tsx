@@ -22,14 +22,15 @@ const MarkdownRenderer = ({ content, className }: MarkdownRendererProps) => {
   };
 
   return (
-    <Markdown
-      remarkPlugins={[remarkGfm]}
-      rehypePlugins={[rehypeRaw]}
-      className={cn("prose prose-sm dark:prose-invert", className)}
-      components={components}
-    >
-      {content}
-    </Markdown>
+    <div className={cn("prose prose-sm dark:prose-invert", className)}>
+      <Markdown
+        remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeRaw]}
+        components={components}
+      >
+        {content}
+      </Markdown>
+    </div>
   );
 };
 
