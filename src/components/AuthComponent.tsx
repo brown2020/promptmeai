@@ -17,6 +17,7 @@ import { PulseLoader } from "react-spinners";
 import { useAuthStore } from "@/zustand/useAuthStore";
 import { auth } from "@/firebase/firebaseClient";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 import googleLogo from "@/app/assets/google.svg";
 import Image from "next/image";
@@ -24,6 +25,7 @@ import { isIOSReactNativeWebView } from "@/utils/platform";
 import { motion } from "framer-motion";
 
 export default function AuthComponent() {
+  const router = useRouter();
   const setAuthDetails = useAuthStore((s) => s.setAuthDetails);
   const clearAuthDetails = useAuthStore((s) => s.clearAuthDetails);
   const uid = useAuthStore((s) => s.uid);
@@ -59,6 +61,7 @@ export default function AuthComponent() {
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
+      router.push("/chat");
     } catch (error) {
       if (isFirebaseError(error)) {
         if (error.code === "auth/account-exists-with-different-credential") {
@@ -91,8 +94,9 @@ export default function AuthComponent() {
   const handlePasswordLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      window.localStorage.setItem("generateEmail", email);
-      window.localStorage.setItem("generateName", email.split("@")[0]);
+      window.localStorage.setItem("promptmeEmail", email);
+      window.localStorage.setItem("promptmeName", email.split("@")[0]);
+      router.push("/chat");
     } catch (error: unknown) {
       handleAuthError(error);
     } finally {
@@ -104,8 +108,9 @@ export default function AuthComponent() {
     e.preventDefault();
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      window.localStorage.setItem("generateEmail", email);
-      window.localStorage.setItem("generateName", email.split("@")[0]);
+      window.localStorage.setItem("promptmeEmail", email);
+      window.localStorage.setItem("promptmeName", email.split("@")[0]);
+      router.push("/chat");
     } catch (error: unknown) {
       if (error instanceof Error) {
         if ((error as { code?: string }).code === "auth/email-already-in-use") {
@@ -128,8 +133,8 @@ export default function AuthComponent() {
 
     try {
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-      window.localStorage.setItem("generateEmail", email);
-      window.localStorage.setItem("generateName", name);
+      window.localStorage.setItem("promptmeEmail", email);
+      window.localStorage.setItem("promptmeName", name);
       setAuthDetails({ authPending: true });
     } catch (error) {
       console.error("Error sending sign-in link:", error);

@@ -2,17 +2,19 @@
 
 import { auth } from "@/firebase/firebaseClient";
 import HomeScreen from "@/screens/home";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 const HomePage = () => {
-  const user = auth.currentUser;
+  const [user, loading] = useAuthState(auth);
+  const router = useRouter();
 
   useEffect(() => {
-    if (user?.uid) {
-      return redirect("/chat");
+    if (!loading && user?.uid) {
+      router.push("/chat");
     }
-  }, [user?.uid]);
+  }, [user?.uid, loading, router]);
 
   return <HomeScreen />;
 };
