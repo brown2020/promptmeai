@@ -1,10 +1,10 @@
 import { create } from "zustand";
-import { type CoreMessage } from "ai";
+import { type ModelMessage } from "ai";
 import useProfileStore, { UsageMode } from "./useProfileStore";
 
 export type PromptCoreMessage = {
   tokenUsage?: number;
-} & CoreMessage;
+} & ModelMessage;
 
 export type Message = {
   mode: UsageMode;

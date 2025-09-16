@@ -1,7 +1,7 @@
 "use server";
 
-import { createStreamableValue } from "ai/rsc";
-import { CoreMessage, streamText } from "ai";
+import { createStreamableValue } from '@ai-sdk/rsc';
+import { ModelMessage, streamText } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { APIKeys, UsageMode } from "@/zustand/useProfileStore";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
@@ -53,7 +53,7 @@ async function getModel(modelName: string, apiKeys: APIKeys | UsageMode) {
 }
 
 export async function continueConversation(
-  messages: CoreMessage[],
+  messages: ModelMessage[],
   modelName: string = "gpt-4o",
   apiKeys: APIKeys | UsageMode
 ) {
@@ -76,7 +76,7 @@ export async function generateResponse(
 ) {
   const model = await getModel(modelName, apiKeys);
 
-  const messages: CoreMessage[] = [
+  const messages: ModelMessage[] = [
     {
       role: "system",
       content: systemPrompt,

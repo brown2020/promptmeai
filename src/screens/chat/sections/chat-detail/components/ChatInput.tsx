@@ -14,8 +14,8 @@ import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { PromptCoreMessage, useChatStore } from "@/zustand/useChatStore";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 import { FaStopCircle } from "react-icons/fa";
-import { CoreMessage } from "ai";
-import { readStreamableValue } from "ai/rsc";
+import { ModelMessage } from "ai";
+import { readStreamableValue } from '@ai-sdk/rsc';
 import { useRouter } from "next/navigation";
 import {
   Fragment,
@@ -69,9 +69,9 @@ const ChatInput = () => {
   }, []);
 
   const getAssistantResponse = useCallback(
-    async (model: string, userMessage: CoreMessage, signal?: AbortSignal) => {
+    async (model: string, userMessage: ModelMessage, signal?: AbortSignal) => {
       try {
-        const currentMessages: CoreMessage[] = messages.flatMap((message) => [
+        const currentMessages: ModelMessage[] = messages.flatMap((message) => [
           message.userMessage,
           ...Object.values(message.responses),
         ]);
