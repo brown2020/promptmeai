@@ -2,7 +2,7 @@
 
 import { continueConversation } from "@/actions/generateActions";
 import { ModalWarning } from "@/components/modals";
-import { MODEL_NAMES } from "@/constants/modelNames";
+import { MODEL_NAMES, ModelName } from "@/constants/modelNames";
 import { saveChat, updateChat } from "@/services/chatService";
 import { isObjectEmpty } from "@/utils/object";
 import {
@@ -69,7 +69,7 @@ const ChatInput = () => {
   }, []);
 
   const getAssistantResponse = useCallback(
-    async (model: string, userMessage: ModelMessage, signal?: AbortSignal) => {
+    async (model: ModelName, userMessage: ModelMessage, signal?: AbortSignal) => {
       try {
         const currentMessages: ModelMessage[] = messages.flatMap((message) => [
           message.userMessage,
@@ -176,8 +176,8 @@ const ChatInput = () => {
       const signal = abortController.signal;
 
       const results = await Promise.allSettled(
-        MODEL_NAMES.map((model) =>
-          getAssistantResponse(model.value, newUserMessage, signal)
+        MODEL_NAMES.map(({ value }) =>
+          getAssistantResponse(value, newUserMessage, signal)
         )
       );
 

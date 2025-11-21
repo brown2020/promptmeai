@@ -1,5 +1,6 @@
 "use server";
 
+import { MODEL_CONFIG, MODEL_NAMES, ModelName } from "@/constants/modelNames";
 import { createStreamableValue } from '@ai-sdk/rsc';
 import { ModelMessage, streamText } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
@@ -8,53 +9,80 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createMistral } from "@ai-sdk/mistral";
 import { createAnthropic } from "@ai-sdk/anthropic";
 
-async function getModel(modelName: string, apiKeys: APIKeys | UsageMode) {
-  switch (modelName) {
-    case "gpt-4o":
-      return createOpenAI({
-        apiKey:
-          apiKeys === UsageMode.Credits
-            ? process.env.OPENAI_API_KEY
-            : (apiKeys as APIKeys)?.openAi || "",
-      })("gpt-4o");
-    case "gemini-1.5-pro":
-      return createGoogleGenerativeAI({
-        apiKey:
-          apiKeys === UsageMode.Credits
-            ? process.env.GOOGLE_GENERATIVE_AI_API_KEY
-            : (apiKeys as APIKeys)?.googleGenerativeAi || "",
-      })("models/gemini-1.5-pro-latest");
-    case "mistral-large":
-      return createMistral({
-        apiKey:
-          apiKeys === UsageMode.Credits
-            ? process.env.MISTRAL_API_KEY
-            : (apiKeys as APIKeys)?.mistral || "",
-      })("mistral-large-latest");
-    case "claude-3-5-sonnet":
-      return createAnthropic({
-        apiKey:
-          apiKeys === UsageMode.Credits
-            ? process.env.ANTHROPIC_API_KEY
-            : (apiKeys as APIKeys)?.anthropic || "",
-      })("claude-3-5-sonnet-20241022");
-    case "llama-v3p1-405b":
-      return createOpenAI({
-        apiKey:
-          apiKeys === UsageMode.Credits
-            ? process.env.FIREWORKS_API_KEY
-            : (apiKeys as APIKeys)?.fireworks || "",
-        baseURL: "https://api.fireworks.ai/inference/v1",
-      })("accounts/fireworks/models/llama-v3p1-405b-instruct");
+const DEFAULT_MODEL = (
+  MODEL_NAMES[0]?.value ?? "gpt-5.1-chat-latest"
+) as ModelName;
 
+const isUsageMode = (value: APIKeys | UsageMode): value is UsageMode =>
+  typeof value === "string";
+
+const resolveApiKey = (
+  apiKeys: APIKeys | UsageMode,
+  config: (typeof MODEL_CONFIG)[ModelName]
+): string => {
+  if (apiKeys === UsageMode.Credits) {
+    const envKey = process.env[config.envKey];
+    if (!envKey) {
+      throw new Error(
+        `Missing environment variable for ${config.label}: ${config.envKey}`
+      );
+    }
+    return envKey;
+  }
+
+  if (isUsageMode(apiKeys)) {
+    throw new Error(
+      "Usage mode is set to API keys, but no API key object was provided."
+    );
+  }
+
+  const userKey = apiKeys[config.apiKeyProp];
+  if (!userKey) {
+    throw new Error(
+      `Missing ${config.apiKeyProp} API key for model ${config.label}.`
+    );
+  }
+
+  return userKey;
+};
+
+async function getModel(modelName: ModelName, apiKeys: APIKeys | UsageMode) {
+  const config = MODEL_CONFIG[modelName];
+
+  if (!config) {
+    throw new Error(`Unsupported model name: ${modelName}`);
+  }
+
+  const apiKey = resolveApiKey(apiKeys, config);
+
+  switch (config.provider) {
+    case "openai": {
+      const baseURL = "baseURL" in config ? config.baseURL : undefined;
+      return createOpenAI({
+        apiKey,
+        ...(baseURL ? { baseURL } : {}),
+      })(config.modelId);
+    }
+    case "google":
+      return createGoogleGenerativeAI({
+        apiKey,
+      })(config.modelId);
+    case "mistral":
+      return createMistral({
+        apiKey,
+      })(config.modelId);
+    case "anthropic":
+      return createAnthropic({
+        apiKey,
+      })(config.modelId);
     default:
-      throw new Error(`Unsupported model name: ${modelName}`);
+      throw new Error(`Unsupported provider for model: ${modelName}`);
   }
 }
 
 export async function continueConversation(
   messages: ModelMessage[],
-  modelName: string = "gpt-4o",
+  modelName: ModelName = DEFAULT_MODEL,
   apiKeys: APIKeys | UsageMode
 ) {
   const model = await getModel(modelName, apiKeys);
@@ -71,7 +99,7 @@ export async function continueConversation(
 export async function generateResponse(
   systemPrompt: string,
   userPrompt: string,
-  modelName: string = "gpt-4o",
+  modelName: ModelName = DEFAULT_MODEL,
   apiKeys: APIKeys | UsageMode
 ) {
   const model = await getModel(modelName, apiKeys);
