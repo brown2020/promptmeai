@@ -1,7 +1,6 @@
 import Logo from "@/layouts/navigation-buttons/Logo";
 import Divider from "@/components/Divider";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
-import UserProfileButton from "@/components/UserProfileButton";
 import { NavigationList } from "./navigation-buttons";
 
 const LeftPanel = () => {
@@ -15,8 +14,6 @@ const LeftPanel = () => {
 
       {/* Bottom section */}
       <div className="flex flex-col gap-[25px] justify-center items-center">
-        <UserProfileButton />
-
         <Divider />
         <ThemeSwitcher />
       </div>

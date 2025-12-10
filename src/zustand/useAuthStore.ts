@@ -1,4 +1,6 @@
 import { db } from "@/firebase/firebaseClient";
+import { paths } from "@/firebase/paths";
+import { logger } from "@/utils/logger";
 import { Timestamp, doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { create } from "zustand";
 
@@ -61,23 +63,23 @@ async function updateUserDetailsInFirestore(
   uid: string
 ) {
   if (uid) {
-    const userRef = doc(db, `users/${uid}`);
+    const userRef = doc(db, paths.user(uid));
 
     // Remove any fields that are functions
     const filteredDetails = Object.fromEntries(
       Object.entries(details).filter((entry) => typeof entry[1] !== "function")
     );
 
-    console.log("Updating auth details in Firestore:", filteredDetails);
+    logger.log("Updating auth details in Firestore:", filteredDetails);
     try {
       await setDoc(
         userRef,
         { ...filteredDetails, lastSignIn: serverTimestamp() },
         { merge: true }
       );
-      console.log("Auth details updated successfully in Firestore.");
+      logger.log("Auth details updated successfully in Firestore.");
     } catch (error) {
-      console.error("Error updating auth details in Firestore:", error);
+      logger.error("Error updating auth details in Firestore:", error);
     }
   }
 }

@@ -3,6 +3,7 @@ import MarkdownRenderer from "@/components/MarkdownRenderer";
 import ChatAiIcon from "./ChatAiIcon";
 import ChatProfileIcon from "./ChatProfileIcon";
 import CreditUsage from "./CreditUsage";
+import { getModelColorByLabel } from "@/constants/modelColors";
 
 type ChatResponseCardProps = {
   type: "self" | "ai";
@@ -17,6 +18,8 @@ const ChatResponseCard = ({
   content,
   tokenUsage,
 }: ChatResponseCardProps) => {
+  const modelColor = aiModel ? getModelColorByLabel(aiModel) : "";
+
   return (
     <div
       className={cn("relative flex flex-col gap-[4px] ml-[16px]", {
@@ -36,12 +39,8 @@ const ChatResponseCard = ({
           "min-h-[40px] w-fit bg-white dark:bg-[#4B4F5B] rounded-lg py-[12px] px-[24px] flex items-center",
           {
             "dark:bg-[#27303F]": aiModel,
-            "bg-[#14A27F]/[0.15]": aiModel?.toLowerCase().includes("gpt"),
-            "bg-[#FF6F61]/[0.15]": aiModel?.toLowerCase().includes("gemini"),
-            "bg-[#3498DB]/[0.15]": aiModel?.toLowerCase().includes("mistral"),
-            "bg-[#F39C12]/[0.15]": aiModel?.toLowerCase().includes("claude"),
-            "bg-[#8E44AD]/[0.15]": aiModel?.toLowerCase().includes("llama"),
-          }
+          },
+          modelColor
         )}
       >
         <div className="relative text-[14px] text-[#1E1F22]">

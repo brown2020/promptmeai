@@ -1,6 +1,13 @@
 import { ChatDetail } from "@/types/chat";
 import { Timestamp } from "firebase/firestore";
-import moment from "moment";
+import {
+  isToday,
+  isYesterday,
+  subDays,
+  isAfter,
+  format,
+  compareDesc,
+} from "date-fns";
 
 export type ChatGroups = {
   today: ChatDetail[];
@@ -19,17 +26,16 @@ export const searchChatByName = (
   );
 };
 
-export const sortChatByDateDesc = (list: ChatDetail[]) => {
-  return list.sort((a, b) =>
-    moment(b.timestamp.toDate()).diff(moment(a.timestamp.toDate()))
+export const sortChatByDateDesc = (list: ChatDetail[]): ChatDetail[] => {
+  return [...list].sort((a, b) =>
+    compareDesc(a.timestamp.toDate(), b.timestamp.toDate())
   );
 };
 
 export const groupChatByDate = (data: ChatDetail[]): ChatGroups => {
-  const today = moment();
-  const yesterday = moment().subtract(1, "days");
-  const sevenDaysAgo = moment().subtract(7, "days");
-  const thirtyDaysAgo = moment().subtract(30, "days");
+  const now = new Date();
+  const sevenDaysAgo = subDays(now, 7);
+  const thirtyDaysAgo = subDays(now, 30);
 
   const groups: ChatGroups = {
     today: [],
@@ -40,19 +46,18 @@ export const groupChatByDate = (data: ChatDetail[]): ChatGroups => {
   };
 
   data.forEach((item) => {
-    const date = item.timestamp.toDate(); // Assuming timestamp is a Firestore Timestamp
-    const itemDate = moment(date);
+    const date = item.timestamp.toDate();
 
-    if (itemDate.isSame(today, "day")) {
+    if (isToday(date)) {
       groups.today.push(item);
-    } else if (itemDate.isSame(yesterday, "day")) {
+    } else if (isYesterday(date)) {
       groups.yesterday.push(item);
-    } else if (itemDate.isAfter(sevenDaysAgo)) {
+    } else if (isAfter(date, sevenDaysAgo)) {
       groups.previous7Days.push(item);
-    } else if (itemDate.isAfter(thirtyDaysAgo)) {
+    } else if (isAfter(date, thirtyDaysAgo)) {
       groups.previous30Days.push(item);
     } else {
-      const monthName = itemDate.format("MMMM YYYY");
+      const monthName = format(date, "MMMM yyyy");
       if (!groups.previousMonths[monthName]) {
         groups.previousMonths[monthName] = [];
       }
@@ -77,13 +82,14 @@ export const moveChatById = (
   const index = fromArray.findIndex((item) => item.id === id);
 
   if (index !== -1) {
-    const [item] = fromArray.splice(index, 1);
-    item.timestamp = Timestamp.now();
+    const newFromArray = [...fromArray];
+    const [item] = newFromArray.splice(index, 1);
+    const updatedItem = { ...item, timestamp: Timestamp.now() };
 
     return {
       result: {
-        newFromArray: [...fromArray],
-        newToArray: [item, ...toArray],
+        newFromArray,
+        newToArray: [updatedItem, ...toArray],
       },
       notFound: false,
     };
@@ -95,6 +101,9 @@ export const moveChatById = (
   };
 };
 
-export const deleteChatById = (id: string, chats: ChatDetail[]) => {
+export const deleteChatById = (
+  id: string,
+  chats: ChatDetail[]
+): ChatDetail[] => {
   return chats.filter((item) => item.id !== id);
 };

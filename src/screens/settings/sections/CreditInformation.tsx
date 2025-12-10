@@ -4,35 +4,27 @@ import { Button } from "@/components/buttons";
 import CardContent from "@/components/CardContent";
 import Spinner from "@/components/Spinner";
 import { auth } from "@/firebase/firebaseClient";
-import { isIOSReactNativeWebView } from "@/utils/platform";
+import { usePlatform } from "@/zustand/usePlatformStore";
 import { cn } from "@/utils/tailwind";
 import { usePaymentsStore } from "@/zustand/usePaymentsStore";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 import { CircularProgress } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useMemo, useCallback } from "react";
 
 const CreditInformation = () => {
   const user = auth.currentUser;
   const { profile, isLoading, isDefaultData, updateProfile } =
     useProfileStore();
   const router = useRouter();
+  const { isRNWebView, isWeb } = usePlatform();
 
-  const [credits, setCredits] = useState(0);
-  const [totalCredits, setTotalCredits] = useState(0);
-  const [showCreditsSection, setShowCreditsSection] = useState(true);
-  const { addPayment } = usePaymentsStore(
-    (state) => state
-  );
+  const { addPayment } = usePaymentsStore((state) => state);
   const addCredits = useProfileStore((state) => state.addCredits);
 
-  useEffect(() => {
-    setShowCreditsSection(!isIOSReactNativeWebView());
-  }, []);
-
+  // Handle messages from React Native WebView for IAP
   useEffect(() => {
     const handleMessageFromRN = async (event: MessageEvent) => {
-      // Process the message sent from React Native
       const message = event.data;
       if (message?.type === "IAP_SUCCESS") {
         await addPayment({
@@ -48,43 +40,44 @@ const CreditInformation = () => {
       }
     };
 
-    // Listen for messages from the RN WebView
     window.addEventListener("message", handleMessageFromRN);
-
-    return () => {
-      window.removeEventListener("message", handleMessageFromRN);
-    };
+    return () => window.removeEventListener("message", handleMessageFromRN);
   }, [addCredits, addPayment]);
 
+  // Sync totalCredits if credits exceed it
   useEffect(() => {
-    if (profile.totalCredits) setTotalCredits(profile.totalCredits);
-    if (profile.credits) setCredits(profile.credits);
-  }, [profile]);
-
-  useEffect(() => {
-    if (!isDefaultData && totalCredits < credits) {
-      updateProfile({ totalCredits: credits }).then(() =>
-        setTotalCredits(credits)
-      );
+    if (!isDefaultData && profile.totalCredits < profile.credits) {
+      updateProfile({ totalCredits: profile.credits });
     }
-  }, [credits, isDefaultData, totalCredits, updateProfile]);
+  }, [profile.credits, profile.totalCredits, isDefaultData, updateProfile]);
 
   const creditUsage = useMemo(
-    () => totalCredits - credits,
-    [credits, totalCredits]
+    () => profile.totalCredits - profile.credits,
+    [profile.credits, profile.totalCredits]
   );
 
   const creditPercentage = useMemo(() => {
-    return totalCredits > 0 ? (credits / totalCredits) * 100 : 0;
-  }, [credits, totalCredits]);
+    return profile.totalCredits > 0
+      ? (profile.credits / profile.totalCredits) * 100
+      : 0;
+  }, [profile.credits, profile.totalCredits]);
 
   const handleBuyClick = useCallback(() => {
-    if (showCreditsSection) {
-      router.push("/payment-attempt")
+    if (isWeb) {
+      router.push("/payment-attempt");
     } else {
       window.ReactNativeWebView?.postMessage("INIT_IAP");
     }
-  }, [showCreditsSection, router]);
+  }, [isWeb, router]);
+
+  const getColorClass = (percentage: number) => {
+    if (percentage >= 60) return "#24C69E";
+    if (percentage >= 40) return "#F6CC19";
+    if (percentage >= 20) return "#F58B1A";
+    return "#EA4227";
+  };
+
+  const colorClass = getColorClass(creditPercentage);
 
   return (
     <CardContent
@@ -98,36 +91,12 @@ const CreditInformation = () => {
           <CircularProgress
             classNames={{
               svg: "w-60 h-60 drop-shadow-md",
-              indicator: cn("stroke-default", {
-                "stroke-[#24C69E]":
-                  creditPercentage >= 60 && creditPercentage <= 100,
-                "stroke-[#F6CC19]":
-                  creditPercentage >= 40 && creditPercentage < 60,
-                "stroke-[#F58B1A]":
-                  creditPercentage >= 20 && creditPercentage < 40,
-                "stroke-[#EA4227]":
-                  creditPercentage >= 0 && creditPercentage < 20,
-              }),
-              track: cn("stroke-default/10", {
-                "stroke-[#24C69E]/10":
-                  creditPercentage >= 60 && creditPercentage <= 100,
-                "stroke-[#F6CC19]/10":
-                  creditPercentage >= 40 && creditPercentage < 60,
-                "stroke-[#F58B1A]/10":
-                  creditPercentage >= 20 && creditPercentage < 40,
-                "stroke-[#EA4227]/10":
-                  creditPercentage >= 0 && creditPercentage < 20,
-              }),
-              value: cn("text-3xl font-semibold text-default", {
-                "text-[#24C69E]":
-                  creditPercentage >= 60 && creditPercentage <= 100,
-                "text-[#F6CC19]":
-                  creditPercentage >= 40 && creditPercentage < 60,
-                "text-[#F58B1A]":
-                  creditPercentage >= 20 && creditPercentage < 40,
-                "text-[#EA4227]":
-                  creditPercentage >= 0 && creditPercentage < 20,
-              }),
+              indicator: cn("stroke-default", `stroke-[${colorClass}]`),
+              track: cn("stroke-default/10", `stroke-[${colorClass}]/10`),
+              value: cn(
+                "text-3xl font-semibold text-default",
+                `text-[${colorClass}]`
+              ),
             }}
             value={creditPercentage}
             strokeWidth={4}
@@ -138,12 +107,10 @@ const CreditInformation = () => {
               maximumFractionDigits: 2,
             }}
           />
-          <h4 className="self-center">{`Credit usage: ${creditUsage} from ${totalCredits}`}</h4>
+          <h4 className="self-center">{`Credit usage: ${creditUsage} from ${profile.totalCredits}`}</h4>
         </div>
       )}
-      <Button onClick={handleBuyClick}>
-        Buy 10,000 Credits
-      </Button>
+      <Button onClick={handleBuyClick}>Buy 10,000 Credits</Button>
     </CardContent>
   );
 };

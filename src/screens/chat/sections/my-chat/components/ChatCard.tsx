@@ -1,8 +1,8 @@
 import { WarningChangingMessage } from "@/components/modals";
 import { cn } from "@/utils/tailwind";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
-import { useChatStore } from "@/zustand/useChatStore";
-import { Fragment, useState } from "react";
+import { useActiveRequestWarning } from "@/hooks";
+import { Fragment } from "react";
 
 type ChatCardProps = {
   id: string;
@@ -13,9 +13,9 @@ const ChatCard = ({ id, title }: ChatCardProps) => {
   const { setActiveChatId, activeChatId, setDrawerOpen } = useChatSideBarStore(
     (state) => state
   );
-  const { isLoading: anotherActiveRequest } = useChatStore();
 
-  const [showWarning, setShowWarning] = useState<boolean>(false);
+  const { showWarning, setShowWarning, executeWithWarning } =
+    useActiveRequestWarning();
 
   const isActive = activeChatId === id;
 
@@ -33,13 +33,7 @@ const ChatCard = ({ id, title }: ChatCardProps) => {
             "bg-[#23C69E]/[0.15] dark:bg-[#1E1F22]": isActive,
           }
         )}
-        onClick={() => {
-          if (anotherActiveRequest) {
-            setShowWarning(true);
-          } else {
-            changeMessageHandler();
-          }
-        }}
+        onClick={() => executeWithWarning(changeMessageHandler)}
       >
         <div className="flex items-center justify-between gap-[8px]">
           <h4 className="text-[14px] text-[#1E1F22] dark:text-[#EEE]/[0.9] whitespace-nowrap overflow-hidden text-ellipsis">

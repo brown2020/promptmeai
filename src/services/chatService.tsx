@@ -1,4 +1,6 @@
 import { db } from "@/firebase/firebaseClient";
+import { collections } from "@/firebase/paths";
+import { logger } from "@/utils/logger";
 import { ChatDetail } from "@/types/chat";
 import { Message } from "@/zustand/useChatStore";
 import {
@@ -12,14 +14,14 @@ import {
   updateDoc,
 } from "firebase/firestore";
 
-const COLLECTION_NAME = "promptme_chats";
+const COLLECTION_NAME = collections.PROMPTME_CHATS;
 
 // Helper function to serialize messages
 const serializeMessages = (messages: Message[]): string | null => {
   try {
     return JSON.stringify(messages);
   } catch (error) {
-    console.error("Failed to serialize messages", error);
+    logger.error("Failed to serialize messages", error);
     return null;
   }
 };
@@ -27,9 +29,9 @@ const serializeMessages = (messages: Message[]): string | null => {
 // Helper function to handle Firestore errors
 const handleFirestoreError = (error: unknown, message: string): void => {
   if (error instanceof Error) {
-    console.error(`${message}: ${error.message}`);
+    logger.error(`${message}: ${error.message}`);
   } else {
-    console.error(`${message}: An unexpected error occurred`);
+    logger.error(`${message}: An unexpected error occurred`);
   }
 };
 
@@ -46,7 +48,7 @@ export async function saveChat(
 
   try {
     const chatRef = await addDoc(
-      collection(db, COLLECTION_NAME, userId, "chat"),
+      collection(db, COLLECTION_NAME, userId, collections.CHAT),
       {
         userId,
         fullName,
@@ -83,11 +85,14 @@ export async function updateChat(
   if (!chatData) return;
 
   try {
-    await updateDoc(doc(db, COLLECTION_NAME, userId, "chat", chatId), {
-      docId: chatId,
-      timestamp: serverTimestamp(),
-      chat: chatData,
-    });
+    await updateDoc(
+      doc(db, COLLECTION_NAME, userId, collections.CHAT, chatId),
+      {
+        docId: chatId,
+        timestamp: serverTimestamp(),
+        chat: chatData,
+      }
+    );
   } catch (error) {
     handleFirestoreError(error, "Error updating chat");
   }
@@ -99,7 +104,7 @@ export async function getChat(
   chatId: string
 ): Promise<{ chat: Message[] } | null> {
   try {
-    const chatRef = doc(db, COLLECTION_NAME, userId, "chat", chatId);
+    const chatRef = doc(db, COLLECTION_NAME, userId, collections.CHAT, chatId);
     const docSnap = await getDoc(chatRef);
 
     if (docSnap.exists()) {
@@ -112,7 +117,7 @@ export async function getChat(
         return null;
       }
     } else {
-      console.warn(`No chat found with ID: ${chatId}`);
+      logger.warn(`No chat found with ID: ${chatId}`);
       return null;
     }
   } catch (error) {
@@ -124,7 +129,7 @@ export async function getChat(
 // Function to get all chat details
 export async function getAllChatDetails(userId: string): Promise<ChatDetail[]> {
   try {
-    const chatsRef = collection(db, COLLECTION_NAME, userId, "chat");
+    const chatsRef = collection(db, COLLECTION_NAME, userId, collections.CHAT);
     const querySnapshot = await getDocs(chatsRef);
 
     return querySnapshot.docs.map((doc) => ({
@@ -146,11 +151,14 @@ export async function updateChatName(
   name: string
 ): Promise<boolean> {
   try {
-    await updateDoc(doc(db, COLLECTION_NAME, userId, "chat", chatId), {
-      docId: chatId,
-      timestamp: serverTimestamp(),
-      name: name,
-    });
+    await updateDoc(
+      doc(db, COLLECTION_NAME, userId, collections.CHAT, chatId),
+      {
+        docId: chatId,
+        timestamp: serverTimestamp(),
+        name: name,
+      }
+    );
     return true;
   } catch (error) {
     handleFirestoreError(error, "Error updating chat name");
@@ -164,13 +172,16 @@ export async function pinChat(
   chatId: string
 ): Promise<boolean> {
   try {
-    await updateDoc(doc(db, COLLECTION_NAME, userId, "chat", chatId), {
-      timestamp: serverTimestamp(),
-      pinned: true,
-    });
+    await updateDoc(
+      doc(db, COLLECTION_NAME, userId, collections.CHAT, chatId),
+      {
+        timestamp: serverTimestamp(),
+        pinned: true,
+      }
+    );
     return true;
   } catch (error) {
-    handleFirestoreError(error, "Error pin chat name");
+    handleFirestoreError(error, "Error pinning chat");
     return false;
   }
 }
@@ -181,13 +192,16 @@ export async function removePinnedChat(
   chatId: string
 ): Promise<boolean> {
   try {
-    await updateDoc(doc(db, COLLECTION_NAME, userId, "chat", chatId), {
-      timestamp: serverTimestamp(),
-      pinned: false,
-    });
+    await updateDoc(
+      doc(db, COLLECTION_NAME, userId, collections.CHAT, chatId),
+      {
+        timestamp: serverTimestamp(),
+        pinned: false,
+      }
+    );
     return true;
   } catch (error) {
-    handleFirestoreError(error, "Error remove pinned chat name");
+    handleFirestoreError(error, "Error removing pinned chat");
     return false;
   }
 }
@@ -198,7 +212,13 @@ export async function deleteChat(
   chatId: string
 ): Promise<boolean> {
   try {
-    const chatDocRef = doc(db, COLLECTION_NAME, userId, "chat", chatId);
+    const chatDocRef = doc(
+      db,
+      COLLECTION_NAME,
+      userId,
+      collections.CHAT,
+      chatId
+    );
     await deleteDoc(chatDocRef);
     return true;
   } catch (error) {

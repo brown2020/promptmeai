@@ -5,34 +5,32 @@ import InputAPIKeys from "./sections/InputAPIKeys";
 import PaymentHistory from "./sections/PaymentHistory";
 import GreenWhiteLayout from "@/layouts/GreenWhiteLayout";
 import UsageSelection from "./sections/UsageSelection";
-import { isIOSReactNativeWebView } from "@/utils/platform";
-import { useEffect, useState } from "react";
+import { usePlatform } from "@/zustand/usePlatformStore";
 import Footer from "@/components/Footer";
 import SettingOption from "./sections/SettingOption";
+import ClientOnly from "@/components/ClientOnly";
 
 const SettingsScreen = () => {
-  const [isRnWebView, setRnWebview] = useState(false);
-
-  useEffect(() => {
-    setRnWebview(isIOSReactNativeWebView());
-  }, []);
+  const { isRNWebView } = usePlatform();
 
   return (
-    <GreenWhiteLayout>
-      <div className="flex flex-col gap-2 sm:gap-5 p-4 sm:p-8 max-w-[1320px] w-full">
-        <h2 className="font-medium text-[20px] sm:text-[24px] dark:text-[#FFF]">
-          Account Settings
-        </h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 overflow-auto scrollable-container">
-          <UsageSelection hideKey={isRnWebView} />
-          <CreditInformation />
-          {!isRnWebView && <InputAPIKeys />}
-          <SettingOption />
-          <PaymentHistory />
-          <Footer />
+    <ClientOnly>
+      <GreenWhiteLayout>
+        <div className="flex flex-col gap-2 sm:gap-5 p-4 sm:p-8 max-w-[1320px] w-full">
+          <h2 className="font-medium text-[20px] sm:text-[24px] dark:text-[#FFF]">
+            Account Settings
+          </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 overflow-auto scrollable-container">
+            <UsageSelection hideKey={isRNWebView} />
+            <CreditInformation />
+            {!isRNWebView && <InputAPIKeys />}
+            <SettingOption />
+            <PaymentHistory />
+            <Footer />
+          </div>
         </div>
-      </div>
-    </GreenWhiteLayout>
+      </GreenWhiteLayout>
+    </ClientOnly>
   );
 };
 

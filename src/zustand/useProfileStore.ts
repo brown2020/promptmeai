@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { deleteDoc, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { useAuthStore } from "./useAuthStore";
 import { db } from "@/firebase/firebaseClient";
+import { paths } from "@/firebase/paths";
+import { logger } from "@/utils/logger";
 import { deleteUser, getAuth } from "firebase/auth";
 
 export enum UsageMode {
@@ -69,7 +71,7 @@ const useProfileStore = create<ProfileState>((set, get) => ({
 
     try {
       set({ isLoading: true });
-      const userRef = doc(db, `users/${uid}/profile/userData`);
+      const userRef = doc(db, paths.userProfile(uid));
       const docSnap = await getDoc(userRef);
 
       if (docSnap.exists()) {
@@ -103,7 +105,7 @@ const useProfileStore = create<ProfileState>((set, get) => ({
 
       set({ isLoading: false });
     } catch (error) {
-      console.error("Error fetching or creating profile:", error);
+      logger.error("Error fetching or creating profile:", error);
       set({ isLoading: false });
     }
   },
@@ -112,19 +114,19 @@ const useProfileStore = create<ProfileState>((set, get) => ({
     const uid = useAuthStore.getState().uid;
     if (!uid) return;
 
-    console.log("Updating profile:", newProfile);
+    logger.log("Updating profile:", newProfile);
 
     try {
-      const userRef = doc(db, `users/${uid}/profile/userData`);
+      const userRef = doc(db, paths.userProfile(uid));
 
       set((state) => ({
         profile: { ...state.profile, ...newProfile },
       }));
 
       await updateDoc(userRef, { ...newProfile });
-      console.log("Profile updated successfully");
+      logger.log("Profile updated successfully");
     } catch (error) {
-      console.error("Error updating profile:", error);
+      logger.error("Error updating profile:", error);
     }
   },
 
@@ -139,7 +141,7 @@ const useProfileStore = create<ProfileState>((set, get) => ({
 
     try {
       const newCredits = profile.credits - amount;
-      const userRef = doc(db, `users/${uid}/profile/userData`);
+      const userRef = doc(db, paths.userProfile(uid));
 
       await updateDoc(userRef, { credits: newCredits });
 
@@ -149,7 +151,7 @@ const useProfileStore = create<ProfileState>((set, get) => ({
 
       return true;
     } catch (error) {
-      console.error("Error using credits:", error);
+      logger.error("Error using credits:", error);
       return false;
     }
   },
@@ -162,7 +164,7 @@ const useProfileStore = create<ProfileState>((set, get) => ({
     const newCredits = profile.credits + amount;
 
     try {
-      const userRef = doc(db, `users/${uid}/profile/userData`);
+      const userRef = doc(db, paths.userProfile(uid));
 
       const newData = {
         credits: newCredits,
@@ -175,28 +177,28 @@ const useProfileStore = create<ProfileState>((set, get) => ({
         profile: { ...state.profile, ...newData },
       }));
     } catch (error) {
-      console.error("Error adding credits:", error);
+      logger.error("Error adding credits:", error);
     }
   },
 
   deleteAccount: async () => {
-    const auth = getAuth(); // Get Firebase auth instance
+    const auth = getAuth();
     const currentUser = auth.currentUser;
 
     const uid = useAuthStore.getState().uid;
     if (!uid || !currentUser) return;
 
     try {
-      const userRef = doc(db, `users/${uid}/profile/userData`);
+      const userRef = doc(db, paths.userProfile(uid));
       // Delete the user profile data from Firestore
       await deleteDoc(userRef);
 
-      //Delete the user from Firebase Authentication
+      // Delete the user from Firebase Authentication
       await deleteUser(currentUser);
 
-      console.log("Account deleted successfully");
+      logger.log("Account deleted successfully");
     } catch (error) {
-      console.error("Error deleting account:", error);
+      logger.error("Error deleting account:", error);
     }
   },
 }));

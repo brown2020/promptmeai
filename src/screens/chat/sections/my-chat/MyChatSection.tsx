@@ -5,13 +5,14 @@ import { HiOutlinePlus } from "react-icons/hi";
 import ChatTabs from "./components/ChatTabs";
 import SearchInput from "./components/SearchInput";
 import ChatList from "./components/ChatList";
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect } from "react";
 import { getAllChatDetails } from "@/services/chatService";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { useChatStore } from "@/zustand/useChatStore";
 import { useAuthStore } from "@/zustand/useAuthStore";
 import { WarningChangingMessage } from "@/components/modals";
 import { sortChatByDateDesc } from "@/utils/chat";
+import { useActiveRequestWarning } from "@/hooks";
 
 const MyChatSection = () => {
   const { uid } = useAuthStore();
@@ -22,9 +23,10 @@ const MyChatSection = () => {
     setPinnedChats,
     setActiveChatId,
   } = useChatSideBarStore();
-  const { setMessages, isLoading: anotherActiveRequest } = useChatStore();
+  const { setMessages } = useChatStore();
 
-  const [showWarning, setShowWarning] = useState<boolean>(false);
+  const { showWarning, setShowWarning, executeWithWarning } =
+    useActiveRequestWarning();
 
   useEffect(() => {
     const getAllChatList = async (userId: string) => {
@@ -75,13 +77,7 @@ const MyChatSection = () => {
           <ButtonIcon
             icon={HiOutlinePlus}
             type="primary"
-            onClick={() => {
-              if (anotherActiveRequest) {
-                setShowWarning(true);
-              } else {
-                addNewChat();
-              }
-            }}
+            onClick={() => executeWithWarning(addNewChat)}
           />
         </div>
 

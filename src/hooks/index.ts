@@ -1,4 +1,5 @@
 import useTypingEffect from "./useTypingEffect";
 import useIsClient from "./useIsClient";
+import useActiveRequestWarning from "./useActiveRequestWarning";
 
-export { useTypingEffect, useIsClient };
+export { useTypingEffect, useIsClient, useActiveRequestWarning };

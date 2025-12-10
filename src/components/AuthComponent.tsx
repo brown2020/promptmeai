@@ -21,7 +21,7 @@ import { useRouter } from "next/navigation";
 
 import googleLogo from "@/app/assets/google.svg";
 import Image from "next/image";
-import { isIOSReactNativeWebView } from "@/utils/platform";
+import { usePlatform } from "@/zustand/usePlatformStore";
 import { motion } from "framer-motion";
 
 export default function AuthComponent() {
@@ -32,6 +32,7 @@ export default function AuthComponent() {
   const authEmail = useAuthStore((s) => s.authEmail);
   const authDisplayName = useAuthStore((s) => s.authDisplayName);
   const authPending = useAuthStore((s) => s.authPending);
+
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [name, setName] = useState<string>("");
@@ -40,15 +41,12 @@ export default function AuthComponent() {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isEmailLinkLogin, setIsEmailLinkLogin] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
-  const [showGoogleSignIn, setShowGoogleSignIn] = useState(true);
+
+  // Use platform store instead of local state
+  const { isWeb } = usePlatform();
 
   const showModal = () => setIsVisible(true);
   const hideModal = () => setIsVisible(false);
-
-  useEffect(() => {
-    // Hide Google Sign-In button and the divider if in a React Native WebView on iOS
-    setShowGoogleSignIn(!isIOSReactNativeWebView());
-  }, []);
 
   const signInWithGoogle = async () => {
     if (!acceptTerms) {
@@ -267,7 +265,7 @@ export default function AuthComponent() {
               >
                 <div className="text-3xl text-center pb-3">Sign In</div>
 
-                {showGoogleSignIn && (
+                {isWeb && (
                   <>
                     <AuthButton
                       label="Continue with Google"

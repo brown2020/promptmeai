@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useEffect, useState } from "react";
+import { memo, useMemo } from "react";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import ChatDetailActions from "./components/ChatDetailActions";
 import ChatInput from "./components/ChatInput";
@@ -10,29 +10,18 @@ import { trimText } from "@/utils/text";
 import { RxHamburgerMenu } from "react-icons/rx";
 
 const ChatDetailSection = () => {
-  const {
-    activeChatId,
-    chats,
-    pinnedChats,
-    isNewChat,
-    activeTab,
-    setDrawerOpen,
-  } = useChatSideBarStore((state) => state);
-  const [title, setTitle] = useState<string>("");
+  const { activeChatId, chats, pinnedChats, isNewChat, setDrawerOpen } =
+    useChatSideBarStore((state) => state);
+
+  // Use useMemo instead of useEffect + useState for derived state
+  const title = useMemo(() => {
+    const chat =
+      chats.find((c) => c.id === activeChatId) ??
+      pinnedChats.find((c) => c.id === activeChatId);
+    return trimText(chat?.name ?? "");
+  }, [activeChatId, chats, pinnedChats]);
+
   const typedTitle = useTypingEffect(title, 100);
-
-  useEffect(() => {
-    let tempTitle = chats.find((chat) => chat.id === activeChatId)?.name || "";
-
-    if (!tempTitle) {
-      tempTitle =
-        pinnedChats.find((chat) => chat.id === activeChatId)?.name || "";
-    }
-
-    const formatedTitle = trimText(tempTitle);
-
-    setTitle(formatedTitle);
-  }, [activeChatId, activeTab, chats, pinnedChats]);
 
   return (
     <div className="w-full h-full p-[16px] flex flex-col gap-[12px] overflow-hidden">

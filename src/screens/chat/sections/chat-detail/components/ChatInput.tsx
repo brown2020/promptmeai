@@ -5,6 +5,7 @@ import { ModalWarning } from "@/components/modals";
 import { MODEL_NAMES, ModelName } from "@/constants/modelNames";
 import { saveChat, updateChat } from "@/services/chatService";
 import { isObjectEmpty } from "@/utils/object";
+import { logger } from "@/utils/logger";
 import {
   calculateCreditCost,
   calculateTotalTokenUsage,
@@ -15,7 +16,7 @@ import { PromptCoreMessage, useChatStore } from "@/zustand/useChatStore";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 import { FaStopCircle } from "react-icons/fa";
 import { ModelMessage } from "ai";
-import { readStreamableValue } from '@ai-sdk/rsc';
+import { readStreamableValue } from "@ai-sdk/rsc";
 import { useRouter } from "next/navigation";
 import {
   Fragment,
@@ -64,19 +65,22 @@ const ChatInput = () => {
 
   useEffect(() => {
     if (inputRef.current) {
-      inputRef.current.focus(); // Automatically focus the input
+      inputRef.current.focus();
     }
   }, []);
 
   const getAssistantResponse = useCallback(
-    async (model: ModelName, userMessage: ModelMessage, signal?: AbortSignal) => {
+    async (
+      model: ModelName,
+      userMessage: ModelMessage,
+      signal?: AbortSignal
+    ) => {
       try {
         const currentMessages: ModelMessage[] = messages.flatMap((message) => [
           message.userMessage,
           ...Object.values(message.responses),
         ]);
 
-        // Remove signal here to avoid serialization issue
         const result = await continueConversation(
           [...currentMessages, userMessage],
           model,
@@ -85,10 +89,9 @@ const ChatInput = () => {
             : profile.APIKeys
         );
 
-        // Check for abort status within the loop
         for await (const content of readStreamableValue(result)) {
           if (signal?.aborted) {
-            console.log("Aborted request", model);
+            logger.log("Aborted request", model);
             break;
           }
 
@@ -99,15 +102,14 @@ const ChatInput = () => {
           });
         }
       } catch (error) {
-        // Type guard to check if `error` has the expected properties
         if (error instanceof Error) {
           if (error.name === "AbortError") {
-            console.log("Request aborted.");
+            logger.log("Request aborted.");
           } else {
-            console.error("Error fetching assistant response:", error.message);
+            logger.error("Error fetching assistant response:", error.message);
           }
         } else {
-          console.error("Unknown error:", error);
+          logger.error("Unknown error:", error);
         }
       }
     },
@@ -144,7 +146,7 @@ const ChatInput = () => {
 
         return totalTokenUsage;
       } catch (error) {
-        console.error("Error saving or updating chat: ", error);
+        logger.error("Error saving or updating chat: ", error);
       }
     }
   };
@@ -189,14 +191,14 @@ const ChatInput = () => {
       if (successfulResponses.length > 0) {
         const totalTokenUsage = await saveChatFunction();
 
-        console.log("Total token proceed", totalTokenUsage);
+        logger.log("Total token proceed", totalTokenUsage);
 
         if (totalTokenUsage && profile.usageMode === UsageMode.Credits) {
           const totalCreditUse = calculateCreditCost(totalTokenUsage);
           reduceCredits(totalCreditUse);
         }
       } else {
-        console.error("All promises failed.");
+        logger.error("All promises failed.");
 
         setIsAlertAPIKeysNotWorking(true);
         setMessages([]);
@@ -205,7 +207,7 @@ const ChatInput = () => {
       setIsLoading(false);
       setIsStopRequest(false);
     } catch (error) {
-      console.error("Error handling submission: ", error);
+      logger.error("Error handling submission: ", error);
       setIsLoading(false);
     }
   };

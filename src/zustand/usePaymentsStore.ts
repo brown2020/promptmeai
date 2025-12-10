@@ -8,8 +8,10 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { useAuthStore } from "./useAuthStore";
-import toast from "react-hot-toast";
 import { db } from "@/firebase/firebaseClient";
+import { paths, collections } from "@/firebase/paths";
+import { logger } from "@/utils/logger";
+import toast from "react-hot-toast";
 
 export type PaymentType = {
   id: string;
@@ -39,14 +41,17 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
   fetchPayments: async () => {
     const uid = useAuthStore.getState().uid;
     if (!uid) {
-      console.error("Invalid UID for fetchPayments");
+      logger.warn("Invalid UID for fetchPayments");
       return;
     }
 
     set({ paymentsLoading: true });
 
     try {
-      const q = query(collection(db, "users", uid, "payments"));
+      const paymentsPath = paths.userPayments(uid);
+      const q = query(
+        collection(db, collections.USERS, uid, collections.PAYMENTS)
+      );
       const querySnapshot = await getDocs(q);
       const payments = querySnapshot.docs.map((doc) => ({
         id: doc.id,
@@ -66,7 +71,7 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : "An unknown error occurred";
-      console.error("Error fetching payments:", errorMessage);
+      logger.error("Error fetching payments:", errorMessage);
       set({ paymentsError: errorMessage, paymentsLoading: false });
     }
   },
@@ -74,7 +79,7 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
   addPayment: async (payment) => {
     const uid = useAuthStore.getState().uid;
     if (!uid) {
-      console.error("Invalid UID for addPayment");
+      logger.warn("Invalid UID for addPayment");
       return;
     }
 
@@ -83,7 +88,7 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
     try {
       // Query to check if the payment with the same id already exists
       const q = query(
-        collection(db, "users", uid, "payments"),
+        collection(db, collections.USERS, uid, collections.PAYMENTS),
         where("id", "==", payment.id)
       );
       const querySnapshot = await getDocs(q);
@@ -95,7 +100,7 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
       }
 
       const newPaymentDoc = await addDoc(
-        collection(db, "users", uid, "payments"),
+        collection(db, collections.USERS, uid, collections.PAYMENTS),
         {
           id: payment.id,
           amount: payment.amount,
@@ -134,7 +139,7 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : "An unknown error occurred";
-      console.error("Error adding payment:", errorMessage);
+      logger.error("Error adding payment:", errorMessage);
       set({ paymentsError: errorMessage, paymentsLoading: false });
     }
   },
@@ -143,9 +148,8 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
     const uid = useAuthStore.getState().uid;
     if (!uid) return null;
 
-    const paymentsRef = collection(db, "users", uid, "payments");
     const q = query(
-      paymentsRef,
+      collection(db, collections.USERS, uid, collections.PAYMENTS),
       where("id", "==", paymentId),
       where("status", "==", "succeeded")
     );
