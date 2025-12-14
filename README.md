@@ -255,20 +255,38 @@ promptme_chats/
 
 ### Security Rules
 
-Ensure your Firestore rules allow authenticated users to read/write only their own data:
+This repo includes production-ready rules that ensure **users can only access their own data**:
 
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /users/{userId}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-    match /promptme_chats/{userId}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-  }
+- **Firestore**: `firestore.rules`
+- **Storage**: `storage.rules`
+
+#### What’s protected
+
+- **User data**: `users/{uid}` and `users/{uid}/profile/userData`
+- **Payments**: `users/{uid}/payments/{paymentDocId}` (read/create only; update/delete denied by default)
+- **Chats**: `promptme_chats/{uid}/chat/{chatId}` (create/update require `userId === uid`)
+- **Everything else**: denied by default
+
+#### Deploy (Firebase Console)
+
+- **Firestore**: Firebase Console → Firestore Database → **Rules** → paste from `firestore.rules` → Publish
+- **Storage**: Firebase Console → Storage → **Rules** → paste from `storage.rules` → Publish
+
+#### Deploy (Firebase CLI)
+
+If you use the Firebase CLI, ensure your `firebase.json` points to the rule files:
+
+```json
+{
+  "firestore": { "rules": "firestore.rules" },
+  "storage": { "rules": "storage.rules" }
 }
+```
+
+Then deploy:
+
+```bash
+firebase deploy --only firestore:rules,storage:rules
 ```
 
 ## Contributing
