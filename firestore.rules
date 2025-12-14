@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // ---- USERS ----
+    // App writes: users/{uid}
+    match /users/{uid} {
+      allow read, create, update, delete: if isOwner(uid);
+
+      // App reads/writes: users/{uid}/profile/userData
+      match /profile/userData {
+        allow read, create, update, delete: if isOwner(uid);
+      }
+
+      // App reads/creates: users/{uid}/payments/{paymentDocId}
+      match /payments/{paymentDocId} {
+        allow read, create: if isOwner(uid);
+        allow update, delete: if false;
+      }
+
+      // Default deny for any other subcollections under users/{uid}
+      match /{document=**} {
+        allow read, write: if false;
+      }
+    }
+
+    // ---- CHATS ----
+    // App reads/writes: promptme_chats/{uid}/chat/{chatId}
+    match /promptme_chats/{uid}/chat/{chatId} {
+      allow read, delete: if isOwner(uid);
+
+      // Ensure chat docs always belong to the signed-in user.
+      allow create: if isOwner(uid)
+        && request.resource.data.userId == uid;
+
+      allow update: if isOwner(uid)
+        && request.resource.data.userId == uid
+        && resource.data.userId == uid;
+    }
+
+    // Default deny for everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
