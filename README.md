@@ -4,9 +4,9 @@
 
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178C6?style=flat-square&logo=typescript)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC?style=flat-square&logo=tailwind-css)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-3178C6?style=flat-square&logo=typescript)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.1.18-38B2AC?style=flat-square&logo=tailwind-css)
+![License](https://img.shields.io/badge/License-AGPLv3-blue?style=flat-square)
 
 **Compare AI model responses side-by-side in real-time**
 
@@ -45,10 +45,10 @@ Prompt.me AI is an open-source platform that allows you to send the same prompt 
 
 ### Frontend
 
-- **[Next.js 16](https://nextjs.org/)** — React framework with App Router
-- **[React 19](https://react.dev/)** — UI library
-- **[TypeScript 5.6](https://www.typescriptlang.org/)** — Type safety
-- **[Tailwind CSS 4](https://tailwindcss.com/)** — Utility-first styling
+- **[Next.js 16.1.1](https://nextjs.org/)** — React framework with App Router
+- **[React 19.2.3](https://react.dev/)** — UI library
+- **[TypeScript 5.9.3](https://www.typescriptlang.org/)** — Type safety
+- **[Tailwind CSS 4.1.18](https://tailwindcss.com/)** — Utility-first styling
 - **[NextUI](https://nextui.org/)** — React component library
 - **[Framer Motion](https://www.framer.com/motion/)** — Animations
 
@@ -76,7 +76,7 @@ Prompt.me AI is an open-source platform that allows you to send the same prompt 
 
 ### Prerequisites
 
-- **Node.js 18+** (LTS recommended)
+- **Node.js 20.9+** (LTS recommended)
 - **npm** or **yarn** or **pnpm**
 - API keys from AI providers (optional if using credits)
 - Firebase project
@@ -348,7 +348,7 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ## License
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)** — see the [LICENSE.md](LICENSE.md) file for details.
 
 ## Acknowledgments
 
