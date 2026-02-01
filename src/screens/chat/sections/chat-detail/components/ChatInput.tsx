@@ -151,7 +151,7 @@ const ChatInput = () => {
     }
   };
 
-  const initialMessage = () => {
+  const initialMessage = async () => {
     const newUserMessage: PromptCoreMessage = {
       content: input,
       role: "user",
@@ -161,7 +161,11 @@ const ChatInput = () => {
     setInput("");
     setActiveTab("chats");
 
-    saveChatFunction();
+    try {
+      await saveChatFunction();
+    } catch (error) {
+      logger.error("Failed to save initial message:", error);
+    }
 
     return newUserMessage;
   };
@@ -169,7 +173,7 @@ const ChatInput = () => {
   const submitHandler = async () => {
     if (!input || isLoading || isStopRequest) return;
 
-    const newUserMessage = initialMessage();
+    const newUserMessage = await initialMessage();
 
     setIsLoading(true);
     try {
@@ -222,18 +226,18 @@ const ChatInput = () => {
 
   return (
     <Fragment>
-      <div className="self-end w-full max-w-[720px] h-[56px] shrink-0 flex gap-[16px] justify-center items-center">
-        <div className="w-full bg-white dark:bg-[#4B4F5B] rounded-xl shadow-sm px-[16px] py-[12px] flex gap-[12px] items-center">
+      <div className="self-end w-full max-w-3xl h-14 shrink-0 flex gap-4 justify-center items-center">
+        <div className="w-full bg-white dark:bg-gray-700 rounded-xl shadow-sm px-4 py-3 flex gap-3 items-center">
           <input
             ref={inputRef}
-            className="w-full text-[16px] dark:bg-[#4B4F5B] text-[#A0A7BB] outline-hidden"
+            className="w-full text-base bg-transparent dark:bg-transparent text-gray-600 dark:text-gray-300 outline-none"
             placeholder="Type your question here..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && submitHandler()}
           />
           <div
-            className="flex items-center justify-center h-[32px] w-[32px] rounded-lg cursor-pointer shrink-0 mr-[-4px]"
+            className="flex items-center justify-center h-8 w-8 rounded-lg cursor-pointer shrink-0 -mr-1"
             onClick={() => (isLoading ? stopRequest() : submitHandler())}
           >
             {isLoading && !isStopRequest ? (
@@ -241,7 +245,7 @@ const ChatInput = () => {
             ) : isStopRequest ? (
               <Spinner size="sm" color="default" />
             ) : (
-              <PiPaperPlaneTilt size={20} color="#ABABAB" />
+              <PiPaperPlaneTilt size={20} className="text-gray-400" />
             )}
           </div>
         </div>

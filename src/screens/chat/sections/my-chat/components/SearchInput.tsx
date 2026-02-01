@@ -1,35 +1,59 @@
 import { ChatDetail } from "@/types/chat";
 import { searchChatByName } from "@/utils/chat";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
-import { useEffect, useState } from "react";
+import { debounce } from "lodash";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 
 const SearchInput = () => {
   const { chats, setChats } = useChatSideBarStore((state) => state);
-  const [allChat, setAllChat] = useState<ChatDetail[]>([]);
-  const [isInitial, setIsInitial] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
+  // Store the original chat list in a ref to avoid stale closure issues
+  const originalChatsRef = useRef<ChatDetail[]>([]);
+
+  // Update the ref when chats change and search is empty
   useEffect(() => {
-    if (chats.length > 0 && !isInitial) {
-      setAllChat(chats);
-      setIsInitial(true);
+    if (searchTerm === "" && chats.length > 0) {
+      originalChatsRef.current = chats;
     }
-  }, [chats, isInitial]);
+  }, [chats, searchTerm]);
 
-  const searchHandler = (searchTerm: string) => {
-    const searchResult = searchChatByName(allChat, searchTerm);
+  // Debounced search to prevent excessive filtering on every keystroke
+  const debouncedSearch = useCallback(
+    debounce((term: string) => {
+      if (term === "") {
+        setChats(originalChatsRef.current);
+      } else {
+        const searchResult = searchChatByName(originalChatsRef.current, term);
+        setChats(searchResult);
+      }
+    }, 300),
+    [setChats]
+  );
 
-    setChats(searchResult);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    debouncedSearch(value);
   };
 
+  // Cleanup debounce on unmount
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
+
   return (
-    <div className="flex gap-[10px]">
-      <div className="flex gap-[8px] items-center bg-[#D6D6D6]/[0.30] dark:bg-[#3F424A] rounded-lg h-[40px] w-full p-[10px] shadow-sm">
-        <IoSearch size={18} className="text-[#575B65] dark:text-[#9CA3AF]" />
+    <div className="flex gap-2.5">
+      <div className="flex gap-2 items-center bg-gray-300/30 dark:bg-gray-700 rounded-lg h-10 w-full p-2.5 shadow-sm">
+        <IoSearch size={18} className="text-gray-600 dark:text-gray-400" />
         <input
           placeholder="Search..."
-          className="bg-transparent border-none outline-hidden text-[16px] text-[#575B65] dark:text-[#9CA3AF] w-full"
-          onChange={(e) => searchHandler(e.target.value)}
+          className="bg-transparent border-none outline-none text-base text-gray-600 dark:text-gray-400 w-full"
+          value={searchTerm}
+          onChange={handleChange}
         />
       </div>
     </div>

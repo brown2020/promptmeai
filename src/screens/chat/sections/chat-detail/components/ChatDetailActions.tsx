@@ -43,22 +43,22 @@ const ChatDetailActions = () => {
   const pinHandler = async () => {
     if (!user?.uid || !activeChatId) return;
 
-    const result = await pinChat(user?.uid, activeChatId);
+    const pinResult = await pinChat(user?.uid, activeChatId);
 
-    if (result) {
+    if (pinResult) {
       toast.success("Chat pinned successfully.", {
         id: "pin-success",
       });
 
-      const { result, notFound } = moveChatById(
+      const { result: moveResult, notFound } = moveChatById(
         activeChatId,
         chats,
         pinnedChats
       );
 
       if (!notFound) {
-        setChats(result.newFromArray);
-        setPinnedChats(result.newToArray);
+        setChats(moveResult.newFromArray);
+        setPinnedChats(moveResult.newToArray);
         setActiveTab("pinned");
       }
     } else {
@@ -71,22 +71,22 @@ const ChatDetailActions = () => {
   const unpinHandler = async () => {
     if (!user?.uid || !activeChatId) return;
 
-    const result = await removePinnedChat(user?.uid, activeChatId);
+    const unpinResult = await removePinnedChat(user?.uid, activeChatId);
 
-    if (result) {
+    if (unpinResult) {
       toast.success("Chat unpinned successfully.", {
         id: "unpin-success",
       });
 
-      const { result, notFound } = moveChatById(
+      const { result: moveResult, notFound } = moveChatById(
         activeChatId,
         pinnedChats,
         chats
       );
 
       if (!notFound) {
-        setPinnedChats(result.newFromArray);
-        setChats(result.newToArray);
+        setPinnedChats(moveResult.newFromArray);
+        setChats(moveResult.newToArray);
         setActiveTab("chats");
       }
     } else {

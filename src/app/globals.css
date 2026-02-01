@@ -4,6 +4,44 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Design System CSS Variables */
+:root {
+  /* Brand colors */
+  --color-brand-primary: #1A8F70;
+  --color-brand-primary-hover: #158060;
+  --color-brand-primary-light: rgba(26, 143, 112, 0.3);
+  --color-brand-secondary: #24C69E;
+
+  /* Light mode backgrounds */
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F5F5F5;
+  --color-bg-tertiary: #F9F9F9;
+
+  /* Light mode text */
+  --color-text-primary: #1E1F22;
+  --color-text-secondary: #3B3B3B;
+  --color-text-muted: #909090;
+
+  /* Borders */
+  --color-border: #E5E5E5;
+}
+
+.dark {
+  /* Dark mode backgrounds */
+  --color-bg-primary: #272A2E;
+  --color-bg-secondary: #1E1F21;
+  --color-bg-tertiary: #1E1F22;
+  --color-bg-input: #4B4F5B;
+
+  /* Dark mode text */
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: rgba(238, 238, 238, 0.9);
+  --color-text-muted: rgba(238, 238, 238, 0.7);
+
+  /* Dark mode borders */
+  --color-border: #3F424A;
+}
+
 @theme {
   --background-image-gradient-radial: radial-gradient(var(--tw-gradient-stops));
   --background-image-gradient-conic: conic-gradient(
@@ -111,7 +149,14 @@
 }
 
 @utility btn-primary {
-  @apply cursor-pointer flex w-full outline-hidden text-center justify-center items-center gap-2 mt-2 px-6 py-2 bg-[#1A8F70] text-white font-semibold hover:bg-[#1A8F70]/30 rounded-full disabled:bg-[#1A8F70]/30 disabled:hover:bg-[#1A8F70]/30 disabled:cursor-not-allowed;
+  @apply cursor-pointer flex w-full outline-hidden text-center justify-center items-center gap-2 mt-2 px-6 py-2 text-white font-semibold rounded-full disabled:cursor-not-allowed transition-colors;
+  background-color: var(--color-brand-primary);
+  &:hover:not(:disabled) {
+    background-color: var(--color-brand-primary-hover);
+  }
+  &:disabled {
+    background-color: var(--color-brand-primary-light);
+  }
 }
 
 @utility btn-blue {
@@ -135,7 +180,11 @@
 }
 
 @utility btn-secondary {
-  @apply cursor-pointer flex outline-hidden items-center gap-2 mt-2 px-6 py-2 bg-[#1A8F70] text-black/50 font-semibold hover:bg-[#1A8F70]/30 ml-auto rounded-full;
+  @apply cursor-pointer flex outline-hidden items-center gap-2 mt-2 px-6 py-2 text-black/50 font-semibold ml-auto rounded-full transition-colors;
+  background-color: var(--color-brand-primary);
+  &:hover {
+    background-color: var(--color-brand-primary-light);
+  }
 }
 
 @utility input-primary {

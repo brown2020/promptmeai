@@ -1,10 +1,10 @@
 import { create } from "zustand";
-import { deleteDoc, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { useAuthStore } from "./useAuthStore";
 import { db } from "@/firebase/firebaseClient";
 import { paths } from "@/firebase/paths";
 import { logger } from "@/utils/logger";
-import { deleteUser, getAuth } from "firebase/auth";
+import toast from "react-hot-toast";
 
 export enum UsageMode {
   Credits = "CREDITS",
@@ -53,13 +53,22 @@ interface ProfileState {
   profile: ProfileType;
   isLoading: boolean;
   isDefaultData: boolean;
-  fetchProfile: () => void;
+  fetchProfile: () => Promise<void>;
   updateProfile: (newProfile: Partial<ProfileType>) => Promise<void>;
+  // Kept for backward compatibility - delegates to useCreditsStore
   reduceCredits: (amount: number) => Promise<boolean>;
   addCredits: (amount: number) => Promise<void>;
+  // Kept for backward compatibility - delegates to useAccountStore
   deleteAccount: () => Promise<void>;
 }
 
+/**
+ * Store for user profile data.
+ *
+ * Note: Credit operations (reduceCredits, addCredits) are delegated to useCreditsStore.
+ * Account operations (deleteAccount) are delegated to useAccountStore.
+ * These are kept here for backward compatibility.
+ */
 const useProfileStore = create<ProfileState>((set, get) => ({
   profile: defaultProfile,
   isLoading: false,
@@ -102,10 +111,10 @@ const useProfileStore = create<ProfileState>((set, get) => ({
         await setDoc(userRef, newProfile);
         set({ profile: newProfile, isDefaultData: false });
       }
-
-      set({ isLoading: false });
     } catch (error) {
       logger.error("Error fetching or creating profile:", error);
+      toast.error("Failed to load profile");
+    } finally {
       set({ isLoading: false });
     }
   },
@@ -116,90 +125,41 @@ const useProfileStore = create<ProfileState>((set, get) => ({
 
     logger.log("Updating profile:", newProfile);
 
+    const previousProfile = get().profile;
+
+    // Optimistic update
+    set((state) => ({
+      profile: { ...state.profile, ...newProfile },
+    }));
+
     try {
       const userRef = doc(db, paths.userProfile(uid));
-
-      set((state) => ({
-        profile: { ...state.profile, ...newProfile },
-      }));
-
       await updateDoc(userRef, { ...newProfile });
       logger.log("Profile updated successfully");
     } catch (error) {
+      // Rollback on failure
+      set({ profile: previousProfile });
       logger.error("Error updating profile:", error);
+      toast.error("Failed to update profile. Please try again.");
     }
   },
 
+  // Backward compatibility - delegates to useCreditsStore
   reduceCredits: async (amount: number) => {
-    const uid = useAuthStore.getState().uid;
-    if (!uid) return false;
-
-    const profile = get().profile;
-    if (profile.credits < amount) {
-      return false;
-    }
-
-    try {
-      const newCredits = profile.credits - amount;
-      const userRef = doc(db, paths.userProfile(uid));
-
-      await updateDoc(userRef, { credits: newCredits });
-
-      set((state) => ({
-        profile: { ...state.profile, credits: newCredits },
-      }));
-
-      return true;
-    } catch (error) {
-      logger.error("Error using credits:", error);
-      return false;
-    }
+    const { useCreditsStore } = await import("./useCreditsStore");
+    return useCreditsStore.getState().reduceCredits(amount);
   },
 
+  // Backward compatibility - delegates to useCreditsStore
   addCredits: async (amount: number) => {
-    const uid = useAuthStore.getState().uid;
-    if (!uid) return;
-
-    const profile = get().profile;
-    const newCredits = profile.credits + amount;
-
-    try {
-      const userRef = doc(db, paths.userProfile(uid));
-
-      const newData = {
-        credits: newCredits,
-        totalCredits: newCredits,
-      };
-
-      await updateDoc(userRef, { ...newData });
-
-      set((state) => ({
-        profile: { ...state.profile, ...newData },
-      }));
-    } catch (error) {
-      logger.error("Error adding credits:", error);
-    }
+    const { useCreditsStore } = await import("./useCreditsStore");
+    return useCreditsStore.getState().addCredits(amount);
   },
 
+  // Backward compatibility - delegates to useAccountStore
   deleteAccount: async () => {
-    const auth = getAuth();
-    const currentUser = auth.currentUser;
-
-    const uid = useAuthStore.getState().uid;
-    if (!uid || !currentUser) return;
-
-    try {
-      const userRef = doc(db, paths.userProfile(uid));
-      // Delete the user profile data from Firestore
-      await deleteDoc(userRef);
-
-      // Delete the user from Firebase Authentication
-      await deleteUser(currentUser);
-
-      logger.log("Account deleted successfully");
-    } catch (error) {
-      logger.error("Error deleting account:", error);
-    }
+    const { useAccountStore } = await import("./useAccountStore");
+    await useAccountStore.getState().deleteAccount();
   },
 }));
 

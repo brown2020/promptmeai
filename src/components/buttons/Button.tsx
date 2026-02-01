@@ -9,29 +9,31 @@ type ButtonProps = {
 } & PropsWithChildren &
   ButtonHTMLAttributes<HTMLButtonElement>;
 
+/**
+ * Reusable button component with multiple variants.
+ * Uses brand primary color (#1A8F70) for consistent styling.
+ */
 const Button = ({
   variant = "filled",
   className,
   children,
   ...props
 }: ButtonProps) => {
+  const baseStyles =
+    "rounded-md py-2 px-4 text-center text-sm transition-all disabled:pointer-events-none disabled:opacity-50";
+
+  const variants = {
+    filled:
+      "bg-[#1A8F70] text-white hover:bg-[#158060] active:bg-[#158060] shadow-md hover:shadow-lg focus:shadow-none",
+    gradient:
+      "bg-gradient-to-tr from-[#1A8F70] to-[#24C69E] text-white shadow-md hover:shadow-lg hover:opacity-90",
+    outlined:
+      "border border-[#1A8F70] text-[#1A8F70] hover:bg-[#1A8F70] hover:text-white shadow-sm hover:shadow-md",
+    text: "text-[#1A8F70] hover:bg-[#1A8F70]/10 focus:bg-[#1A8F70]/10",
+  };
+
   return (
-    <button
-      className={cn(
-        {
-          "bg-slate-800 text-white focus:bg-slate-700 active:bg-slate-700 hover:bg-slate-700 rounded-md py-2 px-4 border border-transparent text-center text-sm  transition-all shadow-md hover:shadow-lg focus:shadow-none active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none":
-            variant === "filled",
-          "rounded-md bg-linear-to-tr from-slate-800 to-slate-700 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none":
-            variant === "gradient",
-          "rounded-md border border-slate-300 py-2 px-4 text-center text-sm transition-all shadow-xs hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none":
-            variant === "outlined",
-          "rounded-md border border-transparent py-2 px-4 text-center text-sm transition-all text-slate-600 hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none":
-            variant === "text",
-        },
-        className
-      )}
-      {...props}
-    >
+    <button className={cn(baseStyles, variants[variant], className)} {...props}>
       {children}
     </button>
   );

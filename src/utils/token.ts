@@ -1,13 +1,36 @@
 import { Message } from "@/zustand/useChatStore";
 import { convertToSubcurrency } from "./number";
+import { logger } from "./logger";
 
 // Approximation: 1 token ≈ 4 characters (this is a common estimate for GPT models)
 const AVERAGE_CHARACTERS_PER_TOKEN = 4;
 
-// Function to count tokens based on the length of the text (character count)
+// Maximum input length to prevent memory issues (~25k tokens)
+const MAX_INPUT_LENGTH = 100_000;
+
+/**
+ * Count tokens based on the length of the text (character count).
+ * Uses approximation of 4 characters per token.
+ *
+ * @param text - The input text to count tokens for
+ * @returns The estimated number of tokens
+ */
 export function countTokens(text: string): number {
+  // Validate input
+  if (!text || typeof text !== "string") {
+    return 0;
+  }
+
   // Remove leading and trailing spaces
   const cleanedText = text.trim();
+
+  // Check for excessively long input
+  if (cleanedText.length > MAX_INPUT_LENGTH) {
+    logger.warn(
+      `Input exceeds max length of ${MAX_INPUT_LENGTH} characters. Truncating for token calculation.`
+    );
+    return Math.ceil(MAX_INPUT_LENGTH / AVERAGE_CHARACTERS_PER_TOKEN);
+  }
 
   // Calculate the number of tokens as character count / 4 (approximation)
   return Math.ceil(cleanedText.length / AVERAGE_CHARACTERS_PER_TOKEN);

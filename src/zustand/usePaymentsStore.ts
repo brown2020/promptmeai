@@ -64,8 +64,12 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
         currency: doc.data().currency,
       }));
 
-      // Sort payments by createdAt with newest at the top
-      payments.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+      // Sort payments by createdAt with newest at the top (handle null safely)
+      payments.sort((a, b) => {
+        const timeA = a.createdAt?.toMillis() ?? 0;
+        const timeB = b.createdAt?.toMillis() ?? 0;
+        return timeB - timeA;
+      });
 
       set({ payments, paymentsLoading: false });
     } catch (error: unknown) {
@@ -127,10 +131,12 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
       set((state) => {
         const updatedPayments = [...state.payments, newPayment];
 
-        // Sort payments by createdAt with newest at the top
-        updatedPayments.sort(
-          (a, b) => b.createdAt!.toMillis() - a.createdAt!.toMillis()
-        );
+        // Sort payments by createdAt with newest at the top (handle null safely)
+        updatedPayments.sort((a, b) => {
+          const timeA = a.createdAt?.toMillis() ?? 0;
+          const timeB = b.createdAt?.toMillis() ?? 0;
+          return timeB - timeA;
+        });
 
         return { payments: updatedPayments, paymentsLoading: false };
       });

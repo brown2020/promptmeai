@@ -13,6 +13,8 @@ import { useAuthStore } from "@/zustand/useAuthStore";
 import { WarningChangingMessage } from "@/components/modals";
 import { sortChatByDateDesc } from "@/utils/chat";
 import { useActiveRequestWarning } from "@/hooks";
+import toast from "react-hot-toast";
+import { logger } from "@/utils/logger";
 
 const MyChatSection = () => {
   const { uid } = useAuthStore();
@@ -40,7 +42,8 @@ const MyChatSection = () => {
         setChats(nonPinnedChats);
         setPinnedChats(pinnedChats);
       } catch (error) {
-        console.error("Error fetching all chat details: ", error);
+        logger.error("Error fetching all chat details:", error);
+        toast.error("Failed to load chats. Please refresh the page.");
       }
     };
 
@@ -67,13 +70,13 @@ const MyChatSection = () => {
 
       {/* Drawer */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-[320px] bg-white dark:bg-[#272A2E] p-[15px] flex flex-col gap-[16px] transform transition-transform lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-80 bg-white dark:bg-gray-800 p-4 flex flex-col gap-4 transform transition-transform lg:static lg:translate-x-0 ${
           isDrawerOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Top section */}
-        <div className="flex justify-between items-center gap-[10px]">
-          <h2 className="text-[20px] font-bold dark:text-[#FFF]">My Chats</h2>
+        <div className="flex justify-between items-center gap-2.5">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">My Chats</h2>
           <ButtonIcon
             icon={HiOutlinePlus}
             type="primary"

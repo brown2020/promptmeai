@@ -144,67 +144,46 @@ export async function getAllChatDetails(userId: string): Promise<ChatDetail[]> {
   }
 }
 
+/**
+ * Generic helper to update a chat document with specific fields.
+ * Reduces code duplication across update operations.
+ */
+async function updateChatField(
+  userId: string,
+  chatId: string,
+  fields: Record<string, unknown>,
+  errorMessage: string
+): Promise<boolean> {
+  try {
+    await updateDoc(
+      doc(db, COLLECTION_NAME, userId, collections.CHAT, chatId),
+      {
+        timestamp: serverTimestamp(),
+        ...fields,
+      }
+    );
+    return true;
+  } catch (error) {
+    handleFirestoreError(error, errorMessage);
+    return false;
+  }
+}
+
 // Function to update chat name
-export async function updateChatName(
+export const updateChatName = (
   userId: string,
   chatId: string,
   name: string
-): Promise<boolean> {
-  try {
-    await updateDoc(
-      doc(db, COLLECTION_NAME, userId, collections.CHAT, chatId),
-      {
-        docId: chatId,
-        timestamp: serverTimestamp(),
-        name: name,
-      }
-    );
-    return true;
-  } catch (error) {
-    handleFirestoreError(error, "Error updating chat name");
-    return false;
-  }
-}
+): Promise<boolean> =>
+  updateChatField(userId, chatId, { name, docId: chatId }, "Error updating chat name");
 
 // Function to pin chat
-export async function pinChat(
-  userId: string,
-  chatId: string
-): Promise<boolean> {
-  try {
-    await updateDoc(
-      doc(db, COLLECTION_NAME, userId, collections.CHAT, chatId),
-      {
-        timestamp: serverTimestamp(),
-        pinned: true,
-      }
-    );
-    return true;
-  } catch (error) {
-    handleFirestoreError(error, "Error pinning chat");
-    return false;
-  }
-}
+export const pinChat = (userId: string, chatId: string): Promise<boolean> =>
+  updateChatField(userId, chatId, { pinned: true }, "Error pinning chat");
 
 // Function to remove pinned chat
-export async function removePinnedChat(
-  userId: string,
-  chatId: string
-): Promise<boolean> {
-  try {
-    await updateDoc(
-      doc(db, COLLECTION_NAME, userId, collections.CHAT, chatId),
-      {
-        timestamp: serverTimestamp(),
-        pinned: false,
-      }
-    );
-    return true;
-  } catch (error) {
-    handleFirestoreError(error, "Error removing pinned chat");
-    return false;
-  }
-}
+export const removePinnedChat = (userId: string, chatId: string): Promise<boolean> =>
+  updateChatField(userId, chatId, { pinned: false }, "Error removing pinned chat");
 
 // Function to delete a chat
 export async function deleteChat(
