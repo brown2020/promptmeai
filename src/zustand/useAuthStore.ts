@@ -58,28 +58,40 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   clearAuthDetails: () => set({ ...defaultAuthState }),
 }));
 
+// Fields that should be persisted to Firestore (not internal UI state)
+const FIRESTORE_FIELDS: (keyof AuthState)[] = [
+  "uid",
+  "authEmail",
+  "authDisplayName",
+  "authPhotoUrl",
+  "authEmailVerified",
+];
+
 async function updateUserDetailsInFirestore(
   details: Partial<AuthState>,
   uid: string
 ) {
-  if (uid) {
-    const userRef = doc(db, paths.user(uid));
+  if (!uid) return;
 
-    // Remove any fields that are functions
-    const filteredDetails = Object.fromEntries(
-      Object.entries(details).filter((entry) => typeof entry[1] !== "function")
-    );
-
-    logger.log("Updating auth details in Firestore:", filteredDetails);
-    try {
-      await setDoc(
-        userRef,
-        { ...filteredDetails, lastSignIn: serverTimestamp() },
-        { merge: true }
-      );
-      logger.log("Auth details updated successfully in Firestore.");
-    } catch (error) {
-      logger.error("Error updating auth details in Firestore:", error);
+  // Only write user-facing fields to Firestore, not internal state
+  const firestoreData: Record<string, unknown> = {};
+  for (const key of FIRESTORE_FIELDS) {
+    if (key in details && details[key] !== undefined) {
+      firestoreData[key] = details[key];
     }
+  }
+
+  // Skip write if no relevant fields changed
+  if (Object.keys(firestoreData).length === 0) return;
+
+  try {
+    const userRef = doc(db, paths.user(uid));
+    await setDoc(
+      userRef,
+      { ...firestoreData, lastSignIn: serverTimestamp() },
+      { merge: true }
+    );
+  } catch (error) {
+    logger.error("Error updating auth details in Firestore:", error);
   }
 }

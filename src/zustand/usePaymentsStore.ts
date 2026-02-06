@@ -9,7 +9,7 @@ import {
 } from "firebase/firestore";
 import { useAuthStore } from "./useAuthStore";
 import { db } from "@/firebase/firebaseClient";
-import { paths, collections } from "@/firebase/paths";
+import { collections } from "@/firebase/paths";
 import { logger } from "@/utils/logger";
 import toast from "react-hot-toast";
 
@@ -48,7 +48,6 @@ export const usePaymentsStore = create<PaymentsStoreState>((set) => ({
     set({ paymentsLoading: true });
 
     try {
-      const paymentsPath = paths.userPayments(uid);
       const q = query(
         collection(db, collections.USERS, uid, collections.PAYMENTS)
       );

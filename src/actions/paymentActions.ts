@@ -1,11 +1,17 @@
-// paymentActions.ts
 "use server";
 
 import Stripe from "stripe";
+import { verifyAuth } from "@/firebase/firebaseAdmin";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 
 export async function createPaymentIntent(amount: number) {
+  await verifyAuth();
+
+  if (!amount || amount <= 0 || !Number.isInteger(amount)) {
+    throw new Error("Invalid payment amount");
+  }
+
   const product = process.env.NEXT_PUBLIC_STRIPE_PRODUCT_NAME;
 
   try {
@@ -15,7 +21,7 @@ export async function createPaymentIntent(amount: number) {
       amount,
       currency: "usd",
       metadata: { product },
-      description: `Payment for product ${process.env.NEXT_PUBLIC_STRIPE_PRODUCT_NAME}`,
+      description: `Payment for product ${product}`,
     });
 
     return paymentIntent.client_secret;
@@ -26,11 +32,16 @@ export async function createPaymentIntent(amount: number) {
 }
 
 export async function validatePaymentIntent(paymentIntentId: string) {
+  await verifyAuth();
+
+  if (!paymentIntentId || typeof paymentIntentId !== "string") {
+    throw new Error("Invalid payment intent ID");
+  }
+
   try {
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
 
     if (paymentIntent.status === "succeeded") {
-      // Convert the Stripe object to a plain object
       return {
         id: paymentIntent.id,
         amount: paymentIntent.amount,

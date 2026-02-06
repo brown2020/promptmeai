@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, runTransaction } from "firebase/firestore";
 import { useAuthStore } from "./useAuthStore";
 import { db } from "@/firebase/firebaseClient";
 import { paths } from "@/firebase/paths";
@@ -13,26 +13,31 @@ interface CreditsState {
 
 /**
  * Store for managing user credit operations.
- * Separated from profile store for single responsibility.
+ * Uses Firestore transactions to prevent race conditions.
  */
 export const useCreditsStore = create<CreditsState>(() => ({
   reduceCredits: async (amount: number) => {
     const uid = useAuthStore.getState().uid;
     if (!uid) return false;
 
-    // Import dynamically to avoid circular dependency
     const { default: useProfileStore } = await import("./useProfileStore");
-    const profile = useProfileStore.getState().profile;
-
-    if (profile.credits < amount) {
-      return false;
-    }
 
     try {
-      const newCredits = profile.credits - amount;
       const userRef = doc(db, paths.userProfile(uid));
 
-      await updateDoc(userRef, { credits: newCredits });
+      const newCredits = await runTransaction(db, async (transaction) => {
+        const snapshot = await transaction.get(userRef);
+        if (!snapshot.exists()) throw new Error("Profile not found");
+
+        const currentCredits = snapshot.data().credits ?? 0;
+        if (currentCredits < amount) {
+          throw new Error("Insufficient credits");
+        }
+
+        const updated = currentCredits - amount;
+        transaction.update(userRef, { credits: updated });
+        return updated;
+      });
 
       useProfileStore.setState((state) => ({
         profile: { ...state.profile, credits: newCredits },
@@ -40,6 +45,9 @@ export const useCreditsStore = create<CreditsState>(() => ({
 
       return true;
     } catch (error) {
+      if (error instanceof Error && error.message === "Insufficient credits") {
+        return false;
+      }
       logger.error("Error reducing credits:", error);
       toast.error("Failed to update credits");
       return false;
@@ -50,23 +58,23 @@ export const useCreditsStore = create<CreditsState>(() => ({
     const uid = useAuthStore.getState().uid;
     if (!uid) return;
 
-    // Import dynamically to avoid circular dependency
     const { default: useProfileStore } = await import("./useProfileStore");
-    const profile = useProfileStore.getState().profile;
-    const newCredits = profile.credits + amount;
 
     try {
       const userRef = doc(db, paths.userProfile(uid));
 
-      const newData = {
-        credits: newCredits,
-        totalCredits: newCredits,
-      };
+      const newCredits = await runTransaction(db, async (transaction) => {
+        const snapshot = await transaction.get(userRef);
+        if (!snapshot.exists()) throw new Error("Profile not found");
 
-      await updateDoc(userRef, { ...newData });
+        const currentCredits = snapshot.data().credits ?? 0;
+        const updated = currentCredits + amount;
+        transaction.update(userRef, { credits: updated, totalCredits: updated });
+        return updated;
+      });
 
       useProfileStore.setState((state) => ({
-        profile: { ...state.profile, ...newData },
+        profile: { ...state.profile, credits: newCredits, totalCredits: newCredits },
       }));
 
       toast.success(`Added ${amount} credits to your account`);

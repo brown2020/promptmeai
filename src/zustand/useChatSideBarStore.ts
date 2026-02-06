@@ -11,12 +11,14 @@ type ChatStore = {
   activeChatId: string | undefined;
   isNewChat: boolean;
   activeTab: ActiveTab;
+  searchTerm: string;
   setDrawerOpen: (value: boolean) => void;
   setChats: (chats: ChatDetail[]) => void;
   setPinnedChats: (chats: ChatDetail[]) => void;
   addChat: (chat: ChatDetail) => void;
   setActiveChatId: (chatId: string | undefined, isNewChat?: boolean) => void;
   setActiveTab: (tab: ActiveTab) => void;
+  setSearchTerm: (term: string) => void;
 };
 
 export const useChatSideBarStore = create<ChatStore>((set) => ({
@@ -27,6 +29,7 @@ export const useChatSideBarStore = create<ChatStore>((set) => ({
   activeChatId: undefined,
   isNewChat: false,
   activeTab: "chats",
+  searchTerm: "",
   setDrawerOpen: (value) => {
     set({ isDrawerOpen: value });
   },
@@ -48,5 +51,8 @@ export const useChatSideBarStore = create<ChatStore>((set) => ({
     }),
   setActiveTab: (tab) => {
     set({ activeTab: tab });
+  },
+  setSearchTerm: (term) => {
+    set({ searchTerm: term });
   },
 }));

@@ -2,6 +2,7 @@ import { cn } from "@/utils/tailwind";
 import { ComponentProps } from "react";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
 
 type MarkdownRendererProps = {
@@ -15,7 +16,7 @@ const MarkdownRenderer = ({ content, className }: MarkdownRendererProps) => {
       <p style={{ whiteSpace: "pre-wrap" }}>{props.children}</p>
     ),
     a: (props: ComponentProps<"a">) => (
-      <a target="_blank" href={props.href}>
+      <a target="_blank" rel="noopener noreferrer" href={props.href}>
         {props.children}
       </a>
     ),
@@ -25,7 +26,7 @@ const MarkdownRenderer = ({ content, className }: MarkdownRendererProps) => {
     <div className={cn("prose prose-sm dark:prose-invert", className)}>
       <Markdown
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeRaw]}
+        rehypePlugins={[rehypeRaw, rehypeSanitize]}
         components={components}
       >
         {content}

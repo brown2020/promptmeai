@@ -1,10 +1,10 @@
+import type { Metadata } from "next";
 import Layout from "@/layouts/Layout";
 import { Providers } from "./providers";
-import { Toaster } from "react-hot-toast";
 
 import "./globals.css";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Prompt.me",
   description: "Compare chatbot models",
 };
@@ -17,7 +17,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Toaster />
         <Providers>
           <Layout>{children}</Layout>
         </Providers>

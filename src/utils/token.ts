@@ -48,16 +48,13 @@ export function calculateCost(tokens: number): number {
 }
 
 // Function to calculate total token usage from a message
-export function calculateTotalTokenUsage(message: Message) {
-  let totalTokenUsage = message.userMessage?.tokenUsage || 0;
-
-  for (const key in message.responses) {
-    if (message.responses.hasOwnProperty(key)) {
-      totalTokenUsage += message.responses[key]?.tokenUsage || 0;
-    }
-  }
-
-  return totalTokenUsage;
+export function calculateTotalTokenUsage(message: Message): number {
+  const userTokens = message.userMessage?.tokenUsage ?? 0;
+  const responseTokens = Object.values(message.responses).reduce(
+    (sum, response) => sum + (response?.tokenUsage ?? 0),
+    0
+  );
+  return userTokens + responseTokens;
 }
 
 // Function to calculate total token credit cost

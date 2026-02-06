@@ -8,6 +8,7 @@ import { APIKeys, UsageMode } from "@/zustand/useProfileStore";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createMistral } from "@ai-sdk/mistral";
 import { createAnthropic } from "@ai-sdk/anthropic";
+import { verifyAuth } from "@/firebase/firebaseAdmin";
 
 const DEFAULT_MODEL = (
   MODEL_NAMES[0]?.value ?? "gpt-5.1-chat-latest"
@@ -85,35 +86,9 @@ export async function continueConversation(
   modelName: ModelName = DEFAULT_MODEL,
   apiKeys: APIKeys | UsageMode
 ) {
+  await verifyAuth();
+
   const model = await getModel(modelName, apiKeys);
-
-  const result = streamText({
-    model,
-    messages,
-  });
-
-  const stream = createStreamableValue(result.textStream);
-  return stream.value;
-}
-
-export async function generateResponse(
-  systemPrompt: string,
-  userPrompt: string,
-  modelName: ModelName = DEFAULT_MODEL,
-  apiKeys: APIKeys | UsageMode
-) {
-  const model = await getModel(modelName, apiKeys);
-
-  const messages: ModelMessage[] = [
-    {
-      role: "system",
-      content: systemPrompt,
-    },
-    {
-      role: "user",
-      content: userPrompt,
-    },
-  ];
 
   const result = streamText({
     model,

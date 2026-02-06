@@ -83,7 +83,7 @@ export default function AuthComponent() {
       clearAuthDetails();
     } catch (error) {
       console.error("Error signing out:", error);
-      alert("An error occurred while signing out.");
+      toast.error("An error occurred while signing out.");
     } finally {
       hideModal();
     }
@@ -136,7 +136,7 @@ export default function AuthComponent() {
       setAuthDetails({ authPending: true });
     } catch (error) {
       console.error("Error sending sign-in link:", error);
-      alert("An error occurred while sending the sign-in link.");
+      toast.error("An error occurred while sending the sign-in link.");
       hideModal();
     }
   };
@@ -406,10 +406,9 @@ function AuthButton({
       <Image
         src={logo}
         alt={`${label} logo`}
-        width={"26"}
-        height={"26"}
-        objectFit="contain"
-        style={{ marginTop: 0, marginBottom: 0 }}
+        width={26}
+        height={26}
+        style={{ marginTop: 0, marginBottom: 0, objectFit: "contain" }}
       />
       <span className="grow text-center">{label}</span>
     </button>

@@ -8,6 +8,7 @@ import useAuthToken from "@/hooks/useAuthToken";
 import { useEffect, useState } from "react";
 import { useInitializeStores } from "@/zustand/useInitializeStores";
 import { usePlatform } from "@/zustand/usePlatformStore";
+import { Toaster } from "react-hot-toast";
 
 // Paths that don't require authentication
 const PUBLIC_PATHS = ["/", "/about", "/terms", "/privacy", "/support"];
@@ -15,7 +16,7 @@ const PUBLIC_PATHS = ["/", "/about", "/terms", "/privacy", "/support"];
 export function Providers({ children }: { children: React.ReactNode }) {
   const [isHydrated, setIsHydrated] = useState(false);
   const { loading, uid } = useAuthToken(
-    process.env.NEXT_PUBLIC_COOKIE_NAME || ""
+    process.env.NEXT_PUBLIC_COOKIE_NAME || "authToken"
   );
   const router = useRouter();
   const pathname = usePathname();
@@ -44,6 +45,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <NextUIProvider>
       <NextThemesProvider attribute="class" defaultTheme="system">
+        <Toaster />
         {children}
         {isWeb && (
           <CookieConsent>

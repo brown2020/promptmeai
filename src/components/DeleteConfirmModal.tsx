@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import toast from "react-hot-toast";
 
 type Props = {
   showDeleteModal: boolean;
@@ -19,12 +20,12 @@ export default function DeleteConfirmModal({
     if (deleteConfirmation === "DELETE ACCOUNT") {
       onDeleteConfirm();
     } else {
-      alert("Please type 'DELETE ACCOUNT' to confirm.");
+      toast.error("Please type 'DELETE ACCOUNT' to confirm.");
     }
   }, [deleteConfirmation, onDeleteConfirm]);
 
   if (!showDeleteModal) {
-    return true;
+    return null;
   }
 
   return (

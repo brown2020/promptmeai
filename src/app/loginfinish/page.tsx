@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { FirebaseError } from "firebase/app";
 import useProfileStore from "@/zustand/useProfileStore";
+import Spinner from "@/components/Spinner";
+import toast from "react-hot-toast";
 
 export default function LoginFinishPage() {
   const router = useRouter();
@@ -23,7 +25,6 @@ export default function LoginFinishPage() {
         let email = window.localStorage.getItem("promptmeEmail");
         const name = window.localStorage.getItem("promptmeName") || "";
 
-        console.log("User signed in successfully:", email, name);
         if (!email) {
           email = window.prompt("Please confirm your email");
           if (!email) {
@@ -42,18 +43,9 @@ export default function LoginFinishPage() {
         const uid = user?.uid;
         const selectedName = name || user?.displayName || "";
 
-        console.log("User auth data:", authEmail, uid, selectedName);
-
         if (!uid || !authEmail) {
           throw new Error("No user found");
         }
-
-        console.log(
-          "User signed in successfully:",
-          authEmail,
-          uid,
-          selectedName
-        );
 
         setAuthDetails({
           uid,
@@ -70,8 +62,8 @@ export default function LoginFinishPage() {
           errorMessage = error.message;
         }
 
-        console.log("ERROR", errorMessage);
-        alert(errorMessage);
+        console.error("Sign-in error:", errorMessage);
+        toast.error(errorMessage);
         router.replace("/");
       } finally {
         window.localStorage.removeItem("promptmeEmail");
@@ -81,4 +73,10 @@ export default function LoginFinishPage() {
 
     attemptSignIn();
   }, [router, setAuthDetails, updateProfile]);
+
+  return (
+    <div className="h-screen w-screen flex items-center justify-center">
+      <Spinner message="Completing sign in..." />
+    </div>
+  );
 }

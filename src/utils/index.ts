@@ -10,4 +10,3 @@ export * from "./chat";
 export * from "./number";
 export * from "./object";
 export * from "./text";
-export * from "./platform";

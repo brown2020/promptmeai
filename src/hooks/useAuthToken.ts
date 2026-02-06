@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import { getIdToken } from "firebase/auth";
 import { deleteCookie, setCookie } from "cookies-next";
 import { debounce } from "lodash";
@@ -6,26 +6,21 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useAuthStore } from "@/zustand/useAuthStore";
 import { auth } from "@/firebase/firebaseClient";
 
+const isValidCookieName = (name: string) => /^[a-zA-Z0-9-_]+$/.test(name);
+
+const REFRESH_INTERVAL = 50 * 60 * 1000; // 50 minutes
+
 const useAuthToken = (cookieName = "authToken") => {
   const [user, loading, error] = useAuthState(auth);
   const setAuthDetails = useAuthStore((state) => state.setAuthDetails);
   const clearAuthDetails = useAuthStore((state) => state.clearAuthDetails);
-  const [activityTimeout, setActivityTimeout] = useState<NodeJS.Timeout | null>(
-    null
-  );
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const refreshInterval = 50 * 60 * 1000; // 50 minutes
   const lastTokenRefresh = `lastTokenRefresh_${cookieName}`;
 
-  // Validate cookie name to prevent invalid arguments
-  const isValidCookieName = (name: string) => /^[a-zA-Z0-9-_]+$/.test(name);
-
-  const refreshAuthToken = async () => {
+  const refreshAuthToken = useCallback(async () => {
     try {
-      if (!auth.currentUser) {
-        console.warn("No user found while attempting to refresh auth token.");
-        return;
-      }
+      if (!auth.currentUser) return;
       const idTokenResult = await getIdToken(auth.currentUser, true);
 
       if (!isValidCookieName(cookieName)) {
@@ -47,35 +42,36 @@ const useAuthToken = (cookieName = "authToken") => {
         deleteCookie(cookieName);
       }
     }
-  };
+  }, [cookieName, lastTokenRefresh]);
 
-  const scheduleTokenRefresh = () => {
-    if (activityTimeout) clearTimeout(activityTimeout);
+  const scheduleTokenRefresh = useCallback(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
     if (document.visibilityState === "visible") {
-      const timeoutId = setTimeout(refreshAuthToken, refreshInterval);
-      setActivityTimeout(timeoutId);
+      timeoutRef.current = setTimeout(refreshAuthToken, REFRESH_INTERVAL);
     }
-  };
+  }, [refreshAuthToken]);
 
-  const handleStorageChange = debounce((e: StorageEvent) => {
-    if (e.key === lastTokenRefresh) {
-      scheduleTokenRefresh();
-    }
-  }, 1000);
-
+  // Storage change listener for cross-tab sync
   useEffect(() => {
+    const debouncedHandler = debounce((e: StorageEvent) => {
+      if (e.key === lastTokenRefresh) {
+        scheduleTokenRefresh();
+      }
+    }, 1000);
+
     if (!window.ReactNativeWebView) {
-      window.addEventListener("storage", handleStorageChange);
+      window.addEventListener("storage", debouncedHandler);
     }
 
     return () => {
-      window.removeEventListener("storage", handleStorageChange);
-      if (activityTimeout) clearTimeout(activityTimeout);
-      handleStorageChange.cancel();
+      window.removeEventListener("storage", debouncedHandler);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      debouncedHandler.cancel();
     };
-  }, [activityTimeout, handleStorageChange]);
+  }, [lastTokenRefresh, scheduleTokenRefresh]);
 
+  // Sync auth state to store and set cookie on login
   useEffect(() => {
     if (user?.uid) {
       setAuthDetails({
@@ -87,13 +83,17 @@ const useAuthToken = (cookieName = "authToken") => {
         authReady: true,
         authPending: false,
       });
+
+      // Set the auth cookie immediately so server actions can verify identity
+      refreshAuthToken();
+      scheduleTokenRefresh();
     } else {
       clearAuthDetails();
       if (isValidCookieName(cookieName)) {
         deleteCookie(cookieName);
       }
     }
-  }, [user, setAuthDetails, clearAuthDetails, cookieName]);
+  }, [user, setAuthDetails, clearAuthDetails, cookieName, refreshAuthToken, scheduleTokenRefresh]);
 
   return { uid: user?.uid, loading, error };
 };

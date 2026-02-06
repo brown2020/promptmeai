@@ -67,9 +67,9 @@ const PaymentSuccess = () => {
             currency: "$",
           });
 
-          // Add credits to profile
-          const creditsToAdd = data.amount + 1;
-          await addCredits(creditsToAdd);
+          // Add fixed credits per purchase (not derived from payment amount)
+          const CREDITS_PER_PURCHASE = 10_000;
+          await addCredits(CREDITS_PER_PURCHASE);
         } else {
           setMessage("Payment validation failed");
         }
@@ -110,9 +110,9 @@ const PaymentSuccess = () => {
                       <LuCoins size={20} />
                       <span>Token Credits</span>
                     </div>
-                    <span className="font-semibold text-[#18181B]">{`${formatNumber(
-                      amount + 1
-                    )} credits`}</span>
+                    <span className="font-semibold text-[#18181B]">
+                      {formatNumber(10_000)} credits
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="flex gap-2 items-center text-[#18181B]">
