@@ -1,6 +1,6 @@
 import { SelectHTMLAttributes } from "react";
 
-export type FieldOptions = {
+type FieldOptions = {
   label: string;
   value: string;
 };

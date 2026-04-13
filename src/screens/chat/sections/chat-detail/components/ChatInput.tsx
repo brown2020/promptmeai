@@ -35,7 +35,6 @@ const ChatInput = () => {
   const user = auth.currentUser;
   const { profile, isDefaultData, reduceCredits } = useProfileStore();
   const {
-    messages,
     addMessage,
     setMessages,
     setIsLoading,
@@ -76,10 +75,12 @@ const ChatInput = () => {
       signal?: AbortSignal
     ) => {
       try {
-        const currentMessages: ModelMessage[] = messages.flatMap((message) => [
-          message.userMessage,
-          ...Object.values(message.responses),
-        ]);
+        const currentMessages: ModelMessage[] = useChatStore
+          .getState()
+          .messages.flatMap((message) => [
+            message.userMessage,
+            ...Object.values(message.responses),
+          ]);
 
         const result = await continueConversation(
           [...currentMessages, userMessage],
@@ -113,7 +114,7 @@ const ChatInput = () => {
         }
       }
     },
-    [messages, profile.APIKeys, profile.usageMode]
+    [profile.APIKeys, profile.usageMode]
   );
 
   const saveChatFunction = async () => {
@@ -236,7 +237,8 @@ const ChatInput = () => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && submitHandler()}
           />
-          <div
+          <button
+            type="button"
             className="flex items-center justify-center h-8 w-8 rounded-lg cursor-pointer shrink-0 -mr-1"
             onClick={() => (isLoading ? stopRequest() : submitHandler())}
           >
@@ -247,7 +249,7 @@ const ChatInput = () => {
             ) : (
               <PiPaperPlaneTilt size={20} className="text-gray-400" />
             )}
-          </div>
+          </button>
         </div>
       </div>
       <ModalWarning

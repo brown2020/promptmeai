@@ -4,7 +4,7 @@ import { ModelName } from "./modelNames";
  * Background colors for each AI model's response cards.
  * Uses brand-appropriate colors with transparency for light mode.
  */
-export const MODEL_COLORS: Record<ModelName, string> = {
+const MODEL_COLORS: Record<ModelName, string> = {
   "gpt-5.1-chat-latest": "bg-[#14A27F]/[0.15]",
   "claude-sonnet-4-5": "bg-[#F39C12]/[0.15]",
   "gemini-2.5-flash": "bg-[#FF6F61]/[0.15]",
@@ -16,7 +16,7 @@ export const MODEL_COLORS: Record<ModelName, string> = {
  * Get the background color class for a model by its key.
  * Falls back to transparent if model not found.
  */
-export const getModelColor = (modelKey: string): string => {
+const getModelColor = (modelKey: string): string => {
   return MODEL_COLORS[modelKey as ModelName] ?? "bg-transparent";
 };
 

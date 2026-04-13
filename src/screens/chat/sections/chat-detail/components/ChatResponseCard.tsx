@@ -44,7 +44,7 @@ const ChatResponseCard = ({
         )}
       >
         <div className="relative text-[14px] text-[#1E1F22]">
-          {tokenUsage && <CreditUsage tokenUsage={tokenUsage} />}
+          {tokenUsage != null && tokenUsage > 0 && <CreditUsage tokenUsage={tokenUsage} />}
           <MarkdownRenderer content={content} />
         </div>
       </div>

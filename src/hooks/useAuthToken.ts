@@ -47,7 +47,7 @@ const useAuthToken = (cookieName = "authToken") => {
   const scheduleTokenRefresh = useCallback(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
-    if (document.visibilityState === "visible") {
+    if (typeof document !== "undefined" && document.visibilityState === "visible") {
       timeoutRef.current = setTimeout(refreshAuthToken, REFRESH_INTERVAL);
     }
   }, [refreshAuthToken]);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ModalWarning from "./ModalWarning";
 import { Spinner } from "@nextui-org/react";
 import { useChatStore } from "@/zustand/useChatStore";
@@ -18,15 +18,12 @@ const WarningChangingMessage = ({
 
   const [warningContinue, setWarningContinue] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (warningContinue) {
-      if (!anotherActiveRequest) {
-        setWarningContinue(false);
-        setShowWarning(false);
-        onFinish();
-      }
-    }
-  }, [anotherActiveRequest, onFinish, setShowWarning, warningContinue]);
+  // When user has confirmed and the request has finished, proceed
+  if (warningContinue && !anotherActiveRequest) {
+    setWarningContinue(false);
+    setShowWarning(false);
+    onFinish();
+  }
 
   return (
     <ModalWarning

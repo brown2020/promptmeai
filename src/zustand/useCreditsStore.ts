@@ -63,18 +63,21 @@ export const useCreditsStore = create<CreditsState>(() => ({
     try {
       const userRef = doc(db, paths.userProfile(uid));
 
-      const newCredits = await runTransaction(db, async (transaction) => {
+      const { newCredits, newTotalCredits } = await runTransaction(db, async (transaction) => {
         const snapshot = await transaction.get(userRef);
         if (!snapshot.exists()) throw new Error("Profile not found");
 
-        const currentCredits = snapshot.data().credits ?? 0;
-        const updated = currentCredits + amount;
-        transaction.update(userRef, { credits: updated, totalCredits: updated });
-        return updated;
+        const data = snapshot.data();
+        const currentCredits = data.credits ?? 0;
+        const currentTotalCredits = data.totalCredits ?? 0;
+        const updatedCredits = currentCredits + amount;
+        const updatedTotalCredits = currentTotalCredits + amount;
+        transaction.update(userRef, { credits: updatedCredits, totalCredits: updatedTotalCredits });
+        return { newCredits: updatedCredits, newTotalCredits: updatedTotalCredits };
       });
 
       useProfileStore.setState((state) => ({
-        profile: { ...state.profile, credits: newCredits, totalCredits: newCredits },
+        profile: { ...state.profile, credits: newCredits, totalCredits: newTotalCredits },
       }));
 
       toast.success(`Added ${amount} credits to your account`);

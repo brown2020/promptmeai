@@ -5,17 +5,20 @@ import CardContent from "@/components/CardContent";
 import Input from "@/components/Input";
 import { areObjectsEqual } from "@/utils/object";
 import useProfileStore, { APIKeys, UsageMode } from "@/zustand/useProfileStore";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const InputAPIKeys = () => {
   const { profile, updateProfile } = useProfileStore();
   const [apiKeys, setApiKeys] = useState<APIKeys>({ ...profile.APIKeys });
+  const [prevAPIKeys, setPrevAPIKeys] = useState(profile.APIKeys);
 
-  useEffect(() => {
+  // Sync local state when profile API keys change externally
+  if (profile.APIKeys !== prevAPIKeys) {
+    setPrevAPIKeys(profile.APIKeys);
     if (profile.APIKeys) {
       setApiKeys(profile.APIKeys);
     }
-  }, [profile.APIKeys]);
+  }
 
   const changeApiKeyHandler = (key: keyof APIKeys, value: string) => {
     const newData = { ...apiKeys };

@@ -29,7 +29,6 @@ const SettingOption = () => {
     setShowDeleteModal(false);
     try {
       await deleteAccount();
-      await signOut(auth);
       clearAuthDetails();
       toast.success("Account deleted successfully.");
       router.replace("/");
