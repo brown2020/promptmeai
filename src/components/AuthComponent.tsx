@@ -1,5 +1,6 @@
 "use client";
 
+import { deleteCookie } from "cookies-next";
 import { useEffect, useRef, useState } from "react";
 import {
   GoogleAuthProvider,
@@ -79,6 +80,10 @@ export default function AuthComponent() {
 
   const handleSignOut = async () => {
     try {
+      // Explicitly delete auth cookies before signing out
+      deleteCookie(process.env.NEXT_PUBLIC_COOKIE_NAME || "authToken", { path: "/" });
+      deleteCookie("authToken", { path: "/" });
+
       await signOut(auth);
       clearAuthDetails();
     } catch (error) {

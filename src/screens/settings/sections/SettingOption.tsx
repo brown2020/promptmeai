@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import useProfileStore from "@/zustand/useProfileStore";
 import { signOut } from "firebase/auth";
 import { auth } from "@/firebase/firebaseClient";
+import { deleteCookie } from "cookies-next";
 import { useAuthStore } from "@/zustand/useAuthStore";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -20,6 +21,10 @@ const SettingOption = () => {
   };
 
   const handleLogout = useCallback(async () => {
+    // Explicitly delete auth cookies before signing out
+    deleteCookie(process.env.NEXT_PUBLIC_COOKIE_NAME || "authToken", { path: "/" });
+    deleteCookie("authToken", { path: "/" });
+
     await signOut(auth);
     clearAuthDetails();
     router.replace("/");
