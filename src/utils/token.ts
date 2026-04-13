@@ -37,7 +37,7 @@ export function countTokens(text: string): number {
 }
 
 // Function to calculate cost based on input and output tokens for all models
-export function calculateCost(tokens: number): number {
+function calculateCost(tokens: number): number {
   // Define a flat rate per token for all models (replace with the agreed rate)
   const flatRatePerToken = 0.04 / 1000; // Example: $0.04 per 1,000 tokens
 

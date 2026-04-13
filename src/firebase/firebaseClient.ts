@@ -19,6 +19,8 @@ const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 const auth = getAuth(app);
-setPersistence(auth, browserLocalPersistence);
+if (typeof window !== "undefined") {
+  setPersistence(auth, browserLocalPersistence);
+}
 
 export { db, storage, auth };

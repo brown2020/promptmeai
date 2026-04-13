@@ -27,11 +27,14 @@ const ChatDetailSection = () => {
     <div className="w-full h-full p-[16px] flex flex-col gap-[12px] overflow-hidden">
       {/* Top section */}
       <div className="flex justify-between items-center gap-4 mt-[-4px]">
-        <RxHamburgerMenu
-          size={24}
+        <button
+          type="button"
           className="lg:hidden cursor-pointer shrink-0"
           onClick={() => setDrawerOpen(true)}
-        />
+          aria-label="Open menu"
+        >
+          <RxHamburgerMenu size={24} />
+        </button>
         <h3 className="text-[18px] whitespace-nowrap overflow-hidden text-ellipsis text-[#1E1F22] dark:text-[#EEE]">
           {isNewChat ? typedTitle : title}
         </h3>

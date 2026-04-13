@@ -25,6 +25,7 @@ const CreditInformation = () => {
   // Handle messages from React Native WebView for IAP
   useEffect(() => {
     const handleMessageFromRN = async (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
       const message = event.data;
       if (message?.type === "IAP_SUCCESS") {
         await addPayment({

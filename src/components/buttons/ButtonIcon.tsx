@@ -21,7 +21,8 @@ const ButtonIcon = ({
   ...props
 }: ButtonIconProps) => {
   return (
-    <div
+    <button
+      type="button"
       className={cn(
         "bg-[#F9F9F9] dark:bg-[#2D2E31] rounded-lg w-[32px] h-[32px] flex justify-center items-center shadow-xl cursor-pointer",
         {
@@ -41,7 +42,7 @@ const ButtonIcon = ({
         })}
         size={iconSize}
       />
-    </div>
+    </button>
   );
 };
 

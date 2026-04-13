@@ -169,14 +169,6 @@ async function updateChatField(
   }
 }
 
-// Function to update chat name
-export const updateChatName = (
-  userId: string,
-  chatId: string,
-  name: string
-): Promise<boolean> =>
-  updateChatField(userId, chatId, { name, docId: chatId }, "Error updating chat name");
-
 // Function to pin chat
 export const pinChat = (userId: string, chatId: string): Promise<boolean> =>
   updateChatField(userId, chatId, { pinned: true }, "Error pinning chat");

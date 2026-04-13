@@ -9,7 +9,7 @@ import {
   compareDesc,
 } from "date-fns";
 
-export type ChatGroups = {
+type ChatGroups = {
   today: ChatDetail[];
   yesterday: ChatDetail[];
   previous7Days: ChatDetail[];
@@ -28,7 +28,10 @@ export const searchChatByName = (
 
 export const sortChatByDateDesc = (list: ChatDetail[]): ChatDetail[] => {
   return [...list].sort((a, b) =>
-    compareDesc(a.timestamp.toDate(), b.timestamp.toDate())
+    compareDesc(
+      a.timestamp?.toDate?.() ?? new Date(0),
+      b.timestamp?.toDate?.() ?? new Date(0)
+    )
   );
 };
 
@@ -46,7 +49,7 @@ export const groupChatByDate = (data: ChatDetail[]): ChatGroups => {
   };
 
   data.forEach((item) => {
-    const date = item.timestamp.toDate();
+    const date = item.timestamp?.toDate?.() ?? new Date(0);
 
     if (isToday(date)) {
       groups.today.push(item);

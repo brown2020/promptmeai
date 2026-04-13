@@ -5,7 +5,7 @@ import CookieConsent from "react-cookie-consent";
 import { usePathname, useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import useAuthToken from "@/hooks/useAuthToken";
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { useInitializeStores } from "@/zustand/useInitializeStores";
 import { usePlatform } from "@/zustand/usePlatformStore";
 import { Toaster } from "react-hot-toast";
@@ -14,7 +14,11 @@ import { Toaster } from "react-hot-toast";
 const PUBLIC_PATHS = ["/", "/about", "/terms", "/privacy", "/support"];
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const [isHydrated, setIsHydrated] = useState(false);
+  const isHydrated = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
   const { loading, uid } = useAuthToken(
     process.env.NEXT_PUBLIC_COOKIE_NAME || "authToken"
   );
@@ -24,16 +28,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   useInitializeStores();
 
-  // Handle hydration
-  useEffect(() => {
-    setIsHydrated(true);
-  }, []);
-
   // Handle authentication redirect
   useEffect(() => {
     if (loading) return;
 
-    const isPublicPath = PUBLIC_PATHS.some((path) => pathname.includes(path));
+    const isPublicPath = PUBLIC_PATHS.some((path) =>
+      path === "/" ? pathname === "/" : pathname.startsWith(path)
+    );
     if (!uid && !isPublicPath) {
       router.push("/");
     }

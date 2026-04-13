@@ -53,7 +53,7 @@ const MyChatSection = () => {
   }, [setChats, setPinnedChats, uid]);
 
   const addNewChat = useCallback(() => {
-    setActiveChatId("");
+    setActiveChatId(undefined);
     setMessages([]);
     setDrawerOpen(false);
   }, [setActiveChatId, setDrawerOpen, setMessages]);

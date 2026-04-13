@@ -1,6 +1,6 @@
 "use client";
 
-import { PropsWithChildren, useEffect, useState } from "react";
+import { PropsWithChildren, useSyncExternalStore } from "react";
 
 type ClientOnlyProps = {
   fallback?: React.ReactNode;
@@ -11,11 +11,11 @@ type ClientOnlyProps = {
  * Prevents hydration mismatches for components that depend on browser APIs.
  */
 const ClientOnly = ({ children, fallback = null }: ClientOnlyProps) => {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   if (!mounted) {
     return fallback;

@@ -2,7 +2,7 @@ import { APIKeys } from "@/zustand/useProfileStore";
 
 type ProviderId = "openai" | "google" | "mistral" | "anthropic";
 
-export type ModelConfig = {
+type ModelConfig = {
   label: string;
   provider: ProviderId;
   modelId: string;

@@ -67,6 +67,16 @@ const ChatList = () => {
           chatList={groupedData.previous30Days}
         />
       )}
+      {Object.entries(groupedData.previousMonths).map(
+        ([monthName, monthChats]) =>
+          monthChats.length > 0 && (
+            <ChatGroupedList
+              key={monthName}
+              groupName={monthName}
+              chatList={monthChats}
+            />
+          )
+      )}
     </div>
   );
 };
