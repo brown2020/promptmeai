@@ -6,21 +6,21 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^3.0.69",
-    "@ai-sdk/google": "^3.0.63",
+    "@ai-sdk/anthropic": "^3.0.71",
+    "@ai-sdk/google": "^3.0.64",
     "@ai-sdk/mistral": "^3.0.30",
-    "@ai-sdk/openai": "^3.0.52",
-    "@ai-sdk/rsc": "^2.0.159",
+    "@ai-sdk/openai": "^3.0.53",
+    "@ai-sdk/rsc": "^2.0.168",
     "@nextui-org/react": "^2.6.11",
     "@nextui-org/system": "^2.4.6",
     "@nextui-org/theme": "^2.4.5",
-    "@stripe/react-stripe-js": "^6.1.0",
+    "@stripe/react-stripe-js": "^6.2.0",
     "@stripe/stripe-js": "^9.2.0",
     "@types/lodash": "^4.17.24",
-    "ai": "^6.0.159",
+    "ai": "^6.0.168",
     "clsx": "^2.1.1",
     "cookies-next": "^6.1.1",
     "date-fns": "^4.1.0",
@@ -29,7 +29,7 @@
     "framer-motion": "^12.38.0",
     "lodash": "^4.18.1",
     "lucide-react": "0.468.0",
-    "next": "^16.2.3",
+    "next": "^16.2.4",
     "next-themes": "^0.4.6",
     "react": "^19.2.5",
     "react-cookie-consent": "^10.0.1",
@@ -42,7 +42,7 @@
     "rehype-raw": "^7.0.0",
     "rehype-sanitize": "^6.0.0",
     "remark-gfm": "^4.0.1",
-    "stripe": "^22.0.1",
+    "stripe": "^22.0.2",
     "tailwind-merge": "^3.5.0",
     "zod": "^4.3.6",
     "zustand": "^5.0.12"
@@ -53,10 +53,10 @@
     "@types/node": "^25.6.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "eslint": "^10.2.0",
-    "eslint-config-next": "^16.2.3",
-    "postcss": "^8.5.9",
+    "eslint": "^9.30.1",
+    "eslint-config-next": "^16.2.4",
+    "postcss": "^8.5.10",
     "tailwindcss": "^4.2.2",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.3"
   }
 }

@@ -7,7 +7,7 @@ type Props = {
   companyAddress: string;
   companyLocation: string;
   updatedAt: string;
-  companyLogo: StaticImageData;
+  companyLogo: StaticImageData | string;
 };
 
 export default function Support({
