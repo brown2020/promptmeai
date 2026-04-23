@@ -18,13 +18,13 @@
     "@nextui-org/system": "^2.4.6",
     "@nextui-org/theme": "^2.4.5",
     "@stripe/react-stripe-js": "^6.2.0",
-    "@stripe/stripe-js": "^9.2.0",
+    "@stripe/stripe-js": "^9.3.0",
     "@types/lodash": "^4.17.24",
     "ai": "^6.0.168",
     "clsx": "^2.1.1",
     "cookies-next": "^6.1.1",
     "date-fns": "^4.1.0",
-    "firebase": "^12.12.0",
+    "firebase": "^12.12.1",
     "firebase-admin": "^13.8.0",
     "framer-motion": "^12.38.0",
     "lodash": "^4.18.1",
@@ -48,7 +48,7 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.2.2",
+    "@tailwindcss/postcss": "^4.2.4",
     "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^25.6.0",
     "@types/react": "^19.2.14",
@@ -56,7 +56,7 @@
     "eslint": "^9.30.1",
     "eslint-config-next": "^16.2.4",
     "postcss": "^8.5.10",
-    "tailwindcss": "^4.2.2",
+    "tailwindcss": "^4.2.4",
     "typescript": "^6.0.3"
   }
 }
