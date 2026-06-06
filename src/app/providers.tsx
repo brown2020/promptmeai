@@ -40,15 +40,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
     }
   }, [loading, pathname, router, uid]);
 
-  // Prevent rendering until hydrated
-  if (!isHydrated) return null;
-
   return (
     <NextUIProvider>
       <NextThemesProvider attribute="class" defaultTheme="system">
         <Toaster />
-        {children}
-        {isWeb && (
+        {isHydrated && children}
+        {isHydrated && isWeb && (
           <CookieConsent>
             This app uses cookies to enhance the user experience.
           </CookieConsent>
