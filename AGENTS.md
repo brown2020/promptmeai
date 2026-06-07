@@ -48,17 +48,18 @@ src/
 ├── screens/        # Page-level UI grouped by route, each with sections/ and components/
 ├── services/       # chatService (Firestore chat CRUD, JSON-serialized messages)
 ├── types/          # chat.ts + ambient .d.ts (globals, svg, menu)
-├── utils/          # token (estimate + credit cost), logger, text, number, object, tailwind
-└── zustand/        # auth, profile, credits, account, chat, chatSideBar, payments, platform stores
+├── utils/          # token, logger, text, number, object, tailwind, routes (isPublicPath)
+├── zustand/        # auth, profile, credits, account, chat, chatSideBar, payments, platform stores
+└── proxy.ts        # Server-side route protection (Next.js 16 Proxy / Middleware)
 ```
 
 Root config: `next.config.mjs`, `tsconfig.json` (`@/*` → `./src/*`), `eslint.config.mjs`, `postcss.config.mjs`, `firestore.rules`, `storage.rules`, `.env.example`.
 
 ## Core architecture overview
 
-- **Client-first SPA.** Nearly every route component is `"use client"`. There is no `middleware.ts`. The root `app/layout.tsx` is the only meaningful server component.
+- **Client-first SPA.** Nearly every route component is `"use client"`. The root `app/layout.tsx` is the only meaningful server component.
 - **Auth flow.** `useAuthToken` (used in `providers.tsx`) listens to Firebase Auth, writes the Firebase ID token into a cookie (name from `NEXT_PUBLIC_COOKIE_NAME`, default `authToken`), and refreshes it every 50 minutes. Server actions call `verifyAuth()` (`firebaseAdmin.ts`) which reads that cookie and verifies the ID token with the Admin SDK, returning the uid.
-- **Route protection is client-side only.** `providers.tsx` holds `PUBLIC_PATHS` and `router.push("/")` for unauthenticated users on non-public routes. Sensitive operations are protected at the **server action** layer via `verifyAuth()`, not by route gating.
+- **Route protection runs server-side in `src/proxy.ts`** (Next.js 16 Proxy, formerly Middleware; Node.js runtime). The proxy redirects unauthenticated requests for non-public routes to `/` before the page renders, using the shared `isPublicPath` matcher (`src/utils/routes.ts`) and a presence check on the auth cookie. This is a coarse routing gate; the authoritative trust boundary is still `verifyAuth()` in the server actions (full ID-token verification), not the proxy.
 - **Generation fan-out.** `ChatInput` reads the current conversation, then calls the `continueConversation` server action once per model via `Promise.allSettled`. The action resolves a provider+model from `MODEL_CONFIG`, picks the API key (env key in credits mode, user key in API-keys mode via `resolveApiKey`), and returns a streamable value the client reads with `readStreamableValue`.
 - **Credits.** `utils/token.ts` estimates tokens (~4 chars/token) and converts to credits at a flat rate. After a successful generation in credits mode, the client calls `reduceCredits` (`useCreditsStore`, Firestore transaction). Credit accounting is currently **client-initiated**, not enforced inside the server action (see "extra caution").
 - **Persistence.** Chats are stored under `promptme_chats/{uid}/chat/{id}` as a JSON-serialized `Message[]` string. Profile lives at `users/{uid}/profile/userData`; payments at `users/{uid}/payments/{id}`. All Firestore path strings come from `firebase/paths.ts`.
@@ -121,9 +122,10 @@ Run this before declaring any change done. `npm run lint` and `npx tsc --noEmit`
 
 ### Route-protection guidance
 
-- Today, page-level protection is client-side (`providers.tsx` `PUBLIC_PATHS` + redirect). Treat it as UX, not security.
-- The real trust boundary is the server action + Firestore security rules (`firestore.rules`, `storage.rules`). Any new sensitive capability must enforce auth in the server action via `verifyAuth()` and be covered by Firestore rules — do not rely on the client redirect.
-- If you add a public route, update `PUBLIC_PATHS`. If you add a route that must be hidden from the panel chrome, update `hidePanelPaths` in `layouts/Layout.tsx`.
+- Page-level protection lives in `src/proxy.ts` (server-side). It redirects unauthenticated requests for non-public routes to `/` based on the auth cookie. Treat the proxy as the routing gate, not as the security boundary.
+- The real trust boundary is the server action + Firestore security rules (`firestore.rules`, `storage.rules`). Any new sensitive capability must enforce auth in the server action via `verifyAuth()` and be covered by Firestore rules — never rely on the proxy alone (it only checks cookie presence, not token validity).
+- Public/protected matching is centralized in `src/utils/routes.ts` (`PUBLIC_PATHS` + `isPublicPath`), which is unit-tested and shared by the proxy. If you add a public route, update `PUBLIC_PATHS` there. If you add a route that must be hidden from the panel chrome, update `hidePanelPaths` in `layouts/Layout.tsx`.
+- The proxy `config.matcher` excludes Next internals and static assets; keep it in sync if you add asset paths that must stay public.
 
 ### State-management guidance
 
