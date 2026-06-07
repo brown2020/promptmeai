@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ModalWarning from "./ModalWarning";
 import { Spinner } from "@nextui-org/react";
 import { useChatStore } from "@/zustand/useChatStore";
@@ -14,16 +14,42 @@ const WarningChangingMessage = ({
   setShowWarning,
   onFinish,
 }: WarningChangingMessageProps) => {
-  const { isLoading: anotherActiveRequest, abortController } = useChatStore();
-
   const [warningContinue, setWarningContinue] = useState<boolean>(false);
+  const unsubscribeRef = useRef<(() => void) | null>(null);
 
-  // When user has confirmed and the request has finished, proceed
-  if (warningContinue && !anotherActiveRequest) {
+  // Tear down any pending store subscription on unmount.
+  useEffect(() => () => unsubscribeRef.current?.(), []);
+
+  const proceed = () => {
     setWarningContinue(false);
     setShowWarning(false);
     onFinish();
-  }
+  };
+
+  const handleConfirm = () => {
+    const { isLoading, abortController } = useChatStore.getState();
+
+    // No request in flight: proceed immediately.
+    if (!isLoading) {
+      proceed();
+      return;
+    }
+
+    // Abort the in-flight request, then proceed only once it has fully settled
+    // (so the aborted stream can't write into the next conversation). React
+    // state is updated from the store subscription callback, never during
+    // render or inside an effect body.
+    setWarningContinue(true);
+    abortController?.abort();
+
+    unsubscribeRef.current = useChatStore.subscribe((state) => {
+      if (!state.isLoading) {
+        unsubscribeRef.current?.();
+        unsubscribeRef.current = null;
+        proceed();
+      }
+    });
+  };
 
   return (
     <ModalWarning
@@ -38,10 +64,7 @@ const WarningChangingMessage = ({
         )
       }
       disableConfirm={warningContinue}
-      onConfirm={() => {
-        setWarningContinue(true);
-        abortController?.abort();
-      }}
+      onConfirm={handleConfirm}
       onClose={() => {
         setShowWarning(false);
       }}

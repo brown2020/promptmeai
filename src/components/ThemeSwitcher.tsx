@@ -7,8 +7,8 @@ import { motion } from "framer-motion";
 import ClientOnly from "./ClientOnly";
 
 const ThemeSwitcher = () => {
-  const { theme, setTheme } = useTheme();
-  const isDarkMode = theme === "dark";
+  const { resolvedTheme, setTheme } = useTheme();
+  const isDarkMode = resolvedTheme === "dark";
 
   return (
     <ClientOnly>

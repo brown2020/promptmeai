@@ -15,7 +15,7 @@ if (process.env.NEXT_PUBLIC_STRIPE_KEY === undefined) {
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY);
 
 const PaymentAttemptScreen = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   const amount = 99.99;
 
@@ -28,7 +28,7 @@ const PaymentAttemptScreen = () => {
           amount: convertToSubcurrency(amount),
           currency: "usd",
           appearance: {
-            theme: theme === "dark" ? "night" : "stripe",
+            theme: resolvedTheme === "dark" ? "night" : "stripe",
           },
         }}
       >

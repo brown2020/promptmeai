@@ -8,9 +8,10 @@ export default function Footer() {
   const uid = useAuthStore((s) => s.uid);
 
   const menuItems = MENU_ITEMS.filter((item) => {
-    if (item.footer && item.show === "everyone") return true;
-    if (item.footer && item.show === "guest_only") return true;
-    if (item.footer && item.show === "user_only") return uid;
+    if (!item.footer) return false;
+    if (item.show === "everyone") return true;
+    if (item.show === "guest_only") return !uid;
+    if (item.show === "user_only") return Boolean(uid);
     return false;
   });
 

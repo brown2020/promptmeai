@@ -73,12 +73,11 @@ const ChatInput = () => {
   }, []);
 
   const getAssistantResponse = useCallback(
-    async (
-      model: ModelName,
-      userMessage: ModelMessage,
-      signal?: AbortSignal
-    ) => {
+    async (model: ModelName, signal?: AbortSignal) => {
       try {
+        // The latest user message is already part of the store (added by
+        // initialMessage) and is therefore included here; do not append it
+        // again or the model receives the prompt twice.
         const currentMessages: ModelMessage[] = useChatStore
           .getState()
           .messages.flatMap((message) => [
@@ -87,7 +86,7 @@ const ChatInput = () => {
           ]);
 
         const result = await continueConversation(
-          [...currentMessages, userMessage],
+          currentMessages,
           model,
           profile.usageMode === UsageMode.Credits
             ? profile.usageMode
@@ -180,7 +179,7 @@ const ChatInput = () => {
     isSubmittingRef.current = true;
 
     try {
-      const newUserMessage = await initialMessage();
+      await initialMessage();
 
       setIsLoading(true);
       const abortController = new AbortController();
@@ -188,9 +187,7 @@ const ChatInput = () => {
       const signal = abortController.signal;
 
       const results = await Promise.allSettled(
-        MODEL_NAMES.map(({ value }) =>
-          getAssistantResponse(value, newUserMessage, signal)
-        )
+        MODEL_NAMES.map(({ value }) => getAssistantResponse(value, signal))
       );
 
       // Filter fulfilled results

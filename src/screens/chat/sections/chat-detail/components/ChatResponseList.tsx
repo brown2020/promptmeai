@@ -13,12 +13,15 @@ import { auth } from "@/firebase/firebaseClient";
 const ChatResponseList = () => {
   const user = auth.currentUser;
   const { messages, setMessages } = useChatStore();
-  const { activeChatId } = useChatSideBarStore();
+  const { activeChatId, isNewChat } = useChatSideBarStore();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const isAutoScrollEnabled = useRef(true);
 
-  // Handle initial chat load
+  // Handle initial chat load.
+  // Skip when the active chat was just created in-session (isNewChat): its
+  // messages already live in the store and are still streaming, so re-fetching
+  // the (partially saved) document here would wipe in-flight responses.
   useEffect(() => {
     const updateMessages = async (userId: string, activeChatId: string) => {
       const result = await getChat(userId, activeChatId);
@@ -28,10 +31,10 @@ const ChatResponseList = () => {
       }
     };
 
-    if (user?.uid && activeChatId) {
+    if (user?.uid && activeChatId && !isNewChat) {
       updateMessages(user.uid, activeChatId);
     }
-  }, [activeChatId, setMessages, user?.uid]);
+  }, [activeChatId, isNewChat, setMessages, user?.uid]);
 
   // Handle scroll events to detect if user has scrolled up
   useEffect(() => {
