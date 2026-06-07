@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+#
+# Pre-commit hook: block commits that introduce malware IOCs.
+#
+# Enable for this repo (one time):
+#   git config core.hooksPath .githooks
+#
+# (An active copy is also installed at .git/hooks/pre-commit by the malware
+# remediation pass, so protection is on immediately without the command above.)
+
+repo_root="$(git rev-parse --show-toplevel)"
+scanner="${repo_root}/scripts/malware-scan.sh"
+
+if [ -x "$scanner" ]; then
+  exec bash "$scanner" staged
+elif [ -f "$scanner" ]; then
+  exec bash "$scanner" staged
+fi
+
+echo "warning: scripts/malware-scan.sh not found; skipping malware IOC scan." >&2
+exit 0

@@ -36,3 +36,6 @@ service_key.json
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# security / malware remediation
+.malware_quarantine/
