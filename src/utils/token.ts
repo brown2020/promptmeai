@@ -1,4 +1,4 @@
-import { Message } from "@/zustand/useChatStore";
+import type { Message } from "@/zustand/useChatStore";
 import { convertToSubcurrency } from "./number";
 import { logger } from "./logger";
 

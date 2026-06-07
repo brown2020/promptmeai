@@ -49,6 +49,10 @@ const ChatInput = () => {
   const [isStopRequest, setIsStopRequest] = useState<boolean>(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  // Synchronous guard against double-submit: `isLoading` is only set after an
+  // awaited save, so rapid Enter presses could fire two submissions (and double
+  // the credit charge) before state updates. A ref blocks that immediately.
+  const isSubmittingRef = useRef<boolean>(false);
   const showAlert =
     profile.usageMode === UsageMode.Credits
       ? profile.credits <= 10
@@ -172,12 +176,13 @@ const ChatInput = () => {
   };
 
   const submitHandler = async () => {
-    if (!input || isLoading || isStopRequest) return;
+    if (!input || isLoading || isStopRequest || isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
 
-    const newUserMessage = await initialMessage();
-
-    setIsLoading(true);
     try {
+      const newUserMessage = await initialMessage();
+
+      setIsLoading(true);
       const abortController = new AbortController();
       setAbortController(abortController);
       const signal = abortController.signal;
@@ -209,11 +214,12 @@ const ChatInput = () => {
         setMessages([]);
       }
 
-      setIsLoading(false);
       setIsStopRequest(false);
     } catch (error) {
       logger.error("Error handling submission: ", error);
+    } finally {
       setIsLoading(false);
+      isSubmittingRef.current = false;
     }
   };
 

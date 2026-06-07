@@ -12,7 +12,7 @@ const HomePage = () => {
 
   useEffect(() => {
     if (!loading && user?.uid) {
-      router.push("/chat");
+      router.replace("/chat");
     }
   }, [user?.uid, loading, router]);
 

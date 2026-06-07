@@ -8,10 +8,8 @@ import useAuthToken from "@/hooks/useAuthToken";
 import { useEffect, useSyncExternalStore } from "react";
 import { useInitializeStores } from "@/zustand/useInitializeStores";
 import { usePlatform } from "@/zustand/usePlatformStore";
+import { isPublicPath } from "@/utils/routes";
 import { Toaster } from "react-hot-toast";
-
-// Paths that don't require authentication
-const PUBLIC_PATHS = ["/", "/about", "/terms", "/privacy", "/support"];
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const isHydrated = useSyncExternalStore(
@@ -32,11 +30,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (loading) return;
 
-    const isPublicPath = PUBLIC_PATHS.some((path) =>
-      path === "/" ? pathname === "/" : pathname.startsWith(path)
-    );
-    if (!uid && !isPublicPath) {
-      router.push("/");
+    if (!uid && !isPublicPath(pathname)) {
+      // Use replace so the gated route doesn't pollute history (prevents a
+      // back-button redirect bounce between the gated route and "/").
+      router.replace("/");
     }
   }, [loading, pathname, router, uid]);
 
