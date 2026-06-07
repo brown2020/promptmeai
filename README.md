@@ -339,12 +339,7 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ## Roadmap
 
-- [ ] Add more AI models (Cohere, AI21, etc.)
-- [ ] Implement conversation branching
-- [ ] Add export functionality (PDF, Markdown)
-- [ ] Create API for programmatic access
-- [ ] Add team collaboration features
-- [ ] Implement prompt templates library
+The product roadmap and full feature spec live in **[spec.md](spec.md)** — the single authoritative product/roadmap document. Agent and engineering operating rules live in **[AGENTS.md](AGENTS.md)**.
 
 ## License
 
