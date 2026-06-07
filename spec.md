@@ -44,11 +44,11 @@ Prompt.me AI is a client-first Next.js (App Router) single-page application back
 ### Current feature inventory
 
 - **Multi-model comparison** across 5 models (current `MODEL_CONFIG`):
-  - GPT-5.1 Chat — OpenAI
-  - Claude Sonnet 4.5 — Anthropic
-  - Gemini 2.5 Flash — Google
-  - Mistral Small — Mistral
-  - LLaMA 3.1 8B Instruct — Meta, via Fireworks's OpenAI-compatible endpoint
+  - GPT-5.5 — OpenAI
+  - Claude Sonnet 4.6 — Anthropic
+  - Gemini 3.5 Flash — Google
+  - Mistral Small 4 (`mistral-small-latest`) — Mistral
+  - Llama 4 Maverick — Meta, via Fireworks's OpenAI-compatible endpoint
 - **Real-time streaming** via Vercel AI SDK (`streamText` + `@ai-sdk/rsc` streamable values).
 - **Parallel fan-out** with per-request abort/stop (`Promise.allSettled` + `AbortController`).
 - **Dual usage modes**: platform **credits** or **user-supplied API keys**, toggled in Settings.

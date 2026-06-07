@@ -12,38 +12,38 @@ type ModelConfig = {
 };
 
 export const MODEL_CONFIG = {
-  "gpt-5.1-chat-latest": {
-    label: "GPT-5.1 Chat (Fast)",
+  "gpt-5.5": {
+    label: "GPT-5.5",
     provider: "openai",
-    modelId: "gpt-5.1-chat-latest",
+    modelId: "gpt-5.5",
     apiKeyProp: "openAi",
     envKey: "OPENAI_API_KEY",
   },
-  "claude-sonnet-4-5": {
-    label: "Claude Sonnet 4.5 (Fast)",
+  "claude-sonnet-4-6": {
+    label: "Claude Sonnet 4.6",
     provider: "anthropic",
-    modelId: "claude-sonnet-4-5",
+    modelId: "claude-sonnet-4-6",
     apiKeyProp: "anthropic",
     envKey: "ANTHROPIC_API_KEY",
   },
-  "gemini-2.5-flash": {
-    label: "Gemini 2.5 Flash",
+  "gemini-3.5-flash": {
+    label: "Gemini 3.5 Flash",
     provider: "google",
-    modelId: "models/gemini-2.5-flash",
+    modelId: "models/gemini-3.5-flash",
     apiKeyProp: "googleGenerativeAi",
     envKey: "GOOGLE_GENERATIVE_AI_API_KEY",
   },
   "mistral-small-latest": {
-    label: "Mistral Small Latest",
+    label: "Mistral Small 4",
     provider: "mistral",
     modelId: "mistral-small-latest",
     apiKeyProp: "mistral",
     envKey: "MISTRAL_API_KEY",
   },
-  "llama-v3p1-8b-instruct": {
-    label: "LLaMA 3.1 8B Instruct",
+  "llama4-maverick-instruct-basic": {
+    label: "Llama 4 Maverick",
     provider: "openai",
-    modelId: "accounts/fireworks/models/llama-v3p1-8b-instruct",
+    modelId: "accounts/fireworks/models/llama4-maverick-instruct-basic",
     apiKeyProp: "fireworks",
     envKey: "FIREWORKS_API_KEY",
     baseURL: "https://api.fireworks.ai/inference/v1",

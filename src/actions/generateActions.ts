@@ -10,9 +10,7 @@ import { createMistral } from "@ai-sdk/mistral";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { verifyAuth } from "@/firebase/firebaseAdmin";
 
-const DEFAULT_MODEL = (
-  MODEL_NAMES[0]?.value ?? "gpt-5.1-chat-latest"
-) as ModelName;
+const DEFAULT_MODEL = (MODEL_NAMES[0]?.value ?? "gpt-5.5") as ModelName;
 
 const isUsageMode = (value: APIKeys | UsageMode): value is UsageMode =>
   typeof value === "string";

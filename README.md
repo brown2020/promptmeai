@@ -24,11 +24,11 @@ Prompt.me AI is an open-source platform that allows you to send the same prompt 
 
 | Model                 | Provider             | Description                     |
 | --------------------- | -------------------- | ------------------------------- |
-| **GPT-5.1 Chat**      | OpenAI               | Fast, capable language model    |
-| **Claude Sonnet 4.5** | Anthropic            | Advanced reasoning and analysis |
-| **Gemini 2.5 Flash**  | Google               | Quick, efficient responses      |
-| **Mistral Small**     | Mistral AI           | Balanced performance model      |
-| **LLaMA 3.1 8B**      | Meta (via Fireworks) | Open-source model               |
+| **GPT-5.5**           | OpenAI               | Frontier reasoning model        |
+| **Claude Sonnet 4.6** | Anthropic            | Advanced reasoning and analysis |
+| **Gemini 3.5 Flash**  | Google               | Quick, efficient responses      |
+| **Mistral Small 4**   | Mistral AI           | Balanced performance model      |
+| **Llama 4 Maverick**  | Meta (via Fireworks) | Open-weight multimodal MoE      |
 
 ## Features
 
