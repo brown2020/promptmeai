@@ -11,23 +11,24 @@
 
 ## Current State
 
-- Phase: Findings Backlog
-- Task: T-003
-- Status: Findings ready to commit
+- Phase: Execute Fixes and Improvements
+- Task: T-004
+- Status: Execution ready to commit
 - Last command: git diff --check
-- Last result: Passed after findings `npm run lint` passed
-- Last pushed commit: 34e60e7
-- Branch sync: local dev matched origin/dev before findings report edits
-- Working tree: dirty with owned findings report updates
-- Next action: Run lint, commit/push findings report, then execute T-004/F-001
+- Last result: Passed after lint, tests, typecheck, build, and malware scan passed
+- Last pushed commit: acda25c
+- Branch sync: local dev matched origin/dev before execution edits
+- Working tree: dirty with owned ChatInput and execution report updates
+- Next action: Run diff check, commit/push execution checkpoint, then review
 
 ## Dirty File Classification
 
 | Path | Classification | Owner/Reason |
 | --- | --- | --- |
-| agent-runs/2026-06-20-codebase-pass/03-findings-backlog.md | Safe-to-commit | T-003 findings report |
-| agent-runs/2026-06-20-codebase-pass/run-state.md | Safe-to-commit | T-003 resume ledger |
-| agent-runs/2026-06-20-codebase-pass/task-queue.md | Safe-to-commit | T-003 queue status |
+| src/screens/chat/sections/chat-detail/components/ChatInput.tsx | In-scope source | T-004/F-001 chat failure classification fix |
+| agent-runs/2026-06-20-codebase-pass/04-execute-fixes-and-improvements.md | Safe-to-commit | T-004 execution report |
+| agent-runs/2026-06-20-codebase-pass/run-state.md | Safe-to-commit | T-004 resume ledger |
+| agent-runs/2026-06-20-codebase-pass/task-queue.md | Safe-to-commit | T-004 queue status |
 
 ## Blockers
 
@@ -55,3 +56,9 @@
 - `npm outdated`: reported patch/minor updates available; queued as F-003.
 - Findings `npm run lint`: passed.
 - Findings `git diff --check`: passed.
+- Execution `npm run lint`: passed.
+- Execution `npm run test`: passed, 6 files and 30 tests.
+- Execution `npx tsc --noEmit`: passed.
+- Execution `npm run build`: passed.
+- Execution `bash scripts/malware-scan.sh tree`: passed, no IOCs found.
+- Execution `git diff --check`: passed.

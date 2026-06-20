@@ -73,7 +73,7 @@ const ChatInput = () => {
   }, []);
 
   const getAssistantResponse = useCallback(
-    async (model: ModelName, signal?: AbortSignal) => {
+    async (model: ModelName, signal?: AbortSignal): Promise<boolean> => {
       try {
         // The latest user message is already part of the store (added by
         // initialMessage) and is therefore included here; do not append it
@@ -93,18 +93,28 @@ const ChatInput = () => {
             : profile.APIKeys
         );
 
+        let hasContent = false;
+
         for await (const content of readStreamableValue(result)) {
           if (signal?.aborted) {
             logger.log("Aborted request", model);
             break;
           }
 
+          const responseContent = typeof content === "string" ? content : "";
+
+          if (responseContent) {
+            hasContent = true;
+          }
+
           useChatStore.getState().addResponse(model, {
             role: "assistant",
-            content: content as string,
-            tokenUsage: content ? countTokens(content) : 0,
+            content: responseContent,
+            tokenUsage: responseContent ? countTokens(responseContent) : 0,
           });
         }
+
+        return hasContent;
       } catch (error) {
         if (error instanceof Error) {
           if (error.name === "AbortError") {
@@ -115,6 +125,8 @@ const ChatInput = () => {
         } else {
           logger.error("Unknown error:", error);
         }
+
+        return false;
       }
     },
     [profile.APIKeys, profile.usageMode]
@@ -190,9 +202,8 @@ const ChatInput = () => {
         MODEL_NAMES.map(({ value }) => getAssistantResponse(value, signal))
       );
 
-      // Filter fulfilled results
       const successfulResponses = results.filter(
-        (result) => result.status === "fulfilled"
+        (result) => result.status === "fulfilled" && result.value
       );
 
       if (successfulResponses.length > 0) {
@@ -202,7 +213,7 @@ const ChatInput = () => {
 
         if (totalTokenUsage && profile.usageMode === UsageMode.Credits) {
           const totalCreditUse = calculateCreditCost(totalTokenUsage);
-          reduceCredits(totalCreditUse);
+          await reduceCredits(totalCreditUse);
         }
       } else {
         logger.error("All promises failed.");
