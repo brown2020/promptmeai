@@ -11,25 +11,23 @@
 
 ## Current State
 
-- Phase: Package and Dead-Code Cleanup
-- Task: T-005
-- Status: Package cleanup ready to commit
-- Last command: npm outdated
-- Last result: Non-forced audit fix reduced vulnerabilities; remaining direct updates/deferred forced paths documented
-- Last pushed commit: aa0a150
-- Branch sync: local dev matched origin/dev before package cleanup edits
-- Working tree: dirty with owned package-lock, README, and package report updates
-- Next action: Commit/push package cleanup checkpoint, then review/stabilize
+- Phase: Review
+- Task: T-006
+- Status: Review ready to commit
+- Last command: git diff --check
+- Last result: Passed after review `npm run lint` passed
+- Last pushed commit: bde3845
+- Branch sync: local dev matched origin/dev before review report edits
+- Working tree: dirty with owned review report updates
+- Next action: Commit/push review report, then run stabilization
 
 ## Dirty File Classification
 
 | Path | Classification | Owner/Reason |
 | --- | --- | --- |
-| package-lock.json | In-scope generated | T-005 non-forced npm audit fix |
-| README.md | Safe-to-commit | T-005 installed Next patch version after lockfile update |
-| agent-runs/2026-06-20-codebase-pass/05-package-and-dead-code-cleanup.md | Safe-to-commit | T-005 package cleanup report |
-| agent-runs/2026-06-20-codebase-pass/run-state.md | Safe-to-commit | T-005 resume ledger |
-| agent-runs/2026-06-20-codebase-pass/task-queue.md | Safe-to-commit | T-005 queue status |
+| agent-runs/2026-06-20-codebase-pass/06-review.md | Safe-to-commit | T-006 review report |
+| agent-runs/2026-06-20-codebase-pass/run-state.md | Safe-to-commit | T-006 resume ledger |
+| agent-runs/2026-06-20-codebase-pass/task-queue.md | Safe-to-commit | T-006 queue status |
 
 ## Blockers
 
@@ -71,3 +69,6 @@
 - Package `bash scripts/malware-scan.sh tree`: passed.
 - Package `git diff --check`: passed.
 - Package `npm audit --audit-level=moderate`: still exits 1 for forced/breaking residual advisories.
+- Review judge: PASS for introduced changes; residual risks documented.
+- Review `npm run lint`: passed.
+- Review `git diff --check`: passed.
