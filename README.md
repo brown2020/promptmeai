@@ -45,7 +45,7 @@ Prompt.me AI is an open-source platform that allows you to send the same prompt 
 
 ### Frontend
 
-- **[Next.js 16.2.7](https://nextjs.org/)** — React framework with App Router
+- **[Next.js 16.2.9](https://nextjs.org/)** — React framework with App Router
 - **[React 19.2.7](https://react.dev/)** — UI library
 - **[TypeScript 6.0.3](https://www.typescriptlang.org/)** — Type safety
 - **[Tailwind CSS 4.3.0](https://tailwindcss.com/)** — Utility-first styling
