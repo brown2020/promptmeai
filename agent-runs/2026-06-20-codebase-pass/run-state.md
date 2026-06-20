@@ -11,21 +11,21 @@
 
 ## Current State
 
-- Phase: Review
+- Phase: Stabilization Loop
 - Task: T-006
-- Status: Review ready to commit
+- Status: Stabilization ready to commit
 - Last command: git diff --check
-- Last result: Passed after review `npm run lint` passed
-- Last pushed commit: bde3845
-- Branch sync: local dev matched origin/dev before review report edits
-- Working tree: dirty with owned review report updates
-- Next action: Commit/push review report, then run stabilization
+- Last result: Final app gates passed; moderate audit residuals documented
+- Last pushed commit: 39cdfe6
+- Branch sync: local dev matched origin/dev before stabilization report edits
+- Working tree: dirty with owned stabilization report updates
+- Next action: Commit/push stabilization report, then write final report
 
 ## Dirty File Classification
 
 | Path | Classification | Owner/Reason |
 | --- | --- | --- |
-| agent-runs/2026-06-20-codebase-pass/06-review.md | Safe-to-commit | T-006 review report |
+| agent-runs/2026-06-20-codebase-pass/07-stabilization-loop.md | Safe-to-commit | T-006 stabilization report |
 | agent-runs/2026-06-20-codebase-pass/run-state.md | Safe-to-commit | T-006 resume ledger |
 | agent-runs/2026-06-20-codebase-pass/task-queue.md | Safe-to-commit | T-006 queue status |
 
@@ -72,3 +72,13 @@
 - Review judge: PASS for introduced changes; residual risks documented.
 - Review `npm run lint`: passed.
 - Review `git diff --check`: passed.
+- Stabilization remote read: passed.
+- Stabilization dry-run push: passed.
+- Stabilization `npm run lint`: passed.
+- Stabilization `npm run test`: passed, 6 files and 30 tests.
+- Stabilization `npx tsc --noEmit`: passed.
+- Stabilization `npm run build`: passed.
+- Stabilization `bash scripts/malware-scan.sh tree`: passed.
+- Stabilization `npm audit --audit-level=high`: passed.
+- Stabilization `npm audit --audit-level=moderate`: failed with documented moderate forced-fix residuals.
+- Stabilization `git diff --check`: passed.
