@@ -11,23 +11,23 @@
 
 ## Current State
 
-- Phase: Baseline Validation
-- Task: T-002
-- Status: Baseline ready to commit
+- Phase: Findings Backlog
+- Task: T-003
+- Status: Findings ready to commit
 - Last command: git diff --check
-- Last result: Passed after post-report `npm run lint` passed
-- Last pushed commit: 146884282da69d34ee1a0d6d68e8c7ea9c2218ef
-- Branch sync: local dev matched origin/dev before baseline report edits
-- Working tree: dirty with owned baseline report updates
-- Next action: Commit/push baseline report, then run findings backlog
+- Last result: Passed after findings `npm run lint` passed
+- Last pushed commit: 34e60e7
+- Branch sync: local dev matched origin/dev before findings report edits
+- Working tree: dirty with owned findings report updates
+- Next action: Run lint, commit/push findings report, then execute T-004/F-001
 
 ## Dirty File Classification
 
 | Path | Classification | Owner/Reason |
 | --- | --- | --- |
-| agent-runs/2026-06-20-codebase-pass/02-baseline-validation.md | Safe-to-commit | T-002 baseline report |
-| agent-runs/2026-06-20-codebase-pass/run-state.md | Safe-to-commit | T-002 resume ledger |
-| agent-runs/2026-06-20-codebase-pass/task-queue.md | Safe-to-commit | T-002 queue status |
+| agent-runs/2026-06-20-codebase-pass/03-findings-backlog.md | Safe-to-commit | T-003 findings report |
+| agent-runs/2026-06-20-codebase-pass/run-state.md | Safe-to-commit | T-003 resume ledger |
+| agent-runs/2026-06-20-codebase-pass/task-queue.md | Safe-to-commit | T-003 queue status |
 
 ## Blockers
 
@@ -51,3 +51,7 @@
 - `bash scripts/malware-scan.sh tree`: passed, no IOCs found.
 - Post-report `npm run lint`: passed.
 - Post-report `git diff --check`: passed.
+- `npm audit --audit-level=moderate`: failed with 20 vulnerabilities; queued as F-003.
+- `npm outdated`: reported patch/minor updates available; queued as F-003.
+- Findings `npm run lint`: passed.
+- Findings `git diff --check`: passed.
