@@ -4,8 +4,8 @@
 
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-3178C6?style=flat-square&logo=typescript)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.1.18-38B2AC?style=flat-square&logo=tailwind-css)
+![TypeScript](https://img.shields.io/badge/TypeScript-6.0.3-3178C6?style=flat-square&logo=typescript)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.3.0-38B2AC?style=flat-square&logo=tailwind-css)
 ![License](https://img.shields.io/badge/License-AGPLv3-blue?style=flat-square)
 
 **Compare AI model responses side-by-side in real-time**
@@ -45,10 +45,10 @@ Prompt.me AI is an open-source platform that allows you to send the same prompt 
 
 ### Frontend
 
-- **[Next.js 16.1.1](https://nextjs.org/)** — React framework with App Router
-- **[React 19.2.3](https://react.dev/)** — UI library
-- **[TypeScript 5.9.3](https://www.typescriptlang.org/)** — Type safety
-- **[Tailwind CSS 4.1.18](https://tailwindcss.com/)** — Utility-first styling
+- **[Next.js 16.2.7](https://nextjs.org/)** — React framework with App Router
+- **[React 19.2.7](https://react.dev/)** — UI library
+- **[TypeScript 6.0.3](https://www.typescriptlang.org/)** — Type safety
+- **[Tailwind CSS 4.3.0](https://tailwindcss.com/)** — Utility-first styling
 - **[NextUI](https://nextui.org/)** — React component library
 - **[Framer Motion](https://www.framer.com/motion/)** — Animations
 
@@ -69,6 +69,7 @@ Prompt.me AI is an open-source platform that allows you to send the same prompt 
 ### Developer Experience
 
 - **[ESLint](https://eslint.org/)** — Code linting
+- **[Vitest](https://vitest.dev/)** — Focused unit tests
 - **[date-fns](https://date-fns.org/)** — Date utilities
 - **[React Markdown](https://remarkjs.github.io/react-markdown/)** — Markdown rendering
 
@@ -77,7 +78,7 @@ Prompt.me AI is an open-source platform that allows you to send the same prompt 
 ### Prerequisites
 
 - **Node.js 20.9+** (LTS recommended)
-- **npm** or **yarn** or **pnpm**
+- **npm** (required; `package-lock.json` is the source of truth)
 - API keys from AI providers (optional if using credits)
 - Firebase project
 - Stripe account (for payments)
@@ -233,6 +234,8 @@ npm run dev      # Start development server
 npm run build    # Build for production
 npm run start    # Start production server
 npm run lint     # Run ESLint
+npm run test     # Run Vitest unit tests
+bash scripts/malware-scan.sh tree   # Run the local malware IOC scan used by CI
 ```
 
 ## Firebase Setup
@@ -304,6 +307,7 @@ We welcome contributions! Here's how you can help:
 4. **Run tests and linting**
    ```bash
    npm run lint
+   npm run test
    npm run build
    ```
 5. **Commit your changes**

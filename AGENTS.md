@@ -27,7 +27,7 @@ The app is a Next.js App Router project that runs almost entirely on the client.
 - **Payments**: Stripe (`stripe` server SDK, `@stripe/react-stripe-js` + `@stripe/stripe-js` client).
 - **State**: Zustand 5 (multiple small stores, no persistence middleware).
 - **Validation**: Zod 4 (a transitive requirement of the AI SDK; not yet used for app-level schemas).
-- **Tooling**: ESLint 9 (`eslint-config-next`), TypeScript compiler for typechecking. Package manager is **npm** (lockfile: `package-lock.json`, `.npmrc` sets `legacy-peer-deps=true`).
+- **Tooling**: ESLint 9 (`eslint-config-next`), TypeScript compiler for typechecking, Vitest 4 for focused unit tests, and a GitHub Actions malware IOC scan. Package manager is **npm** (lockfile: `package-lock.json`, `.npmrc` sets `legacy-peer-deps=true`).
 
 > Always trust `package.json` over prose for exact versions. Do not switch package managers.
 
@@ -53,7 +53,7 @@ src/
 └── proxy.ts        # Server-side route protection (Next.js 16 Proxy / Middleware)
 ```
 
-Root config: `next.config.mjs`, `tsconfig.json` (`@/*` → `./src/*`), `eslint.config.mjs`, `postcss.config.mjs`, `firestore.rules`, `storage.rules`, `.env.example`.
+Root config: `next.config.mjs`, `tsconfig.json` (`@/*` → `./src/*`), `eslint.config.mjs`, `vitest.config.ts`, `postcss.config.mjs`, `firestore.rules`, `storage.rules`, `.env.example`.
 
 ## Core architecture overview
 
@@ -83,20 +83,23 @@ npm run dev          # Next dev server (DO NOT run in autonomous validation; it 
 npm run build        # production build (also typechecks + lints route output)
 npm run start        # serve a production build
 npm run lint         # ESLint over the repo
+npm run test         # Vitest unit tests (node environment, src/**/*.test.ts)
 npx tsc --noEmit     # standalone typecheck (no dedicated npm script exists)
+bash scripts/malware-scan.sh tree   # local malware IOC scan used by CI
 ```
 
 ### Canonical validation/check command
 
 ```bash
-npm run lint && npx tsc --noEmit && npm run build
+npm run lint && npm run test && npx tsc --noEmit && npm run build
 ```
 
-Run this before declaring any change done. `npm run lint` and `npx tsc --noEmit` are fast; `npm run build` is the strongest signal and requires environment variables (see below).
+Run this before declaring any change done. `npm run lint`, `npm run test`, and `npx tsc --noEmit` are fast; `npm run build` is the strongest signal and requires environment variables (see below).
 
 ### Non-interactive testing rules
 
-- There is **no test suite, no test runner, and no CI workflow** in this repo today. Do not claim tests pass.
+- A focused Vitest suite exists for pure route/proxy and utility logic (`src/**/*.test.ts`). Run `npm run test` when changed logic is covered or should remain covered.
+- CI currently runs the malware IOC scan on push and pull request via `.github/workflows/malware-scan.yml`; it does not yet run lint, typecheck, tests, or build.
 - Never start watch mode (`npm run dev`, `tsc --watch`, `eslint --watch`) during validation.
 - Never launch a headed browser, never require manual login, never wait for human input.
 - `npm run build` needs env vars (Firebase Admin + provider keys are referenced at import time). A local `.env` / `.env.local` already exists; rely on it. If a clean environment lacks them, copy `.env.example` and document that the build could not be fully validated rather than inventing secrets.
@@ -136,8 +139,9 @@ Run this before declaring any change done. `npm run lint` and `npx tsc --noEmit`
 
 ### Testing expectations
 
-- No automated tests exist. If you add logic that is easy to unit test (token math, credit conversion, serialization, path builders), adding focused tests is welcome but **introducing a test framework is a product/infra decision** — only do it if the task explicitly calls for it, and wire a non-interactive `test` script (e.g. `vitest run`) if you do.
-- Until then, validation = lint + typecheck + build, plus a manual reasoning pass over the changed user flow.
+- Add or update focused Vitest tests for pure logic when practical (token math, credit conversion, serialization, path builders, public-route matching, proxy behavior). Keep tests non-interactive and colocated as `*.test.ts`.
+- Validation = lint + tests + typecheck + build, plus a manual reasoning pass over the changed user flow.
+- Malware hardening lives in `scripts/malware-scan.sh`, `.githooks/pre-commit`, and `.github/workflows/malware-scan.yml`; keep the IOC list synchronized across those files and `MALWARE_REMEDIATION_REPORT.md`.
 
 ## Files and systems requiring extra caution
 
@@ -164,12 +168,13 @@ A change is done when:
 
 1. It implements exactly the requested scope — one focused, PR-sized change.
 2. `npm run lint` is clean.
-3. `npx tsc --noEmit` is clean.
-4. `npm run build` succeeds (or you have documented precisely why it could not run).
-5. The server/client boundary, auth (`verifyAuth`), and Firestore-rule implications are respected.
-6. No secrets, generated files, or unrelated files are committed.
-7. Docs that describe the changed behavior (`README.md`, `spec.md`) are updated when behavior changes.
-8. Work is committed to `dev` with a Conventional Commit message and pushed to `origin/dev`.
+3. `npm run test` is clean when test-covered logic is touched.
+4. `npx tsc --noEmit` is clean.
+5. `npm run build` succeeds (or you have documented precisely why it could not run).
+6. The server/client boundary, auth (`verifyAuth`), and Firestore-rule implications are respected.
+7. No secrets, generated files, or unrelated files are committed.
+8. Docs that describe the changed behavior (`README.md`, `spec.md`) are updated when behavior changes.
+9. Work is committed to `dev` with a Conventional Commit message and pushed to `origin/dev`.
 
 ## Rules for autonomous Codex runs
 
@@ -178,7 +183,7 @@ A change is done when:
 - Read before you write: inspect the relevant code paths (this guide names them) rather than trusting docs alone.
 - Prefer completing or improving an existing product capability over generic cleanup/refactors. Do not generate large lint/test/refactor backlogs as "work."
 - Keep diffs minimal and reviewable. Match existing patterns and file organization.
-- Always run the canonical validation command before committing. Fix what you broke.
+- Always run the canonical validation command before committing source changes. For docs/report-only commits, run the closest safe quality gate and document why broader checks were deferred.
 - Update `spec.md` and/or `README.md` when you change user-facing behavior.
 - Commit with `docs:`/`feat:`/`fix:` etc. as appropriate, push to `origin/dev`, then stop.
 

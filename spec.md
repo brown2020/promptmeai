@@ -90,7 +90,8 @@ Prompt.me AI is a client-first Next.js (App Router) single-page application back
 ### Existing technical constraints
 
 - **Route protection runs server-side in `src/proxy.ts`** (Next.js 16 Proxy): unauthenticated requests for non-public routes are redirected to `/` before render, based on a presence check of the auth cookie. This is a routing gate only; the authoritative trust boundary remains server actions (`verifyAuth`) + Firestore rules.
-- No test suite, no test runner, and no CI workflow.
+- Focused Vitest tests exist for route/proxy behavior and utility modules (`src/**/*.test.ts`, configured by `vitest.config.ts`).
+- CI currently runs a malware IOC scan on push and pull request (`.github/workflows/malware-scan.yml`); lint, typecheck, tests, and build are still local validation gates.
 - `npm run build` requires environment variables (Firebase Admin + provider keys are referenced at import time).
 - npm is the required package manager (`package-lock.json`, `.npmrc` `legacy-peer-deps=true`).
 - AGPL-3.0 licensed.
