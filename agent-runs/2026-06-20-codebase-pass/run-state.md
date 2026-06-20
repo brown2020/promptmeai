@@ -11,23 +11,24 @@
 
 ## Current State
 
-- Phase: Stabilization Loop
+- Phase: Integrator
 - Task: T-006
-- Status: Stabilization ready to commit
-- Last command: git diff --check
-- Last result: Final app gates passed; moderate audit residuals documented
-- Last pushed commit: 39cdfe6
-- Branch sync: local dev matched origin/dev before stabilization report edits
-- Working tree: dirty with owned stabilization report updates
-- Next action: Commit/push stabilization report, then write final report
+- Status: Complete pending final report checkpoint push
+- Last command: git rev-parse HEAD
+- Last result: Final pushed stabilization commit before final report was d31b09ba2929668d03c7bf8664be62d7989f39c2
+- Last pushed commit: d31b09ba2929668d03c7bf8664be62d7989f39c2
+- Branch sync: local dev matched origin/dev before final report edits
+- Working tree: dirty with owned final report updates
+- Next action: Commit/push final report, fetch, confirm clean sync, then stop
 
 ## Dirty File Classification
 
 | Path | Classification | Owner/Reason |
 | --- | --- | --- |
-| agent-runs/2026-06-20-codebase-pass/07-stabilization-loop.md | Safe-to-commit | T-006 stabilization report |
-| agent-runs/2026-06-20-codebase-pass/run-state.md | Safe-to-commit | T-006 resume ledger |
-| agent-runs/2026-06-20-codebase-pass/task-queue.md | Safe-to-commit | T-006 queue status |
+| agent-runs/2026-06-20-codebase-pass/08-integrator.md | Safe-to-commit | T-006 integrator report |
+| agent-runs/2026-06-20-codebase-pass/final-report.md | Safe-to-commit | T-006 final report |
+| agent-runs/2026-06-20-codebase-pass/run-state.md | Safe-to-commit | T-006 final resume ledger |
+| agent-runs/2026-06-20-codebase-pass/task-queue.md | Safe-to-commit | T-006 final queue status |
 
 ## Blockers
 
@@ -82,3 +83,5 @@
 - Stabilization `npm audit --audit-level=high`: passed.
 - Stabilization `npm audit --audit-level=moderate`: failed with documented moderate forced-fix residuals.
 - Stabilization `git diff --check`: passed.
+- Integrator commit list inspected.
+- Integrator branch status clean/synced before final report edit.
