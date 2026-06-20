@@ -11,24 +11,23 @@
 
 ## Current State
 
-- Phase: Preflight and Repo Docs
-- Task: T-001
-- Status: Ready to commit
+- Phase: Baseline Validation
+- Task: T-002
+- Status: Baseline ready to commit
 - Last command: git diff --check
-- Last result: Passed after `npm run lint` passed
-- Last pushed commit: 6fe0de086ee52ee0901dfe6d17b979c6306de3a6
-- Branch sync: local dev matched origin/dev before run-report edits
-- Working tree: dirty with owned preflight docs/report edits
-- Next action: Run docs-safe quality gate, inspect diff, commit, dry-run push, push, fetch, and confirm sync
+- Last result: Passed after post-report `npm run lint` passed
+- Last pushed commit: 146884282da69d34ee1a0d6d68e8c7ea9c2218ef
+- Branch sync: local dev matched origin/dev before baseline report edits
+- Working tree: dirty with owned baseline report updates
+- Next action: Commit/push baseline report, then run findings backlog
 
 ## Dirty File Classification
 
 | Path | Classification | Owner/Reason |
 | --- | --- | --- |
-| AGENTS.md | Safe-to-commit | T-001 repo guidance update from package/test/CI evidence |
-| spec.md | Safe-to-commit | T-001 current-state validation update |
-| README.md | Safe-to-commit | T-001 package version/script drift update |
-| agent-runs/2026-06-20-codebase-pass/* | Safe-to-commit | T-001 sb-cbi run reports and queue |
+| agent-runs/2026-06-20-codebase-pass/02-baseline-validation.md | Safe-to-commit | T-002 baseline report |
+| agent-runs/2026-06-20-codebase-pass/run-state.md | Safe-to-commit | T-002 resume ledger |
+| agent-runs/2026-06-20-codebase-pass/task-queue.md | Safe-to-commit | T-002 queue status |
 
 ## Blockers
 
@@ -46,3 +45,9 @@
 - Skill scaffolding validation: passed.
 - `npm run lint`: passed.
 - `git diff --check`: passed.
+- `npm run test`: passed, 6 files and 30 tests.
+- `npx tsc --noEmit`: passed.
+- `npm run build`: passed.
+- `bash scripts/malware-scan.sh tree`: passed, no IOCs found.
+- Post-report `npm run lint`: passed.
+- Post-report `git diff --check`: passed.
