@@ -18,17 +18,19 @@ const useAuthToken = (cookieName = "authToken") => {
 
   const lastTokenRefresh = `lastTokenRefresh_${cookieName}`;
 
-  const refreshAuthToken = useCallback(async () => {
+  const refreshAuthToken = useCallback(async (): Promise<boolean> => {
     try {
-      if (!auth.currentUser) return;
-      const idTokenResult = await getIdToken(auth.currentUser, true);
-
       if (!isValidCookieName(cookieName)) {
         console.error(`Invalid cookie name: ${cookieName}`);
-        return;
+        return false;
       }
 
+      if (!auth.currentUser) return false;
+
+      const idTokenResult = await getIdToken(auth.currentUser, true);
+
       setCookie(cookieName, idTokenResult, {
+        path: "/",
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
       });
@@ -36,11 +38,14 @@ const useAuthToken = (cookieName = "authToken") => {
       if (!window.ReactNativeWebView) {
         window.localStorage.setItem(lastTokenRefresh, Date.now().toString());
       }
+
+      return true;
     } catch (err) {
       console.error("Error refreshing token:", err);
       if (isValidCookieName(cookieName)) {
-        deleteCookie(cookieName);
+        deleteCookie(cookieName, { path: "/" });
       }
+      return false;
     }
   }, [cookieName, lastTokenRefresh]);
 
@@ -73,7 +78,27 @@ const useAuthToken = (cookieName = "authToken") => {
 
   // Sync auth state to store and set cookie on login
   useEffect(() => {
-    if (user?.uid) {
+    if (loading) return;
+
+    let isCancelled = false;
+
+    async function syncAuthState() {
+      if (!user?.uid) {
+        clearAuthDetails();
+        if (isValidCookieName(cookieName)) {
+          deleteCookie(cookieName, { path: "/" });
+        }
+        return;
+      }
+
+      const hasAuthCookie = await refreshAuthToken();
+      if (isCancelled) return;
+
+      if (!hasAuthCookie) {
+        clearAuthDetails();
+        return;
+      }
+
       setAuthDetails({
         uid: user.uid,
         authEmail: user.email || "",
@@ -84,16 +109,23 @@ const useAuthToken = (cookieName = "authToken") => {
         authPending: false,
       });
 
-      // Set the auth cookie immediately so server actions can verify identity
-      refreshAuthToken();
       scheduleTokenRefresh();
-    } else {
-      clearAuthDetails();
-      if (isValidCookieName(cookieName)) {
-        deleteCookie(cookieName);
-      }
     }
-  }, [user, setAuthDetails, clearAuthDetails, cookieName, refreshAuthToken, scheduleTokenRefresh]);
+
+    syncAuthState();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [
+    user,
+    loading,
+    setAuthDetails,
+    clearAuthDetails,
+    cookieName,
+    refreshAuthToken,
+    scheduleTokenRefresh,
+  ]);
 
   return { uid: user?.uid, loading, error };
 };
