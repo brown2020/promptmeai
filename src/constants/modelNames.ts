@@ -8,7 +8,6 @@ type ModelConfig = {
   modelId: string;
   apiKeyProp: keyof APIKeys;
   envKey: string;
-  baseURL?: string;
 };
 
 export const MODEL_CONFIG = {
@@ -39,14 +38,6 @@ export const MODEL_CONFIG = {
     modelId: "mistral-small-latest",
     apiKeyProp: "mistral",
     envKey: "MISTRAL_API_KEY",
-  },
-  "llama4-maverick-instruct-basic": {
-    label: "Llama 4 Maverick",
-    provider: "openai",
-    modelId: "accounts/fireworks/models/llama4-maverick-instruct-basic",
-    apiKeyProp: "fireworks",
-    envKey: "FIREWORKS_API_KEY",
-    baseURL: "https://api.fireworks.ai/inference/v1",
   },
 } as const satisfies Record<string, ModelConfig>;
 

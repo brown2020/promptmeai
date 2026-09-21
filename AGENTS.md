@@ -8,9 +8,9 @@ For product scope, current-state inventory, and roadmap, see [`spec.md`](./spec.
 
 ## Project overview
 
-**Prompt.me AI** is an open-source web app that sends one prompt to five large language models at once and streams all five responses side-by-side in real time. It is a single-purpose comparison tool, not a general chat client: every prompt fans out to every configured model so users can compare quality, tone, speed, and correctness.
+**Prompt.me AI** is an open-source web app that sends one prompt to four large language models at once and streams all four responses side-by-side in real time. It is a single-purpose comparison tool, not a general chat client: every prompt fans out to every configured model so users can compare quality, tone, speed, and correctness.
 
-The app is a Next.js App Router project that runs almost entirely on the client. Server-side code is limited to two thin server-action modules (AI streaming and Stripe payment intents) plus Firebase Admin auth verification. Firebase (Auth + Firestore) is the backend; Stripe handles credit purchases.
+The app is a Next.js App Router project that runs almost entirely on the client. Server-side code is limited to thin server-action modules (AI streaming, Stripe payment intents, and profile creation) plus Firebase Admin auth verification. Firebase (Auth + Firestore) is the backend; Stripe handles credit purchases.
 
 ## Product purpose
 
@@ -61,13 +61,13 @@ Root config: `next.config.mjs`, `tsconfig.json` (`@/*` → `./src/*`), `eslint.c
 - **Auth flow.** `useAuthToken` (used in `providers.tsx`) listens to Firebase Auth, writes the Firebase ID token into a cookie (name from `NEXT_PUBLIC_COOKIE_NAME`, default `authToken`), and refreshes it every 50 minutes. Server actions call `verifyAuth()` (`firebaseAdmin.ts`) which reads that cookie and verifies the ID token with the Admin SDK, returning the uid.
 - **Route protection runs server-side in `src/proxy.ts`** (Next.js 16 Proxy, formerly Middleware; Node.js runtime). The proxy redirects unauthenticated requests for non-public routes to `/` before the page renders, using the shared `isPublicPath` matcher (`src/utils/routes.ts`) and a presence check on the auth cookie. This is a coarse routing gate; the authoritative trust boundary is still `verifyAuth()` in the server actions (full ID-token verification), not the proxy.
 - **Generation fan-out.** `ChatInput` reads the current conversation, then calls the `continueConversation` server action once per model via `Promise.allSettled`. The action resolves a provider+model from `MODEL_CONFIG`, picks the API key (env key in credits mode, user key in API-keys mode via `resolveApiKey`), and returns a streamable value the client reads with `readStreamableValue`.
-- **Credits.** `utils/token.ts` estimates tokens (~4 chars/token) and converts to credits at a flat rate. After a successful generation in credits mode, the client calls `reduceCredits` (`useCreditsStore`, Firestore transaction). Credit accounting is currently **client-initiated**, not enforced inside the server action (see "extra caution").
+- **Credits.** `utils/token.ts` estimates tokens (~4 chars/token) and converts to credits at a flat rate. In credits mode, `continueConversation` rejects a caller with no balance and deducts the estimate with the Admin SDK after a response. Catalog purchases grant credits only from `grantCatalogPurchase` after a succeeded 9999-cent PaymentIntent. Firestore rules in the repo freeze `credits` and `totalCredits` on client updates; those rules are not the live deployment until they are published.
 - **Persistence.** Chats are stored under `promptme_chats/{uid}/chat/{id}` as a JSON-serialized `Message[]` string. Profile lives at `users/{uid}/profile/userData`; payments at `users/{uid}/payments/{id}`. All Firestore path strings come from `firebase/paths.ts`.
 - **Mobile webview awareness.** `usePlatformStore` detects `window.ReactNativeWebView`; some web-only UI (Google sign-in, API-key entry) is hidden inside a React Native webview wrapper.
 
 ## Key app features that exist today
 
-- Five-model side-by-side streaming comparison (OpenAI GPT, Anthropic Claude, Google Gemini, Mistral, Meta LLaMA via Fireworks's OpenAI-compatible endpoint).
+- Four-model side-by-side streaming comparison (OpenAI GPT, Anthropic Claude, Google Gemini, and Mistral).
 - Stop/abort an in-flight generation (`AbortController` per request).
 - Chat history with create, update, pin/unpin, delete, and debounced search.
 - Dual usage modes: platform credits or bring-your-own API keys, switchable in Settings.
@@ -146,8 +146,8 @@ Run this before declaring any change done. `npm run lint`, `npm run test`, and `
 ## Files and systems requiring extra caution
 
 - `src/firebase/firebaseAdmin.ts` — server-only, holds Admin credential init and `verifyAuth`. Never import client-side; never log secrets.
-- `src/actions/generateActions.ts` & `src/actions/paymentActions.ts` — the only privileged server entry points. Keep `verifyAuth()` first and validate inputs.
-- `src/zustand/useCreditsStore.ts` & `src/utils/token.ts` — billing logic. Credit deduction is currently client-initiated and based on a character-count token estimate, so it is **not authoritative**; changes here have real money/abuse implications. Do not make charging looser; tightening (server-side enforcement) is a roadmap item.
+- `src/actions/generateActions.ts`, `src/actions/paymentActions.ts`, and `src/actions/profileActions.ts` — the privileged server entry points. Keep `verifyAuth()` first and validate inputs.
+- `src/zustand/useCreditsStore.ts` & `src/utils/token.ts` — billing logic. Platform inference now checks and deducts credits in `continueConversation`, and catalog grants go through `grantCatalogPurchase`. The estimate is still a character count, and the live Firestore rules must be published before client credit writes are denied. Do not make charging looser.
 - `src/zustand/usePaymentsStore.ts` & payment screens — payment recording happens client-side after Stripe success; there is **no Stripe webhook**. Be careful not to introduce double-credit or unverified-credit paths.
 - `firestore.rules` / `storage.rules` — the actual security boundary. Any new collection/field must be reflected here.
 - `src/firebase/paths.ts` — all Firestore paths funnel through here; keep new paths centralized.

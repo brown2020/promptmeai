@@ -9,7 +9,6 @@ const MODEL_COLORS: Record<ModelName, string> = {
   "claude-sonnet-4-6": "bg-[#F39C12]/[0.15]",
   "gemini-3.5-flash": "bg-[#FF6F61]/[0.15]",
   "mistral-small-latest": "bg-[#3498DB]/[0.15]",
-  "llama4-maverick-instruct-basic": "bg-[#8E44AD]/[0.15]",
 } as const;
 
 /**
@@ -32,8 +31,6 @@ export const getModelColorByLabel = (label: string): string => {
   if (lowerLabel.includes("gemini")) return MODEL_COLORS["gemini-3.5-flash"];
   if (lowerLabel.includes("mistral"))
     return MODEL_COLORS["mistral-small-latest"];
-  if (lowerLabel.includes("llama"))
-    return MODEL_COLORS["llama4-maverick-instruct-basic"];
 
   return "bg-transparent";
 };

@@ -76,7 +76,6 @@ export const colors = {
     claude: "#F39C12",
     gemini: "#FF6F61",
     mistral: "#3498DB",
-    llama: "#8E44AD",
   },
 } as const;
 

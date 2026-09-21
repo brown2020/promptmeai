@@ -6,51 +6,16 @@ import Spinner from "@/components/Spinner";
 import { auth } from "@/firebase/firebaseClient";
 import { usePlatform } from "@/zustand/usePlatformStore";
 import { cn } from "@/utils/tailwind";
-import { usePaymentsStore } from "@/zustand/usePaymentsStore";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 import { CircularProgress } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 const CreditInformation = () => {
   const user = auth.currentUser;
-  const { profile, isLoading, isDefaultData, updateProfile } =
-    useProfileStore();
+  const { profile, isLoading, isDefaultData } = useProfileStore();
   const router = useRouter();
   const { isRNWebView, isWeb } = usePlatform();
-
-  const { addPayment } = usePaymentsStore((state) => state);
-  const addCredits = useProfileStore((state) => state.addCredits);
-
-  // Handle messages from React Native WebView for IAP
-  useEffect(() => {
-    const handleMessageFromRN = async (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return;
-      const message = event.data;
-      if (message?.type === "IAP_SUCCESS") {
-        await addPayment({
-          id: message.message,
-          amount: message.amount,
-          status: "succeeded",
-          mode: "iap",
-          platform: message.platform,
-          productId: message.productId,
-          currency: message.currency,
-        });
-        await addCredits(10000);
-      }
-    };
-
-    window.addEventListener("message", handleMessageFromRN);
-    return () => window.removeEventListener("message", handleMessageFromRN);
-  }, [addCredits, addPayment]);
-
-  // Sync totalCredits if credits exceed it
-  useEffect(() => {
-    if (!isDefaultData && profile.totalCredits < profile.credits) {
-      updateProfile({ totalCredits: profile.credits });
-    }
-  }, [profile.credits, profile.totalCredits, isDefaultData, updateProfile]);
 
   const creditUsage = useMemo(
     () => profile.totalCredits - profile.credits,

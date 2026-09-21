@@ -28,11 +28,10 @@ Prompt.me AI is an open-source platform that allows you to send the same prompt 
 | **Claude Sonnet 4.6** | Anthropic            | Advanced reasoning and analysis |
 | **Gemini 3.5 Flash**  | Google               | Quick, efficient responses      |
 | **Mistral Small 4**   | Mistral AI           | Balanced performance model      |
-| **Llama 4 Maverick**  | Meta (via Fireworks) | Open-weight multimodal MoE      |
 
 ## Features
 
-- 🤖 **Multi-Model Comparison** — Send prompts to 5 AI models simultaneously
+- 🤖 **Multi-Model Comparison** — Send prompts to 4 AI models simultaneously
 - ⚡ **Real-time Streaming** — See responses as they're generated
 - 💾 **Chat History** — Save, pin, and organize your conversations
 - 🔑 **Dual Usage Modes** — Use platform credits or your own API keys
@@ -128,7 +127,6 @@ OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
 GOOGLE_GENERATIVE_AI_API_KEY=...
 MISTRAL_API_KEY=...
-FIREWORKS_API_KEY=...
 ```
 
 ### Firebase Configuration

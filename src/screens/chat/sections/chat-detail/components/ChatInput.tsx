@@ -7,7 +7,6 @@ import { saveChat, updateChat } from "@/services/chatService";
 import { isObjectEmpty } from "@/utils/object";
 import { logger } from "@/utils/logger";
 import {
-  calculateCreditCost,
   calculateTotalTokenUsage,
   countTokens,
 } from "@/utils/token";
@@ -33,7 +32,7 @@ import { auth } from "@/firebase/firebaseClient";
 const ChatInput = () => {
   const router = useRouter();
   const user = auth.currentUser;
-  const { profile, isDefaultData, reduceCredits } = useProfileStore();
+  const { profile, isDefaultData, fetchProfile } = useProfileStore();
   const {
     addMessage,
     setMessages,
@@ -212,8 +211,7 @@ const ChatInput = () => {
         logger.log("Total token proceed", totalTokenUsage);
 
         if (totalTokenUsage && profile.usageMode === UsageMode.Credits) {
-          const totalCreditUse = calculateCreditCost(totalTokenUsage);
-          await reduceCredits(totalCreditUse);
+          await fetchProfile();
         }
       } else {
         logger.error("All promises failed.");

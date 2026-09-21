@@ -16,7 +16,6 @@ const ChatAiIcon = ({ aiModel }: ChatAiIconProps) => {
             "bg-[#FF6F61]": aiModel.toLowerCase().includes("gemini"),
             "bg-[#3498DB]": aiModel.toLowerCase().includes("mistral"),
             "bg-[#F39C12]": aiModel.toLowerCase().includes("claude"),
-            "bg-[#8E44AD]": aiModel.toLowerCase().includes("llama"),
           }
         )}
       >

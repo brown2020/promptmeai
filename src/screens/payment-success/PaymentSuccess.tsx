@@ -1,13 +1,12 @@
 "use client";
 
-import { validatePaymentIntent } from "@/actions/paymentActions";
+import { grantCatalogPurchase } from "@/actions/paymentActions";
 import { Button } from "@/components/buttons";
 import CardContent from "@/components/CardContent";
 import Spinner from "@/components/Spinner";
 import GreenWhiteLayout from "@/layouts/GreenWhiteLayout";
 import { formatNumber, subcurrencyToNumber } from "@/utils/number";
 import { useAuthStore } from "@/zustand/useAuthStore";
-import { usePaymentsStore } from "@/zustand/usePaymentsStore";
 import useProfileStore from "@/zustand/useProfileStore";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
@@ -18,10 +17,7 @@ const PaymentSuccess = () => {
   const searchParams = useSearchParams();
   const paymentIntent = searchParams.get("payment_intent") || "";
 
-  const { addPayment, checkIfPaymentProcessed } = usePaymentsStore(
-    (state) => state
-  );
-  const addCredits = useProfileStore((state) => state.addCredits);
+  const fetchProfile = useProfileStore((state) => state.fetchProfile);
   const uid = useAuthStore((state) => state.uid);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -38,41 +34,15 @@ const PaymentSuccess = () => {
 
     const handlePaymentSuccess = async () => {
       try {
-        const data = await validatePaymentIntent(paymentIntent);
-
-        if (data.status === "succeeded") {
-          // Check if payment is already processed
-          const existingPayment = await checkIfPaymentProcessed(data.id);
-          if (existingPayment) {
-            setMessage("Payment has already been processed.");
-
-            setId(existingPayment.id);
-            setAmount(existingPayment.amount);
-            setIsLoading(false);
-            return;
-          }
-
-          setMessage("Payment successful");
-          setId(data.id);
-          setAmount(data.amount);
-
-          // Add payment to store
-          await addPayment({
-            id: data.id,
-            amount: data.amount,
-            status: data.status,
-            mode: "stripe",
-            platform: "web",
-            productId: "payment_gateway",
-            currency: "$",
-          });
-
-          // Add fixed credits per purchase (not derived from payment amount)
-          const CREDITS_PER_PURCHASE = 10_000;
-          await addCredits(CREDITS_PER_PURCHASE);
-        } else {
-          setMessage("Payment validation failed");
-        }
+        const result = await grantCatalogPurchase(paymentIntent);
+        setMessage(
+          result.alreadyProcessed
+            ? "Payment has already been processed."
+            : "Payment successful"
+        );
+        setId(paymentIntent);
+        setAmount(9999);
+        await fetchProfile();
       } catch (error) {
         console.error("Error handling payment success:", error);
         setMessage("Error handling payment success");
@@ -82,7 +52,7 @@ const PaymentSuccess = () => {
     };
 
     if (uid) handlePaymentSuccess();
-  }, [addPayment, checkIfPaymentProcessed, addCredits, uid, paymentIntent]);
+  }, [fetchProfile, uid, paymentIntent]);
 
   return (
     <GreenWhiteLayout>

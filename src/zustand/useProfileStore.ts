@@ -1,8 +1,9 @@
 import { create } from "zustand";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useAuthStore } from "./useAuthStore";
 import { db } from "@/firebase/firebaseClient";
 import { paths } from "@/firebase/paths";
+import { ensureProfile } from "@/actions/profileActions";
 import { logger } from "@/utils/logger";
 import toast from "react-hot-toast";
 
@@ -16,7 +17,6 @@ export type APIKeys = {
   anthropic: string;
   googleGenerativeAi: string;
   mistral: string;
-  fireworks: string;
 };
 
 export interface ProfileType {
@@ -45,7 +45,6 @@ const defaultProfile: ProfileType = {
     anthropic: "",
     googleGenerativeAi: "",
     mistral: "",
-    fireworks: "",
   },
 };
 
@@ -96,20 +95,15 @@ const useProfileStore = create<ProfileState>((set, get) => ({
 
         set({ profile: newProfile, isDefaultData: false });
       } else {
-        const newProfile = {
-          email: useAuthStore.getState().authEmail || "",
-          contactEmail: useAuthStore.getState().authEmail || "",
-          displayName: useAuthStore.getState().authDisplayName || "",
-          photoUrl: useAuthStore.getState().authPhotoUrl || "",
-          emailVerified: useAuthStore.getState().authEmailVerified || false,
-          credits: 1000,
-          totalCredits: 1000,
-          usageMode: UsageMode.Credits,
-          APIKeys: defaultProfile.APIKeys,
-        };
-
-        await setDoc(userRef, newProfile);
-        set({ profile: newProfile, isDefaultData: false });
+        await ensureProfile();
+        const created = await getDoc(userRef);
+        if (!created.exists()) {
+          throw new Error("Profile not found");
+        }
+        set({
+          profile: created.data() as ProfileType,
+          isDefaultData: false,
+        });
       }
     } catch (error) {
       logger.error("Error fetching or creating profile:", error);

@@ -20,7 +20,7 @@ const features: Feature[] = [
     icon: FaRocket,
     title: "Compare AI Models",
     description:
-      "Run prompts across GPT, Claude, Gemini, Llama, and Mistral simultaneously.",
+      "Run prompts across GPT, Claude, Gemini, and Mistral simultaneously.",
   },
   {
     icon: FaChartLine,

@@ -2,13 +2,15 @@
 
 import Stripe from "stripe";
 import { verifyAuth } from "@/firebase/firebaseAdmin";
+import { grantCatalogCredits } from "@/firebase/creditLedger";
+import { isCatalogAmount } from "@/utils/paymentAmount";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 
 export async function createPaymentIntent(amount: number) {
-  await verifyAuth();
+  const uid = await verifyAuth();
 
-  if (!amount || amount <= 0 || !Number.isInteger(amount)) {
+  if (!isCatalogAmount(amount)) {
     throw new Error("Invalid payment amount");
   }
 
@@ -20,7 +22,7 @@ export async function createPaymentIntent(amount: number) {
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency: "usd",
-      metadata: { product },
+      metadata: { product, uid },
       description: `Payment for product ${product}`,
     });
 
@@ -58,4 +60,24 @@ export async function validatePaymentIntent(paymentIntentId: string) {
     console.error("Error validating payment intent:", error);
     throw new Error("Failed to validate payment intent");
   }
+}
+
+export async function grantCatalogPurchase(paymentIntentId: string) {
+  const uid = await verifyAuth();
+
+  if (!paymentIntentId || typeof paymentIntentId !== "string") {
+    throw new Error("Invalid payment intent ID");
+  }
+
+  const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+  if (paymentIntent.status !== "succeeded") {
+    throw new Error("Payment was not successful");
+  }
+
+  if (paymentIntent.metadata.uid !== uid) {
+    throw new Error("Payment does not belong to this account");
+  }
+
+  return grantCatalogCredits(uid, paymentIntent.id, paymentIntent.amount);
 }

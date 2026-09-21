@@ -21,7 +21,7 @@ Send one prompt to multiple leading AI models at once and watch their answers st
 ### Core workflows
 
 1. **Sign in** (Google, email/password, or email link).
-2. **Ask once, compare many**: type a prompt; it is sent to all five configured models in parallel and each response streams into its own card.
+2. **Ask once, compare many**: type a prompt; it is sent to all four configured models in parallel and each response streams into its own card.
 3. **Pay for inference** either with platform **credits** or with the user's **own provider API keys** (chosen in Settings).
 4. **Manage conversations**: comparisons auto-save to history; pin, search, revisit, or delete them.
 5. **Top up**: buy credits through Stripe when the balance runs low.
@@ -39,16 +39,15 @@ Send one prompt to multiple leading AI models at once and watch their answers st
 
 ### What the app currently does
 
-Prompt.me AI is a client-first Next.js (App Router) single-page application backed by Firebase (Auth + Firestore) and Stripe. Authenticated users submit a prompt that fans out to five models via a single server action; responses stream back per model and the full comparison is persisted to Firestore.
+Prompt.me AI is a client-first Next.js (App Router) single-page application backed by Firebase (Auth + Firestore) and Stripe. Authenticated users submit a prompt that fans out to four models via a single server action; responses stream back per model and the full comparison is persisted to Firestore.
 
 ### Current feature inventory
 
-- **Multi-model comparison** across 5 models (current `MODEL_CONFIG`):
+- **Multi-model comparison** across 4 models (current `MODEL_CONFIG`):
   - GPT-5.5 — OpenAI
   - Claude Sonnet 4.6 — Anthropic
   - Gemini 3.5 Flash — Google
   - Mistral Small 4 (`mistral-small-latest`) — Mistral
-  - Llama 4 Maverick — Meta, via Fireworks's OpenAI-compatible endpoint
 - **Real-time streaming** via Vercel AI SDK (`streamText` + `@ai-sdk/rsc` streamable values).
 - **Parallel fan-out** with per-request abort/stop (`Promise.allSettled` + `AbortController`).
 - **Dual usage modes**: platform **credits** or **user-supplied API keys**, toggled in Settings.
@@ -98,10 +97,10 @@ Prompt.me AI is a client-first Next.js (App Router) single-page application back
 
 ### Known limitations
 
-- **Credit deduction is client-initiated and estimate-based.** The `continueConversation` server action does not check or deduct credits; deduction happens client-side after generation using a character-count token estimate, so it is neither authoritative nor abuse-resistant **(inferred)**.
+- **Credit deduction for platform inference is enforced in `continueConversation`.** The action rejects a credits-mode caller with an empty balance and deducts the token estimate with the Admin SDK after a response. A purchase grants 10,000 credits only from `grantCatalogPurchase` when the PaymentIntent succeeded for the 9999-cent catalog amount and belongs to the caller. The repo's Firestore rules freeze client writes to `credits` and `totalCredits`; publishing those rules is still required for the live project.
 - **No Stripe webhook.** Payments are recorded client-side after success; there is no server-side confirmation or idempotency guarantee beyond a client-side duplicate check **(inferred)**.
 - **User API keys are stored in plaintext** in the Firestore profile document **(inferred)**.
-- **The model set is fixed at five** and hard-coded in `MODEL_CONFIG`; users cannot choose which/how many models to query.
+- **The model set is fixed at four** and hard-coded in `MODEL_CONFIG`; users cannot choose which/how many models to query.
 - **No export/share** of comparisons; **no conversation branching**; **no prompt templates**; **no programmatic API**.
 - **Token "counting" is an approximation**, so credit charges and any usage display do not reflect real provider token usage.
 - `README.md` references a `firebase.json` and a CLI deploy flow, but `firebase.json` is not in the repo **(inferred: rules are deployed manually or out-of-repo)**.
@@ -131,8 +130,8 @@ Roadmap items are ordered by product impact and dependency order. Each is scoped
   - Lint, typecheck, and build pass.
 
 ### Milestone 3 — Selectable models per comparison (core workflow + activation)
-- **User value**: users compare exactly the models they care about, reduce cost/noise, and aren't forced into all five.
-- **Implementation intent**: add a model-selection control in the chat UI backed by `MODEL_CONFIG`; persist the selection (profile or local store); fan-out only to selected models. Default to all five for first-time users.
+- **User value**: users compare exactly the models they care about, reduce cost/noise, and aren't forced into all four.
+- **Implementation intent**: add a model-selection control in the chat UI backed by `MODEL_CONFIG`; persist the selection (profile or local store); fan-out only to selected models. Default to all four for first-time users.
 - **Acceptance criteria**:
   - Users can enable/disable individual models; the comparison fans out only to enabled ones.
   - Selection persists across sessions.

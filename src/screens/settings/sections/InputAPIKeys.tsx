@@ -37,7 +37,7 @@ const InputAPIKeys = () => {
       overrideStyles="xl:col-span-2"
       isActive={profile.usageMode === UsageMode.ApiKeys}
     >
-      <div className="grid xl:grid-rows-3 xl:grid-flow-col gap-4">
+      <div className="grid xl:grid-rows-2 xl:grid-flow-col gap-4">
         <Input
           title="Open AI"
           value={apiKeys.openAi}
@@ -59,11 +59,6 @@ const InputAPIKeys = () => {
           title="Mistral"
           value={apiKeys.mistral}
           onChange={(e) => changeApiKeyHandler("mistral", e.target.value)}
-        />
-        <Input
-          title="Fireworks"
-          value={apiKeys.fireworks}
-          onChange={(e) => changeApiKeyHandler("fireworks", e.target.value)}
         />
       </div>
       <Button

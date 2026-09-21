@@ -9,6 +9,11 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createMistral } from "@ai-sdk/mistral";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { verifyAuth } from "@/firebase/firebaseAdmin";
+import {
+  assertCreditsAvailable,
+  deductCredits,
+} from "@/firebase/creditLedger";
+import { calculateCreditCost, countTokens } from "@/utils/token";
 
 const DEFAULT_MODEL = (MODEL_NAMES[0]?.value ?? "gpt-5.5") as ModelName;
 
@@ -55,13 +60,10 @@ async function getModel(modelName: ModelName, apiKeys: APIKeys | UsageMode) {
   const apiKey = resolveApiKey(apiKeys, config);
 
   switch (config.provider) {
-    case "openai": {
-      const baseURL = "baseURL" in config ? config.baseURL : undefined;
+    case "openai":
       return createOpenAI({
         apiKey,
-        ...(baseURL ? { baseURL } : {}),
       })(config.modelId);
-    }
     case "google":
       return createGoogleGenerativeAI({
         apiKey,
@@ -79,20 +81,60 @@ async function getModel(modelName: ModelName, apiKeys: APIKeys | UsageMode) {
   }
 }
 
+const messageText = (message: ModelMessage): string => {
+  if (typeof message.content === "string") return message.content;
+  if (!Array.isArray(message.content)) return "";
+  return message.content
+    .map((part) => (part.type === "text" ? part.text : ""))
+    .join("");
+};
+
 export async function continueConversation(
   messages: ModelMessage[],
   modelName: ModelName = DEFAULT_MODEL,
   apiKeys: APIKeys | UsageMode
 ) {
-  await verifyAuth();
+  const uid = await verifyAuth();
+  const chargesCredits = apiKeys === UsageMode.Credits;
+
+  if (chargesCredits) {
+    await assertCreditsAvailable(uid);
+  }
 
   const model = await getModel(modelName, apiKeys);
-
   const result = streamText({
     model,
     messages,
   });
 
-  const stream = createStreamableValue(result.textStream);
+  const inputTokens = messages.reduce(
+    (sum, message) => sum + countTokens(messageText(message)),
+    0
+  );
+  const inputShare =
+    inputTokens === 0 ? 0 : Math.ceil(inputTokens / MODEL_NAMES.length);
+
+  async function* chargedText() {
+    let output = "";
+    try {
+      for await (const chunk of result.textStream) {
+        output += chunk;
+        yield chunk;
+      }
+    } finally {
+      if (chargesCredits && output.trim()) {
+        try {
+          await deductCredits(
+            uid,
+            calculateCreditCost(inputShare + countTokens(output))
+          );
+        } catch (error) {
+          console.error("Error deducting credits:", error);
+        }
+      }
+    }
+  }
+
+  const stream = createStreamableValue(chargedText());
   return stream.value;
 }

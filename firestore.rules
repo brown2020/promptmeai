@@ -16,7 +16,11 @@ service cloud.firestore {
 
       // App reads/writes: users/{uid}/profile/userData
       match /profile/userData {
-        allow read, create, update, delete: if isOwner(uid);
+        allow read, delete: if isOwner(uid);
+        allow create: if false;
+        allow update: if isOwner(uid)
+          && request.resource.data.credits == resource.data.credits
+          && request.resource.data.totalCredits == resource.data.totalCredits;
       }
 
       // App reads/creates: users/{uid}/payments/{paymentDocId}
