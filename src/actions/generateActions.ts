@@ -114,27 +114,46 @@ export async function continueConversation(
   const inputShare =
     inputTokens === 0 ? 0 : Math.ceil(inputTokens / MODEL_NAMES.length);
 
-  async function* chargedText() {
-    let output = "";
-    try {
-      for await (const chunk of result.textStream) {
-        output += chunk;
-        yield chunk;
-      }
-    } finally {
-      if (chargesCredits && output.trim()) {
-        try {
-          await deductCredits(
-            uid,
-            calculateCreditCost(inputShare + countTokens(output))
-          );
-        } catch (error) {
-          console.error("Error deducting credits:", error);
-        }
-      }
-    }
+  const textStream = chargesCredits
+    ? result.textStream.tee()
+    : [result.textStream];
+  const clientStream = textStream[0];
+  const billingStream = textStream[1];
+
+  if (billingStream) {
+    void deductStream(uid, inputShare, billingStream);
   }
 
-  const stream = createStreamableValue(chargedText());
+  const stream = createStreamableValue(clientStream);
   return stream.value;
+}
+
+async function deductStream(
+  uid: string,
+  inputShare: number,
+  billingStream: ReadableStream<string>
+) {
+  const reader = billingStream.getReader();
+  let output = "";
+
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      if (value) output += value;
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  if (!output.trim()) return;
+
+  try {
+    await deductCredits(
+      uid,
+      calculateCreditCost(inputShare + countTokens(output))
+    );
+  } catch (error) {
+    console.error("Error deducting credits:", error);
+  }
 }

@@ -97,7 +97,7 @@ Prompt.me AI is a client-first Next.js (App Router) single-page application back
 
 ### Known limitations
 
-- **Credit deduction for platform inference is enforced in `continueConversation`.** The action rejects a credits-mode caller with an empty balance and deducts the token estimate with the Admin SDK after a response. A purchase grants 10,000 credits only from `grantCatalogPurchase` when the PaymentIntent succeeded for the 9999-cent catalog amount and belongs to the caller. The repo's Firestore rules freeze client writes to `credits` and `totalCredits`; publishing those rules is still required for the live project.
+- **Credit deduction for platform inference is enforced in `continueConversation`.** The action rejects a credits-mode caller with an empty balance and deducts the token estimate with the Admin SDK after a response. A purchase grants 10,000 credits only from `grantCatalogPurchase` when the PaymentIntent succeeded for the 9999-cent catalog amount and belongs to the caller. The published Firestore rules freeze client writes to `credits` and `totalCredits` on the live project.
 - **No Stripe webhook.** Payments are recorded client-side after success; there is no server-side confirmation or idempotency guarantee beyond a client-side duplicate check **(inferred)**.
 - **User API keys are stored in plaintext** in the Firestore profile document **(inferred)**.
 - **The model set is fixed at four** and hard-coded in `MODEL_CONFIG`; users cannot choose which/how many models to query.

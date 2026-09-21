@@ -14,7 +14,8 @@ service cloud.firestore {
     match /users/{uid} {
       allow read, create, update, delete: if isOwner(uid);
 
-      // App reads/writes: users/{uid}/profile/userData
+      // Profile creation is server-only. Owners can read, update non-credit
+      // fields, and delete. Client updates cannot change the balance.
       match /profile/userData {
         allow read, delete: if isOwner(uid);
         allow create: if false;
