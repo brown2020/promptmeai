@@ -21,11 +21,15 @@ const SettingOption = () => {
   };
 
   const handleLogout = useCallback(async () => {
-    // Explicitly delete auth cookies before signing out
-    deleteCookie(process.env.NEXT_PUBLIC_COOKIE_NAME || "authToken", { path: "/" });
+    const cookieName = process.env.NEXT_PUBLIC_COOKIE_NAME || "authToken";
+    deleteCookie(cookieName, { path: "/" });
     deleteCookie("authToken", { path: "/" });
-
-    await signOut(auth);
+    deleteCookie("promptme_auth", { path: "/" });
+    try {
+      await signOut(auth);
+    } catch {
+      console.warn("[auth] sign-out-failed");
+    }
     clearAuthDetails();
     router.replace("/");
   }, [router, clearAuthDetails]);
@@ -48,16 +52,19 @@ const SettingOption = () => {
         Settings:
       </label>
       <button
+        type="button"
         className="btn-primary bg-[#e32012] self-start rounded-md hover:bg-[#e32012]/30"
         onClick={handleDeleteClick}
       >
         Delete Account
       </button>
       <button
+        type="button"
+        aria-label="Sign Out"
         className="btn-primary self-start rounded-md bg-[#1A8F70] hover:bg-[#166854]"
-        onClick={handleLogout}
+        onClick={() => void handleLogout()}
       >
-        Logout
+        Sign out
       </button>
       <DeleteConfirmModal
         showDeleteModal={showDeleteModal}

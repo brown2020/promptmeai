@@ -82,6 +82,7 @@ const MyChatSection = () => {
           <ButtonIcon
             icon={HiOutlinePlus}
             type="primary"
+            aria-label="Start new chat"
             onClick={() => executeWithWarning(addNewChat)}
           />
         </div>

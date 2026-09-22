@@ -256,6 +256,7 @@ const ChatInput = () => {
           />
           <button
             type="button"
+            aria-label={isLoading ? "Stop generating" : "Send prompt"}
             className="flex items-center justify-center h-8 w-8 rounded-lg cursor-pointer shrink-0 -mr-1"
             onClick={() => (isLoading ? stopRequest() : submitHandler())}
           >

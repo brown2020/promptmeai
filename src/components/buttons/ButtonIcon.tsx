@@ -10,6 +10,7 @@ type ButtonIconProps = {
   iconSize?: number;
   className?: ClassNameValue;
   onClick?: () => void;
+  "aria-label": string;
 } & PropsWithChildren;
 
 const ButtonIcon = ({
@@ -26,8 +27,8 @@ const ButtonIcon = ({
       className={cn(
         "bg-[#F9F9F9] dark:bg-[#2D2E31] rounded-lg w-[32px] h-[32px] flex justify-center items-center shadow-xl cursor-pointer",
         {
-          "bg-[#10A37F] dark:bg-[#10A37F]": isActive,
-          "bg-[#23C69E] dark:bg-[#24C69E]": type === "primary",
+          "bg-[#0B7A5E] dark:bg-[#0B7A5E]": isActive,
+          "bg-[#0F8F70] dark:bg-[#0F8F70]": type === "primary",
           "bg-[#EFEFEF]": type === "secondary",
         },
         className
@@ -35,12 +36,12 @@ const ButtonIcon = ({
       {...props}
     >
       <Icon
-        className={cn("text-[#255148] dark:text-[#23C69E]", {
-          "text-white dark:text-[#EEEEEE]": isActive,
-          "text-white dark:text-white": type === "primary",
-          "text-[#3B3B3B]": type === "secondary",
+        className={cn("text-[#1A4D40] dark:text-[#7DDFC4]", {
+          "text-[#F5FFFB] dark:text-[#F5FFFB]": isActive || type === "primary",
+          "text-[#1E1F22]": type === "secondary",
         })}
         size={iconSize}
+        aria-hidden
       />
     </button>
   );

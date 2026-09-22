@@ -4,22 +4,21 @@ import { usePathname, useRouter } from "next/navigation";
 import { ButtonIcon } from "@/components/buttons";
 import { PiChatsCircle } from "react-icons/pi";
 import { usePlatform } from "@/zustand/usePlatformStore";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "@/firebase/firebaseClient";
+import { useAuthStore } from "@/zustand/useAuthStore";
 
 const ChatNav = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const [user] = useAuthState(auth);
-  const isSignedIn = user?.uid;
+  const uid = useAuthStore((s) => s.uid);
   const { isRNWebView } = usePlatform();
 
   return (
     <ButtonIcon
       icon={PiChatsCircle}
+      aria-label="Open chat"
       isActive={pathname.includes("chat")}
       onClick={() => {
-        if (isSignedIn || !isRNWebView) {
+        if (uid || !isRNWebView) {
           router.push("/chat");
         }
       }}
