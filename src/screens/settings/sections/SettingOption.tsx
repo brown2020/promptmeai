@@ -28,9 +28,12 @@ const SettingOption = () => {
       console.warn("[auth] sign-out-failed");
     }
     clearAuthDetails();
-    deleteCookie(cookieName, { path: "/" });
-    deleteCookie("authToken", { path: "/" });
-    deleteCookie("promptme_auth", { path: "/" });
+    for (const name of [cookieName, "authToken", "promptme_auth"]) {
+      deleteCookie(name, { path: "/" });
+      if (typeof document !== "undefined") {
+        document.cookie = `${name}=; Max-Age=0; path=/`;
+      }
+    }
     router.replace("/");
   }, [router, clearAuthDetails]);
 
