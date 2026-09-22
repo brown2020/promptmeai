@@ -26,7 +26,7 @@ const ChatResponseEmptyState = () => {
           </m.div>
 
           <m.span
-            className="text-xl text-[#9F969C] dark:text-[#EEE]/[0.7]"
+            className="text-xl text-[#5C5659] dark:text-[#D8D8D8]"
             initial={{ opacity: 0, y: 20 }}
             animate={{
               opacity: 1,

@@ -10,8 +10,11 @@ import { trimText } from "@/utils/text";
 import { RxHamburgerMenu } from "react-icons/rx";
 
 const ChatDetailSection = () => {
-  const { activeChatId, chats, pinnedChats, isNewChat, setDrawerOpen } =
-    useChatSideBarStore((state) => state);
+  const activeChatId = useChatSideBarStore((state) => state.activeChatId);
+  const chats = useChatSideBarStore((state) => state.chats);
+  const pinnedChats = useChatSideBarStore((state) => state.pinnedChats);
+  const isNewChat = useChatSideBarStore((state) => state.isNewChat);
+  const setDrawerOpen = useChatSideBarStore((state) => state.setDrawerOpen);
 
   // Use useMemo instead of useEffect + useState for derived state
   const title = useMemo(() => {
@@ -36,7 +39,7 @@ const ChatDetailSection = () => {
           <RxHamburgerMenu size={24} />
         </button>
         <h3 className="text-[18px] whitespace-nowrap overflow-hidden text-ellipsis text-[#1E1F22] dark:text-[#EEE]">
-          {isNewChat ? typedTitle : title}
+          {(isNewChat ? typedTitle : title) || "New chat"}
         </h3>
         <ChatDetailActions />
       </div>

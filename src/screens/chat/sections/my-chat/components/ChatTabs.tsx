@@ -32,7 +32,7 @@ const ChatTabs = () => {
         className={cn(
           "relative z-10 w-[135.5px] flex gap-[6px] h-full items-center justify-center",
           {
-            "text-[#14B48D] dark:text-[#23C69E] font-semibold":
+            "text-[#0B6B52] dark:text-[#7DDFC4] font-semibold":
               activeTab === "chats",
             "text-[#3B3B3B] dark:text-[#EEE]": activeTab !== "chats",
           }
@@ -42,7 +42,7 @@ const ChatTabs = () => {
         <PiChatsCircleFill
           size={14}
           className={cn({
-            "text-[#14B48D] dark:text-[#23C69E]": activeTab === "chats",
+            "text-[#0B6B52] dark:text-[#7DDFC4]": activeTab === "chats",
             "text-[#3B3B3B] dark:text-[#EEE]": activeTab !== "chats",
           })}
         />
@@ -62,7 +62,7 @@ const ChatTabs = () => {
         className={cn(
           "relative z-10 w-[135.5px] flex gap-[6px] h-full items-center justify-center",
           {
-            "text-[#14B48D] dark:text-[#23C69E] font-semibold":
+            "text-[#0B6B52] dark:text-[#7DDFC4] font-semibold":
               activeTab === "pinned",
             "text-[#3B3B3B] dark:text-[#EEE]": activeTab !== "pinned",
           }
@@ -72,7 +72,7 @@ const ChatTabs = () => {
         <TbPinnedFilled
           size={14}
           className={cn({
-            "text-[#14B48D] dark:text-[#23C69E]": activeTab === "pinned",
+            "text-[#0B6B52] dark:text-[#7DDFC4]": activeTab === "pinned",
             "text-[#3B3B3B] dark:text-[#EEE]": activeTab !== "pinned",
           })}
         />

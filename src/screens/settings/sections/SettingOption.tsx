@@ -22,15 +22,15 @@ const SettingOption = () => {
 
   const handleLogout = useCallback(async () => {
     const cookieName = process.env.NEXT_PUBLIC_COOKIE_NAME || "authToken";
-    deleteCookie(cookieName, { path: "/" });
-    deleteCookie("authToken", { path: "/" });
-    deleteCookie("promptme_auth", { path: "/" });
     try {
       await signOut(auth);
     } catch {
       console.warn("[auth] sign-out-failed");
     }
     clearAuthDetails();
+    deleteCookie(cookieName, { path: "/" });
+    deleteCookie("authToken", { path: "/" });
+    deleteCookie("promptme_auth", { path: "/" });
     router.replace("/");
   }, [router, clearAuthDetails]);
 
