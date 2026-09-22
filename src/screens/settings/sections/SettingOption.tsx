@@ -61,7 +61,7 @@ const SettingOption = () => {
       <button
         type="button"
         aria-label="Sign Out"
-        className="btn-primary self-start rounded-md bg-[#1A8F70] hover:bg-[#166854]"
+        className="btn-primary self-start rounded-md bg-[#0D6E56] hover:bg-[#0A5A46]"
         onClick={() => void handleLogout()}
       >
         Sign out

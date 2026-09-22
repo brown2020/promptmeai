@@ -77,6 +77,7 @@ const CreditInformation = () => {
       ) : (
         <div className="flex flex-col items-center justify-center">
           <CircularProgress
+            aria-label="Conversation credit usage"
             classNames={{
               svg: "w-60 h-60 drop-shadow-md",
               indicator: cn("stroke-default", colorClasses.indicator),

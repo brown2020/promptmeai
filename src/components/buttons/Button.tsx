@@ -24,12 +24,12 @@ const Button = ({
 
   const variants = {
     filled:
-      "bg-[#1A8F70] text-white hover:bg-[#158060] active:bg-[#158060] shadow-md hover:shadow-lg focus:shadow-none",
+      "bg-[#0D6E56] text-white hover:bg-[#0A5A46] active:bg-[#0A5A46] shadow-md hover:shadow-lg focus:shadow-none",
     gradient:
       "bg-gradient-to-tr from-[#1A8F70] to-[#24C69E] text-white shadow-md hover:shadow-lg hover:opacity-90",
     outlined:
-      "border border-[#1A8F70] text-[#1A8F70] hover:bg-[#1A8F70] hover:text-white shadow-sm hover:shadow-md",
-    text: "text-[#1A8F70] hover:bg-[#1A8F70]/10 focus:bg-[#1A8F70]/10",
+      "border border-[#1A8F70] text-[#1A8F70] hover:bg-[#0D6E56] hover:text-white shadow-sm hover:shadow-md",
+    text: "text-[#1A8F70] hover:bg-[#0D6E56]/10 focus:bg-[#0D6E56]/10",
   };
 
   return (
