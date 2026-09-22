@@ -1,7 +1,6 @@
 import { useEffect, useCallback, useRef } from "react";
 import { getIdToken } from "firebase/auth";
 import { deleteCookie, setCookie } from "cookies-next";
-import { debounce } from "lodash";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useAuthStore } from "@/zustand/useAuthStore";
 import { auth } from "@/firebase/firebaseClient";
@@ -9,19 +8,21 @@ import { auth } from "@/firebase/firebaseClient";
 const isValidCookieName = (name: string) => /^[a-zA-Z0-9-_]+$/.test(name);
 
 const REFRESH_INTERVAL = 50 * 60 * 1000; // 50 minutes
+const DEBOUNCE_MS = 1000;
 
 const useAuthToken = (cookieName = "authToken") => {
   const [user, loading, error] = useAuthState(auth);
   const setAuthDetails = useAuthStore((state) => state.setAuthDetails);
   const clearAuthDetails = useAuthStore((state) => state.clearAuthDetails);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const lastTokenRefresh = `lastTokenRefresh_${cookieName}`;
 
   const refreshAuthToken = useCallback(async (): Promise<boolean> => {
     try {
       if (!isValidCookieName(cookieName)) {
-        console.error(`Invalid cookie name: ${cookieName}`);
+        console.warn(`Invalid cookie name: ${cookieName}`);
         return false;
       }
 
@@ -40,8 +41,8 @@ const useAuthToken = (cookieName = "authToken") => {
       }
 
       return true;
-    } catch (err) {
-      console.error("Error refreshing token:", err);
+    } catch {
+      console.warn("[auth] token-refresh-failed");
       if (isValidCookieName(cookieName)) {
         deleteCookie(cookieName, { path: "/" });
       }
@@ -53,30 +54,32 @@ const useAuthToken = (cookieName = "authToken") => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
     if (typeof document !== "undefined" && document.visibilityState === "visible") {
-      timeoutRef.current = setTimeout(refreshAuthToken, REFRESH_INTERVAL);
+      timeoutRef.current = setTimeout(() => {
+        void refreshAuthToken();
+      }, REFRESH_INTERVAL);
     }
   }, [refreshAuthToken]);
 
-  // Storage change listener for cross-tab sync
   useEffect(() => {
-    const debouncedHandler = debounce((e: StorageEvent) => {
-      if (e.key === lastTokenRefresh) {
+    const handler = (e: StorageEvent) => {
+      if (e.key !== lastTokenRefresh) return;
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => {
         scheduleTokenRefresh();
-      }
-    }, 1000);
+      }, DEBOUNCE_MS);
+    };
 
     if (!window.ReactNativeWebView) {
-      window.addEventListener("storage", debouncedHandler);
+      window.addEventListener("storage", handler);
     }
 
     return () => {
-      window.removeEventListener("storage", debouncedHandler);
+      window.removeEventListener("storage", handler);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      debouncedHandler.cancel();
+      if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [lastTokenRefresh, scheduleTokenRefresh]);
 
-  // Sync auth state to store and set cookie on login
   useEffect(() => {
     if (loading) return;
 
@@ -112,7 +115,7 @@ const useAuthToken = (cookieName = "authToken") => {
       scheduleTokenRefresh();
     }
 
-    syncAuthState();
+    void syncAuthState();
 
     return () => {
       isCancelled = true;

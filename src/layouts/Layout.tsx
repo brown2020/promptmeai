@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 
 const Layout = ({ children }: PropsWithChildren) => {
   const pathname = usePathname();
-  const hidePanelPaths = ["/privacy", "/terms", "/support"];
+  const hidePanelPaths = ["/privacy", "/terms", "/support", "/login", "/signup", "/forgot-password"];
 
   if (hidePanelPaths.includes(pathname)) {
     return (

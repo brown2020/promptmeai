@@ -2,22 +2,30 @@
 
 import { useAuthStore } from "@/zustand/useAuthStore";
 import { isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
-import { auth } from "@/firebase/firebaseClient";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { FirebaseError } from "firebase/app";
+import { auth, hasClientConfig } from "@/firebase/firebaseClient";
+import { useEffect, useState } from "react";
 import useProfileStore from "@/zustand/useProfileStore";
 import Spinner from "@/components/Spinner";
 import toast from "react-hot-toast";
+import { mapAuthError } from "@/utils/authErrors";
+import { setCookie } from "cookies-next";
+import { getIdToken } from "firebase/auth";
+
+const COOKIE_NAME = process.env.NEXT_PUBLIC_COOKIE_NAME || "authToken";
 
 export default function LoginFinishPage() {
-  const router = useRouter();
   const setAuthDetails = useAuthStore((s) => s.setAuthDetails);
   const updateProfile = useProfileStore((s) => s.updateProfile);
+  const [status, setStatus] = useState("Completing sign in...");
 
   useEffect(() => {
+    let cancelled = false;
+
     async function attemptSignIn() {
       try {
+        if (!hasClientConfig) {
+          throw new Error("Authentication is not configured");
+        }
         if (!isSignInWithEmailLink(auth, window.location.href)) {
           throw new Error("Sign in link is not valid");
         }
@@ -47,36 +55,48 @@ export default function LoginFinishPage() {
           throw new Error("No user found");
         }
 
+        const token = await getIdToken(user, true);
+        setCookie(COOKIE_NAME, token, {
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          path: "/",
+        });
+
+        if (cancelled) return;
+
         setAuthDetails({
           uid,
           authEmail,
           authDisplayName: selectedName,
+          authReady: true,
+          authPending: false,
         });
         updateProfile({ displayName: selectedName });
-        router.replace("/chat");
+        setStatus("Redirecting…");
+        window.location.assign("/chat");
       } catch (error) {
-        let errorMessage = "Unknown error signing in";
-        if (error instanceof FirebaseError) {
-          errorMessage = error.message;
-        } else if (error instanceof Error) {
-          errorMessage = error.message;
+        const errorMessage = mapAuthError(error);
+        console.warn("[auth] loginfinish-failed");
+        if (!cancelled) {
+          toast.error(errorMessage);
+          setStatus(errorMessage);
+          window.location.assign("/");
         }
-
-        console.error("Sign-in error:", errorMessage);
-        toast.error(errorMessage);
-        router.replace("/");
       } finally {
         window.localStorage.removeItem("promptmeEmail");
         window.localStorage.removeItem("promptmeName");
       }
     }
 
-    attemptSignIn();
-  }, [router, setAuthDetails, updateProfile]);
+    void attemptSignIn();
+    return () => {
+      cancelled = true;
+    };
+  }, [setAuthDetails, updateProfile]);
 
   return (
     <div className="h-screen w-screen flex items-center justify-center">
-      <Spinner message="Completing sign in..." />
+      <Spinner message={status} />
     </div>
   );
 }

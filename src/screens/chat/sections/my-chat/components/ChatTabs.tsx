@@ -1,23 +1,25 @@
 "use client";
 
 import { PiChatsCircleFill } from "react-icons/pi";
-import { motion } from "framer-motion";
+import { LazyMotion, domAnimation, m } from "framer-motion";
 import { cn } from "@/utils/tailwind";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { TbPinnedFilled } from "react-icons/tb";
 import React from "react";
 
 const ChatTabs = () => {
-  const { chats, pinnedChats, activeTab, setActiveTab } = useChatSideBarStore(
-    (state) => state
-  );
+  const chats = useChatSideBarStore((state) => state.chats);
+  const pinnedChats = useChatSideBarStore((state) => state.pinnedChats);
+  const activeTab = useChatSideBarStore((state) => state.activeTab);
+  const setActiveTab = useChatSideBarStore((state) => state.setActiveTab);
 
   const buttonWidth = 135.5;
   const gapBetweenButtons = 10;
 
   return (
+    <LazyMotion features={domAnimation}>
     <div className="bg-[#EEE] dark:bg-[#3F424A] rounded-xl border-[0.6px] border-[#E2E2E2] dark:border-[#3F424A] h-[48px] flex gap-[10px] shrink-0 p-[4px] relative">
-      <motion.div
+      <m.div
         className="absolute top-[4px] bottom-[4px] left-[4px] w-[135.5px] bg-white dark:bg-[#1E1F22] rounded-lg shadow-lg"
         initial={false}
         animate={{
@@ -86,6 +88,7 @@ const ChatTabs = () => {
         </span>
       </button>
     </div>
+    </LazyMotion>
   );
 };
 

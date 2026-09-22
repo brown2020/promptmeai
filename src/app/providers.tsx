@@ -8,6 +8,12 @@ import { useSyncExternalStore } from "react";
 import { useInitializeStores } from "@/zustand/useInitializeStores";
 import { usePlatform } from "@/zustand/usePlatformStore";
 import { Toaster } from "react-hot-toast";
+import { hasClientConfig } from "@/firebase/firebaseClient";
+
+function AuthReadyShell({ children }: { children: React.ReactNode }) {
+  useAuthToken(process.env.NEXT_PUBLIC_COOKIE_NAME || "authToken");
+  return <>{children}</>;
+}
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const isHydrated = useSyncExternalStore(
@@ -16,24 +22,26 @@ export function Providers({ children }: { children: React.ReactNode }) {
     () => false
   );
 
-  // Keeps the Firebase auth state in sync and maintains the auth cookie that
-  // src/proxy.ts reads to gate protected routes server-side. Route protection
-  // itself lives in the proxy, not here.
-  useAuthToken(process.env.NEXT_PUBLIC_COOKIE_NAME || "authToken");
-
   const { isWeb } = usePlatform();
-
   useInitializeStores();
+
+  const body = hasClientConfig ? (
+    <AuthReadyShell>{children}</AuthReadyShell>
+  ) : (
+    children
+  );
 
   return (
     <NextUIProvider>
       <NextThemesProvider attribute="class" defaultTheme="system">
         <Toaster />
-        {isHydrated && children}
+        {isHydrated && body}
         {isHydrated && isWeb && (
-          <CookieConsent>
-            This app uses cookies to enhance the user experience.
-          </CookieConsent>
+          <aside aria-label="Cookie consent">
+            <CookieConsent>
+              This app uses cookies to enhance the user experience.
+            </CookieConsent>
+          </aside>
         )}
       </NextThemesProvider>
     </NextUIProvider>

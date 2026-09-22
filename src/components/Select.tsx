@@ -1,4 +1,6 @@
-import { SelectHTMLAttributes } from "react";
+"use client";
+
+import { SelectHTMLAttributes, useId } from "react";
 
 type FieldOptions = {
   label: string;
@@ -10,14 +12,19 @@ type SelectProps = {
   options: FieldOptions[];
 } & SelectHTMLAttributes<HTMLSelectElement>;
 
-const Select = ({ label, options, ...props }: SelectProps) => {
+const Select = ({ label, options, id, ...props }: SelectProps) => {
+  const autoId = useId();
+  const selectId = id ?? autoId;
   return (
     <div className="w-full max-w-sm min-w-[200px]">
-      <label className="block mb-1 text-[14px]">{label}</label>
+      <label htmlFor={selectId} className="block mb-1 text-[14px]">
+        {label}
+      </label>
 
       <div className="relative">
         <select
-          className="w-full bg-transparent dark:bg-[#4B4F5B] placeholder:text-slate-400 text-slate-700 dark:text-[#A0A7BB] border dark:border-[#4B4F5B] py-[12px] px-[14px] rounded-md transition duration-300 ease focus:outline-hidden focus:border-slate-400 hover:border-slate-400 shadow-xs focus:shadow-md appearance-none cursor-pointer"
+          id={selectId}
+          className="w-full bg-transparent dark:bg-[#4B4F5B] placeholder:text-slate-400 text-slate-700 dark:text-[#A0A7BB] border dark:border-[#4B4F5B] py-[12px] px-[14px] rounded-md transition-colors duration-300 ease focus:outline-hidden focus:border-slate-400 hover:border-slate-400 shadow-xs focus:shadow-md appearance-none cursor-pointer"
           {...props}
         >
           {options.map((option) => (
@@ -33,6 +40,7 @@ const Select = ({ label, options, ...props }: SelectProps) => {
           strokeWidth="1.2"
           stroke="currentColor"
           className="h-5 w-5 ml-1 absolute top-[13.5px] right-2.5 text-slate-700 dark:text-[#A0A7BB]"
+          aria-hidden
         >
           <path
             strokeLinecap="round"

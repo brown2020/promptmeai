@@ -1,5 +1,5 @@
 import { MdWavingHand } from "react-icons/md";
-import { motion } from "framer-motion";
+import { LazyMotion, domAnimation, m } from "framer-motion";
 import { Fragment } from "react";
 import Spinner from "@/components/Spinner";
 import { auth } from "@/firebase/firebaseClient";
@@ -8,12 +8,13 @@ const ChatResponseEmptyState = () => {
   const user = auth.currentUser;
 
   return (
+    <LazyMotion features={domAnimation}>
     <div className="h-full flex flex-col justify-center items-center gap-1">
       {!user ? (
         <Spinner message="Setting things up for you..." />
       ) : (
         <Fragment>
-          <motion.div
+          <m.div
             className="bg-[#464646] dark:bg-[#1E1F22] p-3 rounded-2xl mb-4"
             initial={{ scale: 0 }}
             animate={{
@@ -22,9 +23,9 @@ const ChatResponseEmptyState = () => {
             }}
           >
             <MdWavingHand color="#E8E8E8" size={32} />
-          </motion.div>
+          </m.div>
 
-          <motion.span
+          <m.span
             className="text-xl text-[#9F969C] dark:text-[#EEE]/[0.7]"
             initial={{ opacity: 0, y: 20 }}
             animate={{
@@ -34,8 +35,8 @@ const ChatResponseEmptyState = () => {
             }}
           >
             Hi, {user && user.displayName}
-          </motion.span>
-          <motion.span
+          </m.span>
+          <m.span
             className="text-xl text-[#53494D] dark:text-[#EEE]"
             initial={{ opacity: 0, y: 20 }}
             animate={{
@@ -45,10 +46,11 @@ const ChatResponseEmptyState = () => {
             }}
           >
             What can I help with?
-          </motion.span>
+          </m.span>
         </Fragment>
       )}
     </div>
+    </LazyMotion>
   );
 };
 

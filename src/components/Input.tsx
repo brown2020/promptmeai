@@ -1,4 +1,6 @@
-import { InputHTMLAttributes } from "react";
+"use client";
+
+import { InputHTMLAttributes, useId } from "react";
 import { cn } from "@/utils/tailwind";
 
 type InputProps = {
@@ -7,13 +9,16 @@ type InputProps = {
   className?: string;
 } & InputHTMLAttributes<HTMLInputElement>;
 
-const Input = ({ title, error, className, ...props }: InputProps) => {
+const Input = ({ title, error, className, id, ...props }: InputProps) => {
+  const autoId = useId();
+  const inputId = id ?? autoId;
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-base text-gray-900 dark:text-gray-100">
+      <label htmlFor={inputId} className="text-base text-gray-900 dark:text-gray-100">
         {title}
       </label>
       <input
+        id={inputId}
         {...props}
         className={cn(
           "py-2.5 px-3.5 rounded-md border transition-colors outline-none",

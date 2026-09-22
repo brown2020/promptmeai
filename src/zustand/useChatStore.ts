@@ -7,6 +7,7 @@ export type PromptCoreMessage = {
 } & ModelMessage;
 
 export type Message = {
+  id: string;
   mode: UsageMode;
   userMessage: PromptCoreMessage;
   responses: Record<string, PromptCoreMessage>;
@@ -38,6 +39,10 @@ export const useChatStore = create<ChatStore>((set) => ({
       messages: [
         ...state.messages,
         {
+          id:
+            typeof crypto !== "undefined" && "randomUUID" in crypto
+              ? crypto.randomUUID()
+              : `msg-${Date.now()}-${Math.random().toString(36).slice(2)}`,
           mode: profile.usageMode,
           userMessage,
           responses: {},

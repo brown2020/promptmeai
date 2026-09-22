@@ -9,7 +9,7 @@ import { formatNumber, subcurrencyToNumber } from "@/utils/number";
 import { useAuthStore } from "@/zustand/useAuthStore";
 import useProfileStore from "@/zustand/useProfileStore";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { LuCheck, LuCoins, LuCreditCard } from "react-icons/lu";
 
 const PaymentSuccess = () => {
@@ -20,21 +20,21 @@ const PaymentSuccess = () => {
   const fetchProfile = useProfileStore((state) => state.fetchProfile);
   const uid = useAuthStore((state) => state.uid);
 
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const missingIntent = !paymentIntent;
+  const [isLoading, setIsLoading] = useState(!missingIntent);
   const [id, setId] = useState<string>("");
-  const [message, setMessage] = useState<string>("");
+  const [message, setMessage] = useState<string>(
+    missingIntent ? "No payment intent found" : ""
+  );
   const [amount, setAmount] = useState<number>(0);
 
   useEffect(() => {
-    if (!paymentIntent) {
-      setMessage("No payment intent found");
-      setIsLoading(false);
-      return;
-    }
+    if (missingIntent || !uid) return;
+    let cancelled = false;
 
-    const handlePaymentSuccess = async () => {
-      try {
-        const result = await grantCatalogPurchase(paymentIntent);
+    grantCatalogPurchase(paymentIntent)
+      .then(async (result) => {
+        if (cancelled) return;
         setMessage(
           result.alreadyProcessed
             ? "Payment has already been processed."
@@ -43,16 +43,22 @@ const PaymentSuccess = () => {
         setId(paymentIntent);
         setAmount(9999);
         await fetchProfile();
-      } catch (error) {
-        console.error("Error handling payment success:", error);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        console.warn("[payments] grant-failed");
         setMessage("Error handling payment success");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
 
-    if (uid) handlePaymentSuccess();
-  }, [fetchProfile, uid, paymentIntent]);
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchProfile, uid, paymentIntent, missingIntent]);
+
+  const creditsLabel = useMemo(() => formatNumber(10_000), []);
 
   return (
     <GreenWhiteLayout>
@@ -81,7 +87,7 @@ const PaymentSuccess = () => {
                       <span>Token Credits</span>
                     </div>
                     <span className="font-semibold text-[#18181B]">
-                      {formatNumber(10_000)} credits
+                      {creditsLabel} credits
                     </span>
                   </div>
                   <div className="flex justify-between items-center">

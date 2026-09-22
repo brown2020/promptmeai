@@ -37,15 +37,21 @@ export default function DeleteConfirmModal({
         <p className="mb-4 mt-2">
           Please type <strong>DELETE ACCOUNT</strong> to confirm.
         </p>
+        <label htmlFor="delete-account-confirm" className="sr-only">
+          Type DELETE ACCOUNT to confirm
+        </label>
         <input
+          id="delete-account-confirm"
           type="text"
           value={deleteConfirmation}
           onChange={(e) => setDeleteConfirmation(e.target.value)}
           className="border border-gray-300 rounded-md px-3 py-2 w-full mb-4"
           placeholder="Type DELETE ACCOUNT"
+          aria-label="Type DELETE ACCOUNT to confirm"
         />
         <div className="flex justify-end gap-2">
           <button
+            type="button"
             className="bg-gray-500 text-white px-3 py-2 rounded-md"
             onClick={onHideModal}
           >

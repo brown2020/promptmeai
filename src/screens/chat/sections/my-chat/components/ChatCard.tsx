@@ -26,9 +26,10 @@ const ChatCard = ({ id, title }: ChatCardProps) => {
 
   return (
     <Fragment>
-      <div
+      <button
+        type="button"
         className={cn(
-          "flex flex-col gap-[6px] py-[11px] px-[18px] rounded-lg w-full cursor-pointer hover:bg-[#23C69E]/[0.20] dark:hover:bg-[#1E1F22]",
+          "flex flex-col gap-[6px] py-[11px] px-[18px] rounded-lg w-full text-left cursor-pointer hover:bg-[#23C69E]/[0.20] dark:hover:bg-[#1E1F22]",
           {
             "bg-[#23C69E]/[0.15] dark:bg-[#1E1F22]": isActive,
           }
@@ -40,7 +41,7 @@ const ChatCard = ({ id, title }: ChatCardProps) => {
             {title}
           </h4>
         </div>
-      </div>
+      </button>
 
       {/* Warning for changing message if there is active request */}
       <WarningChangingMessage

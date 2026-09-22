@@ -46,8 +46,10 @@ export async function ensureUserProfile(
   const markerRef = adminDb.doc(billingState(uid));
 
   await adminDb.runTransaction(async (transaction) => {
-    const profile = await transaction.get(profileRef);
-    const marker = await transaction.get(markerRef);
+    const [profile, marker] = await Promise.all([
+      transaction.get(profileRef),
+      transaction.get(markerRef),
+    ]);
 
     if (profile.exists) {
       if (!marker.exists) {
@@ -91,10 +93,10 @@ export async function grantCatalogCredits(
   const payments = adminDb.collection(paths.userPayments(uid));
 
   return adminDb.runTransaction(async (transaction) => {
-    const existing = await transaction.get(
-      payments.where("id", "==", paymentIntentId).limit(1)
-    );
-    const profile = await transaction.get(profileRef);
+    const [existing, profile] = await Promise.all([
+      transaction.get(payments.where("id", "==", paymentIntentId).limit(1)),
+      transaction.get(profileRef),
+    ]);
     if (!profile.exists) {
       throw new Error("Profile not found");
     }

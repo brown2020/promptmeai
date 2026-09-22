@@ -241,10 +241,15 @@ const ChatInput = () => {
     <Fragment>
       <div className="self-end w-full max-w-3xl h-14 shrink-0 flex gap-4 justify-center items-center">
         <div className="w-full bg-white dark:bg-gray-700 rounded-xl shadow-sm px-4 py-3 flex gap-3 items-center">
+          <label htmlFor="chat-prompt" className="sr-only">
+            Prompt
+          </label>
           <input
+            id="chat-prompt"
             ref={inputRef}
             className="w-full text-base bg-transparent dark:bg-transparent text-gray-600 dark:text-gray-300 outline-none"
             placeholder="Type your question here..."
+            aria-label="Type your question"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && submitHandler()}

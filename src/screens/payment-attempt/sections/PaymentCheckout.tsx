@@ -21,17 +21,19 @@ const PaymentCheckout = ({ amount }: PaymentCheckoutProps) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    async function initializePayment() {
-      try {
-        const secret = await createPaymentIntent(convertToSubcurrency(amount));
-        if (secret) setClientSecret(secret);
-      } catch (error) {
-        console.error("Failed to initialize payment:", error);
-        setErrorMessage("Failed to initialize payment. Please try again.");
-      }
-    }
-
-    initializePayment();
+    let cancelled = false;
+    createPaymentIntent(convertToSubcurrency(amount))
+      .then((secret) => {
+        if (!cancelled && secret) setClientSecret(secret);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setErrorMessage("Failed to initialize payment. Please try again.");
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [amount]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -42,13 +44,12 @@ const PaymentCheckout = ({ amount }: PaymentCheckoutProps) => {
     }
 
     setLoading(true);
+    setErrorMessage(null);
 
     try {
-      // Confirm the Payment
       const { error: submitError } = await elements.submit();
       if (submitError) {
         setErrorMessage(submitError.message || "Payment failed");
-        setLoading(false);
         return;
       }
 
@@ -61,20 +62,14 @@ const PaymentCheckout = ({ amount }: PaymentCheckoutProps) => {
       });
 
       if (error) {
-        // This point is only reached if there's an immediate error when
-        // confirming the payment. Show the error to the user
-        // For example, the card was declined
         setErrorMessage(error.message || "Payment failed");
-      } else {
-        // The payment UI automatically closes with a success animation
-        // User is redirected to the return_url
       }
-    } catch (error) {
+    } catch {
       setErrorMessage("Payment validation failed. Please try again.");
-      console.error("Payment validation error:", error);
+      console.warn("[payments] validation-failed");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   if (!clientSecret || !stripe || !elements) {
@@ -99,6 +94,7 @@ const PaymentCheckout = ({ amount }: PaymentCheckoutProps) => {
           {errorMessage && <p className="text-red-500">{errorMessage}</p>}
 
           <button
+            type="submit"
             disabled={!stripe || loading}
             className="text-white w-full p-5 bg-black mt-2 rounded-md font-bold disabled:opacity-50 disabled:animate-pulse"
           >

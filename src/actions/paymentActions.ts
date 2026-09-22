@@ -63,11 +63,11 @@ export async function validatePaymentIntent(paymentIntentId: string) {
 }
 
 export async function grantCatalogPurchase(paymentIntentId: string) {
-  const uid = await verifyAuth();
-
   if (!paymentIntentId || typeof paymentIntentId !== "string") {
     throw new Error("Invalid payment intent ID");
   }
+
+  const uid = await verifyAuth();
 
   const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
 

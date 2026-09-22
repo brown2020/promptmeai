@@ -12,7 +12,8 @@ import { auth } from "@/firebase/firebaseClient";
 
 const ChatResponseList = () => {
   const user = auth.currentUser;
-  const { messages, setMessages } = useChatStore();
+  const messages = useChatStore((s) => s.messages);
+  const setMessages = useChatStore((s) => s.setMessages);
   const { activeChatId, isNewChat } = useChatSideBarStore();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -27,7 +28,14 @@ const ChatResponseList = () => {
       const result = await getChat(userId, activeChatId);
 
       if (result && result.chat) {
-        setMessages(result.chat);
+        setMessages(
+          result.chat.map((message, index) => ({
+            ...message,
+            id:
+              message.id ||
+              `hydrated-${activeChatId}-${index}-${String(message.userMessage?.content ?? "").slice(0, 24)}`,
+          }))
+        );
       }
     };
 
@@ -72,8 +80,8 @@ const ChatResponseList = () => {
     >
       {messages.length === 0 && <ChatResponseEmptyState />}
       {messages.length > 0 &&
-        messages.map((message, i) => (
-          <Fragment key={i}>
+        messages.map((message) => (
+          <Fragment key={message.id}>
             <ChatResponseCard
               type="self"
               content={message.userMessage.content as string}

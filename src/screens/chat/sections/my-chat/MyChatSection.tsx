@@ -61,7 +61,9 @@ const MyChatSection = () => {
   return (
     <Fragment>
       {/* Drawer backdrop for mobile */}
-      <div
+      <button
+        type="button"
+        aria-label="Close chat drawer"
         className={`fixed inset-0 z-40 bg-black/50 transition-opacity lg:hidden ${
           isDrawerOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}

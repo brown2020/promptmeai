@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef, useState } from "react";
 import ModalWarning from "./ModalWarning";
 import { Spinner } from "@nextui-org/react";
@@ -14,14 +16,34 @@ const WarningChangingMessage = ({
   setShowWarning,
   onFinish,
 }: WarningChangingMessageProps) => {
-  const [warningContinue, setWarningContinue] = useState<boolean>(false);
-  const unsubscribeRef = useRef<(() => void) | null>(null);
+  const [waitingForSettle, setWaitingForSettle] = useState(false);
+  const onFinishRef = useRef(onFinish);
+  const setShowWarningRef = useRef(setShowWarning);
 
-  // Tear down any pending store subscription on unmount.
-  useEffect(() => () => unsubscribeRef.current?.(), []);
+  useEffect(() => {
+    onFinishRef.current = onFinish;
+  }, [onFinish]);
+
+  useEffect(() => {
+    setShowWarningRef.current = setShowWarning;
+  }, [setShowWarning]);
+
+  useEffect(() => {
+    if (!waitingForSettle) return;
+
+    const unsubscribe = useChatStore.subscribe((state) => {
+      if (!state.isLoading) {
+        setWaitingForSettle(false);
+        setShowWarningRef.current(false);
+        onFinishRef.current();
+      }
+    });
+
+    return unsubscribe;
+  }, [waitingForSettle]);
 
   const proceed = () => {
-    setWarningContinue(false);
+    setWaitingForSettle(false);
     setShowWarning(false);
     onFinish();
   };
@@ -29,26 +51,13 @@ const WarningChangingMessage = ({
   const handleConfirm = () => {
     const { isLoading, abortController } = useChatStore.getState();
 
-    // No request in flight: proceed immediately.
     if (!isLoading) {
       proceed();
       return;
     }
 
-    // Abort the in-flight request, then proceed only once it has fully settled
-    // (so the aborted stream can't write into the next conversation). React
-    // state is updated from the store subscription callback, never during
-    // render or inside an effect body.
-    setWarningContinue(true);
+    setWaitingForSettle(true);
     abortController?.abort();
-
-    unsubscribeRef.current = useChatStore.subscribe((state) => {
-      if (!state.isLoading) {
-        unsubscribeRef.current?.();
-        unsubscribeRef.current = null;
-        proceed();
-      }
-    });
   };
 
   return (
@@ -57,13 +66,13 @@ const WarningChangingMessage = ({
       backdrop="opaque"
       title="Another request is in progress. Continuing will stop the current request. Do you want to proceed?"
       confirmText={
-        warningContinue ? (
+        waitingForSettle ? (
           <Spinner color="default" size="sm" />
         ) : (
           "Yes, continue"
         )
       }
-      disableConfirm={warningContinue}
+      disableConfirm={waitingForSettle}
       onConfirm={handleConfirm}
       onClose={() => {
         setShowWarning(false);

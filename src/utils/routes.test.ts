@@ -12,8 +12,16 @@ describe("isPublicPath", () => {
     expect(isPublicPath("/support")).toBe(true);
   });
 
+  it("treats auth UX routes as public", () => {
+    expect(isPublicPath("/login")).toBe(true);
+    expect(isPublicPath("/signup")).toBe(true);
+    expect(isPublicPath("/forgot-password")).toBe(true);
+    expect(PUBLIC_PATHS).toContain("/login");
+    expect(PUBLIC_PATHS).toContain("/signup");
+    expect(PUBLIC_PATHS).toContain("/forgot-password");
+  });
+
   it("treats /loginfinish as public so email-link sign-in can complete", () => {
-    // Regression guard: gating /loginfinish redirects users away mid sign-in.
     expect(isPublicPath("/loginfinish")).toBe(true);
     expect(PUBLIC_PATHS).toContain("/loginfinish");
   });
