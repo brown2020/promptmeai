@@ -1,365 +1,160 @@
-# Prompt.me AI
+# Prompt.me AI (`promptmeai`)
 
-<div align="center">
-
-![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)
-![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-6.0.3-3178C6?style=flat-square&logo=typescript)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.3.0-38B2AC?style=flat-square&logo=tailwind-css)
-![License](https://img.shields.io/badge/License-AGPLv3-blue?style=flat-square)
-
-**Compare AI model responses side-by-side in real-time**
-
-[Demo](#demo) • [Features](#features) • [Quick Start](#quick-start) • [Documentation](#documentation) • [Contributing](#contributing)
-
-</div>
-
----
-
-## Overview
-
-Prompt.me AI is an open-source platform that allows you to send the same prompt to multiple leading AI models simultaneously and compare their responses in real-time. Perfect for researchers, developers, and AI enthusiasts who want to understand the strengths and differences between various AI models.
-
-### Supported AI Models
-
-| Model                 | Provider             | Description                     |
-| --------------------- | -------------------- | ------------------------------- |
-| **GPT-5.5**           | OpenAI               | Frontier reasoning model        |
-| **Claude Sonnet 4.6** | Anthropic            | Advanced reasoning and analysis |
-| **Gemini 3.5 Flash**  | Google               | Quick, efficient responses      |
-| **Mistral Small 4**   | Mistral AI           | Balanced performance model      |
+Send one prompt to multiple leading AI models and compare streaming answers side by side. Sign in, use platform credits or your own provider keys, save comparison history, and top up via Stripe. Live site: [prompt.me](https://prompt.me/).
 
 ## Features
 
-- 🤖 **Multi-Model Comparison** — Send prompts to 4 AI models simultaneously
-- ⚡ **Real-time Streaming** — See responses as they're generated
-- 💾 **Chat History** — Save, pin, and organize your conversations
-- 🔑 **Dual Usage Modes** — Use platform credits or your own API keys
-- 💳 **Payment Integration** — Purchase credits via Stripe
-- 🌙 **Dark Mode** — Full dark/light theme support
-- 📱 **Responsive Design** — Works on desktop and mobile
-- 🔐 **Secure Authentication** — Firebase Auth with Google sign-in
+Verified from the current codebase:
 
-## Tech Stack
+- Parallel multi-model chat against four configured models (`src/constants/modelNames.ts`): GPT-5.5 (OpenAI), Claude Sonnet 4.6 (Anthropic), Gemini 3.5 Flash (Google), Mistral Small 4 (`mistral-small-latest`)
+- Streaming via Vercel AI SDK (`streamText` + `@ai-sdk/rsc`) in `src/actions/generateActions.ts`
+- Usage modes: platform **credits** (server provider keys + credit ledger) or **bring-your-own API keys** (stored on profile / settings)
+- Auth: Google popup, email/password, email link (`/loginfinish`); password reset; account deletion
+- Chat history with pin/search/delete; Zustand stores for auth, profile, credits, chat, payments, etc.
+- Stripe PaymentIntents for credit purchases (`/payment-attempt`, `/payment-success`, `/settings`)
+- Themes (next-themes), markdown responses, cookie consent, privacy/terms/support pages
+- Route gate in `src/proxy.ts` (cookie presence); authoritative checks via Firebase Admin `verifyAuth` + Firestore rules
 
-### Frontend
+## Tech stack
 
-- **[Next.js 16.2.9](https://nextjs.org/)** — React framework with App Router
-- **[React 19.2.7](https://react.dev/)** — UI library
-- **[TypeScript 6.0.3](https://www.typescriptlang.org/)** — Type safety
-- **[Tailwind CSS 4.3.0](https://tailwindcss.com/)** — Utility-first styling
-- **[NextUI](https://nextui.org/)** — React component library
-- **[Framer Motion](https://www.framer.com/motion/)** — Animations
+| Area | Choice | Version (package.json) |
+| --- | --- | --- |
+| Framework | Next.js (App Router) | ^16.2.7 |
+| UI | React + NextUI | ^19.2.7 / NextUI 2.x |
+| Language | TypeScript | ^6.0.3 |
+| Styling | Tailwind CSS + typography plugin | ^4.3.0 |
+| State | Zustand | ^5.0.14 |
+| Auth / data | Firebase client + firebase-admin | ^12.14.0 / ^13.10.0 |
+| AI | `ai` + OpenAI / Anthropic / Google / Mistral + `@ai-sdk/rsc` | ai ^6.0.197 |
+| Payments | Stripe + React Stripe.js | stripe ^22.2.0 |
+| Markdown | react-markdown + remark-gfm + rehype sanitize/raw | — |
+| Tests | Vitest | ^4.1.8 |
 
-### AI Integration
+## Project structure
 
-- **[Vercel AI SDK](https://sdk.vercel.ai/)** — Unified AI provider interface
-- **[@ai-sdk/openai](https://sdk.vercel.ai/providers/ai-sdk-providers/openai)** — OpenAI integration
-- **[@ai-sdk/anthropic](https://sdk.vercel.ai/providers/ai-sdk-providers/anthropic)** — Anthropic integration
-- **[@ai-sdk/google](https://sdk.vercel.ai/providers/ai-sdk-providers/google-generative-ai)** — Google AI integration
-- **[@ai-sdk/mistral](https://sdk.vercel.ai/providers/ai-sdk-providers/mistral)** — Mistral integration
+```
+src/
+  app/
+    page.tsx, chat/, settings/
+    login/, signup/, forgot-password/, loginfinish/
+    payment-attempt/, payment-success/
+    privacy/, terms/, support/
+  actions/                 # generateActions, paymentActions, profileActions
+  components/ layouts/
+  firebase/                # client, admin, creditLedger, paths
+  zustand/                 # auth, profile, credits, chat, payments, …
+  constants/modelNames.ts
+  proxy.ts
+firestore.rules
+storage.rules
+firebase.json
+.env.example
+.github/workflows/ci.yml
+.github/workflows/malware-scan.yml
+```
 
-### Backend & Data
-
-- **[Firebase](https://firebase.google.com/)** — Authentication & Firestore database
-- **[Stripe](https://stripe.com/)** — Payment processing
-- **[Zustand](https://zustand-demo.pmnd.rs/)** — State management
-
-### Developer Experience
-
-- **[ESLint](https://eslint.org/)** — Code linting
-- **[Vitest](https://vitest.dev/)** — Focused unit tests
-- **[date-fns](https://date-fns.org/)** — Date utilities
-- **[React Markdown](https://remarkjs.github.io/react-markdown/)** — Markdown rendering
-
-## Quick Start
+## Getting started
 
 ### Prerequisites
 
-- **Node.js 20.9+** (LTS recommended)
-- **npm** (required; `package-lock.json` is the source of truth)
-- API keys from AI providers (optional if using credits)
-- Firebase project
-- Stripe account (for payments)
+- Node.js 22 (matches CI) or a current LTS
+- npm
+- Firebase project + service account
+- Provider API keys for credits mode
+- Stripe account for purchases
 
-### Installation
-
-1. **Clone the repository**
-
-   ```bash
-   git clone https://github.com/brown2020/promptmeai.git
-   cd promptmeai
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-3. **Configure environment variables**
-
-   ```bash
-   cp .env.example .env.local
-   ```
-
-   Edit `.env.local` with your configuration (see [Environment Variables](#environment-variables))
-
-4. **Start the development server**
-
-   ```bash
-   npm run dev
-   ```
-
-5. **Open your browser**
-
-   Navigate to [http://localhost:3000](http://localhost:3000)
-
-## Environment Variables
-
-Create a `.env.local` file in the root directory with the following variables:
-
-### AI Provider Keys (Server-side)
+### Clone and install
 
 ```bash
-# Required for credit-based usage
-OPENAI_API_KEY=sk-...
-ANTHROPIC_API_KEY=sk-ant-...
-GOOGLE_GENERATIVE_AI_API_KEY=...
-MISTRAL_API_KEY=...
+git clone https://github.com/brown2020/promptmeai.git
+cd promptmeai
+npm install
 ```
 
-### Firebase Configuration
+### Environment variables
+
+Copy `.env.example` → `.env.local`. **Never commit real values.**
+
+#### Public / client
+
+| Name | Purpose | Where to get it |
+| --- | --- | --- |
+| `NEXT_PUBLIC_COOKIE_NAME` | Auth cookie name for proxy + client | Choose a non-secret name |
+| `NEXT_PUBLIC_FIREBASE_APIKEY` | Firebase web API key | Firebase Console → Your apps |
+| `NEXT_PUBLIC_FIREBASE_AUTHDOMAIN` | Auth domain | Same |
+| `NEXT_PUBLIC_FIREBASE_PROJECTID` | Project id | Same |
+| `NEXT_PUBLIC_FIREBASE_STORAGEBUCKET` | Storage bucket | Same |
+| `NEXT_PUBLIC_FIREBASE_MESSAGINGSENDERID` | Messaging sender id | Same |
+| `NEXT_PUBLIC_FIREBASE_APPID` | App id | Same |
+| `NEXT_PUBLIC_FIREBASE_MEASUREMENTID` | Analytics measurement id (optional) | Same |
+| `NEXT_PUBLIC_STRIPE_KEY` | Stripe publishable key | Stripe Dashboard → API keys |
+| `NEXT_PUBLIC_STRIPE_PRODUCT_NAME` | Product label on PaymentIntents | Your naming |
+
+#### Server secrets
+
+| Name | Purpose | Where to get it |
+| --- | --- | --- |
+| `OPENAI_API_KEY` | Platform credits → GPT models | OpenAI |
+| `ANTHROPIC_API_KEY` | Platform credits → Claude | Anthropic |
+| `GOOGLE_GENERATIVE_AI_API_KEY` | Platform credits → Gemini | Google AI Studio |
+| `MISTRAL_API_KEY` | Platform credits → Mistral | Mistral |
+| `STRIPE_SECRET_KEY` | PaymentIntents | Stripe Dashboard |
+| `FIREBASE_TYPE` | Service account type | Service account JSON |
+| `FIREBASE_PROJECT_ID` | Admin project id | Same |
+| `FIREBASE_PRIVATE_KEY_ID` | Key id | Same |
+| `FIREBASE_PRIVATE_KEY` | PEM key (`\n` escaped) | Same |
+| `FIREBASE_CLIENT_EMAIL` | Service account email | Same |
+| `FIREBASE_CLIENT_ID` | Client id | Same |
+| `FIREBASE_AUTH_URI` | OAuth auth URI | Same |
+| `FIREBASE_TOKEN_URI` | Token URI | Same |
+| `FIREBASE_AUTH_PROVIDER_X509_CERT_URL` | Cert URL | Same |
+| `FIREBASE_CLIENT_CERTS_URL` | Client cert URL | Same |
+
+`FIREBASE_UNIVERSE_DOMAIN` is listed in `.env.example` but is not read by `firebaseAdmin.ts` today.
+
+### Firebase / Stripe setup
+
+1. Enable Google, Email/Password, and Email link auth as needed.
+2. Deploy `firestore.rules` and `storage.rules` (`firebase.json` / `.firebaserc`).
+3. Configure Stripe keys and catalog purchase amount validation (`src/utils/paymentAmount.ts` / credit ledger).
+
+### Run locally
 
 ```bash
-# Client-side (public)
-NEXT_PUBLIC_FIREBASE_APIKEY=...
-NEXT_PUBLIC_FIREBASE_AUTHDOMAIN=your-project.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECTID=your-project-id
-NEXT_PUBLIC_FIREBASE_STORAGEBUCKET=your-project.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGINGSENDERID=...
-NEXT_PUBLIC_FIREBASE_APPID=...
-NEXT_PUBLIC_FIREBASE_MEASUREMENTID=G-...
-
-# Server-side (Admin SDK)
-FIREBASE_TYPE=service_account
-FIREBASE_PROJECT_ID=your-project-id
-FIREBASE_PRIVATE_KEY_ID=...
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-...@your-project.iam.gserviceaccount.com
-FIREBASE_CLIENT_ID=...
-FIREBASE_AUTH_URI=https://accounts.google.com/o/oauth2/auth
-FIREBASE_TOKEN_URI=https://oauth2.googleapis.com/token
-FIREBASE_AUTH_PROVIDER_X509_CERT_URL=https://www.googleapis.com/oauth2/v1/certs
-FIREBASE_CLIENT_CERTS_URL=https://www.googleapis.com/robot/v1/metadata/x509/...
+npm run dev
 ```
 
-### Stripe Configuration
-
-```bash
-NEXT_PUBLIC_STRIPE_KEY=pk_...
-NEXT_PUBLIC_STRIPE_PRODUCT_NAME=PromptMe Credits
-STRIPE_SECRET_KEY=sk_...
-```
-
-### Application Settings
-
-```bash
-NEXT_PUBLIC_COOKIE_NAME=promptme_auth
-```
-
-## Project Structure
-
-```
-promptmeai/
-├── src/
-│   ├── actions/           # Server actions (AI generation, payments)
-│   ├── app/               # Next.js App Router pages
-│   │   ├── chat/          # Main chat interface
-│   │   ├── settings/      # User settings & API keys
-│   │   ├── payment-*/     # Payment flow pages
-│   │   └── ...
-│   ├── components/        # Reusable UI components
-│   │   ├── buttons/       # Button variants
-│   │   ├── modals/        # Modal dialogs
-│   │   └── ...
-│   ├── constants/         # App constants & model config
-│   ├── firebase/          # Firebase client & admin setup
-│   ├── hooks/             # Custom React hooks
-│   ├── layouts/           # Page layouts & navigation
-│   ├── screens/           # Page-level components
-│   │   ├── chat/          # Chat screen with sections
-│   │   ├── settings/      # Settings screen
-│   │   └── ...
-│   ├── services/          # Business logic (chat CRUD)
-│   ├── types/             # TypeScript type definitions
-│   ├── utils/             # Utility functions
-│   └── zustand/           # State management stores
-├── public/                # Static assets
-└── ...config files
-```
-
-## Usage
-
-### Chat Interface
-
-1. **Sign in** with Google or email/password
-2. **Type your prompt** in the chat input
-3. **View responses** from all AI models simultaneously
-4. **Save conversations** automatically to your history
-5. **Pin important chats** for quick access
-
-### Usage Modes
-
-| Mode         | Description                             |
-| ------------ | --------------------------------------- |
-| **Credits**  | Use platform-provided credits (default) |
-| **API Keys** | Use your own API keys for each provider |
-
-Configure your usage mode in **Settings**.
-
-### Purchasing Credits
-
-1. Navigate to **Settings**
-2. Click **Buy 10,000 Credits**
-3. Complete payment via Stripe
-4. Credits are added instantly
+Open [http://localhost:3000](http://localhost:3000). Chat UI lives at `/chat` after sign-in.
 
 ## Scripts
 
-```bash
-npm run dev      # Start development server
-npm run build    # Build for production
-npm run start    # Start production server
-npm run lint     # Run ESLint
-npm run test     # Run Vitest unit tests
-bash scripts/malware-scan.sh tree   # Run the local malware IOC scan used by CI
-```
+| Script | Description |
+| --- | --- |
+| `npm run dev` | Next.js development server |
+| `npm run build` | Production build |
+| `npm start` | Serve the production build |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm test` | Vitest |
+| `npm run doctor` | `react-doctor` |
 
-## Firebase Setup
+## Testing and CI
 
-### Firestore Database Structure
+- Vitest covers proxy/routes, payment amount helpers, token/text/object utilities, and related modules.
+- CI: `npm ci --ignore-scripts`, lint, typecheck, test, doctor, build (Node 22). Public Firebase/Stripe env for build come from Actions secrets when set; client init soft-skips when missing.
+- `malware-scan.yml` runs static IOC matching via `scripts/malware-scan.sh`.
 
-```
-users/
-  └── {uid}/
-      └── profile/
-          └── userData          # User profile & settings
-      └── payments/             # Payment history
-          └── {paymentId}
+## Deployment
 
-promptme_chats/
-  └── {uid}/
-      └── chat/
-          └── {chatId}          # Individual chat conversations
-```
-
-### Security Rules
-
-This repo includes production-ready rules that ensure **users can only access their own data**:
-
-- **Firestore**: `firestore.rules`
-- **Storage**: `storage.rules`
-
-#### What’s protected
-
-- **User data**: `users/{uid}` and `users/{uid}/profile/userData`
-- **Payments**: `users/{uid}/payments/{paymentDocId}` (read/create only; update/delete denied by default)
-- **Chats**: `promptme_chats/{uid}/chat/{chatId}` (create/update require `userId === uid`)
-- **Everything else**: denied by default
-
-#### Deploy (Firebase Console)
-
-- **Firestore**: Firebase Console → Firestore Database → **Rules** → paste from `firestore.rules` → Publish
-- **Storage**: Firebase Console → Storage → **Rules** → paste from `storage.rules` → Publish
-
-#### Deploy (Firebase CLI)
-
-If you use the Firebase CLI, ensure your `firebase.json` points to the rule files:
-
-```json
-{
-  "firestore": { "rules": "firestore.rules" },
-  "storage": { "rules": "storage.rules" }
-}
-```
-
-Then deploy:
-
-```bash
-firebase deploy --only firestore:rules,storage:rules
-```
+Production: [prompt.me](https://prompt.me/). Set all required env vars on the host. Keep Firestore rules in sync so clients cannot mutate frozen credit fields.
 
 ## Contributing
 
-We welcome contributions! Here's how you can help:
-
-### Getting Started
-
-1. **Fork the repository**
-2. **Create a feature branch**
-   ```bash
-   git checkout -b feature/amazing-feature
-   ```
-3. **Make your changes**
-4. **Run tests and linting**
-   ```bash
-   npm run lint
-   npm run test
-   npm run build
-   ```
-5. **Commit your changes**
-   ```bash
-   git commit -m "feat: add amazing feature"
-   ```
-6. **Push to your fork**
-   ```bash
-   git push origin feature/amazing-feature
-   ```
-7. **Open a Pull Request**
-
-### Commit Convention
-
-We follow [Conventional Commits](https://www.conventionalcommits.org/):
-
-- `feat:` — New features
-- `fix:` — Bug fixes
-- `docs:` — Documentation changes
-- `style:` — Code style changes (formatting, etc.)
-- `refactor:` — Code refactoring
-- `perf:` — Performance improvements
-- `test:` — Test additions or modifications
-- `chore:` — Maintenance tasks
-
-### Development Guidelines
-
-- Write TypeScript with proper types
-- Follow the existing code style
-- Add comments for complex logic
-- Keep components small and focused
-- Use the existing utility functions
-
-## Roadmap
-
-The product roadmap and full feature spec live in **[spec.md](spec.md)** — the single authoritative product/roadmap document. Agent and engineering operating rules live in **[AGENTS.md](AGENTS.md)**.
+1. Branch from `dev`.
+2. Keep `verifyAuth` + credit ledger checks on generative and payment actions.
+3. Run lint, typecheck, and tests before opening a PR.
+4. Never commit secrets or `.env.local`.
 
 ## License
 
-This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)** — see the [LICENSE.md](LICENSE.md) file for details.
-
-## Acknowledgments
-
-- [Vercel](https://vercel.com) for the AI SDK and hosting
-- [OpenAI](https://openai.com), [Anthropic](https://anthropic.com), [Google](https://ai.google), [Mistral](https://mistral.ai), [Meta](https://ai.meta.com) for their AI models
-- [Firebase](https://firebase.google.com) for authentication and database
-- [Stripe](https://stripe.com) for payment processing
-
----
-
-<div align="center">
-
-**[⬆ Back to Top](#promptme-ai)**
-
-Made with ❤️ by [Brown2020](https://github.com/brown2020)
-
-</div>
+[GNU Affero General Public License v3.0](LICENSE.md) (AGPL-3.0).
