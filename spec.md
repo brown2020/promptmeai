@@ -57,7 +57,7 @@ Prompt.me AI is a client-first Next.js (App Router) single-page application back
 - **Authentication**: Google popup, email/password, and email-link sign-in; password reset; sign-out with explicit cookie deletion; account deletion.
 - **Settings**: usage-mode selection, credit information, API-key entry, payment history, account options.
 - **UX**: responsive 3-panel layout, light/dark/system themes, markdown rendering of responses, cookie-consent banner, static legal/support pages.
-- **Mobile webview awareness**: detects React Native WebView and hides web-only UI (Google sign-in, API-key entry) **(inferred: supports an external mobile wrapper / in-app-purchase path; no IAP code is present in this repo)**.
+- **Mobile webview awareness**: detects React Native WebView and hides web-only UI (Google sign-in, API-key entry, credit purchase) inside the iOS wrapper app (`promptmeai_expo`), which has no in-app purchase flow.
 
 ### Current user flows
 

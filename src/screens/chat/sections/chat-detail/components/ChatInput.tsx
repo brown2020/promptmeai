@@ -13,6 +13,7 @@ import {
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { PromptCoreMessage, useChatStore } from "@/zustand/useChatStore";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
+import { usePlatform } from "@/zustand/usePlatformStore";
 import { FaStopCircle } from "react-icons/fa";
 import { ModelMessage } from "ai";
 import { readStreamableValue } from "@ai-sdk/rsc";
@@ -33,6 +34,7 @@ const ChatInput = () => {
   const router = useRouter();
   const user = auth.currentUser;
   const { profile, isDefaultData, fetchProfile } = useProfileStore();
+  const { isRNWebView } = usePlatform();
   const {
     addMessage,
     setMessages,
@@ -56,8 +58,9 @@ const ChatInput = () => {
     profile.usageMode === UsageMode.Credits
       ? profile.credits <= 10
       : isObjectEmpty(profile.APIKeys);
-  const alertCredits =
-    "Your credit balance is exhausted. Please purchase more credits or provide your API keys to continue.";
+  const alertCredits = isRNWebView
+    ? "Your credit balance is exhausted."
+    : "Your credit balance is exhausted. Please purchase more credits or provide your API keys to continue.";
   const alertAPIKeys =
     "API keys have not been set up yet. Please configure your API keys to proceed.";
   const alertAPIKeysNotWorking =
