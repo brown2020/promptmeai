@@ -2,9 +2,14 @@ import { useEffect, useState } from "react";
 
 const useTypingEffect = (text: string, speed: number): string => {
   const [displayedText, setDisplayedText] = useState<string>("");
+  const [typedFrom, setTypedFrom] = useState(text);
+
+  if (typedFrom !== text) {
+    setTypedFrom(text);
+    setDisplayedText("");
+  }
 
   useEffect(() => {
-    setDisplayedText(""); // Reset displayed text on every new `text` input
     let index = 0;
 
     const intervalId = setInterval(() => {

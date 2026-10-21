@@ -19,7 +19,7 @@ Verified from the current codebase:
 
 | Area | Choice | Version (package.json) |
 | --- | --- | --- |
-| Framework | Next.js (App Router) | ^16.2.7 |
+| Framework | Next.js (App Router) | ^16.4.2 |
 | UI | React + NextUI | ^19.2.7 / NextUI 2.x |
 | Language | TypeScript | ^6.0.3 |
 | Styling | Tailwind CSS + typography plugin | ^4.3.0 |
@@ -79,7 +79,7 @@ Copy `.env.example` → `.env.local`. **Never commit real values.**
 
 | Name | Purpose | Where to get it |
 | --- | --- | --- |
-| `NEXT_PUBLIC_COOKIE_NAME` | Auth cookie name for proxy + client | Choose a non-secret name |
+| `NEXT_PUBLIC_COOKIE_NAME` | Auth cookie name for proxy + client. Default when unset is `authToken` (`NEXT_PUBLIC_COOKIE_NAME=authToken`). | A non-secret name |
 | `NEXT_PUBLIC_FIREBASE_APIKEY` | Firebase web API key | Firebase Console → Your apps |
 | `NEXT_PUBLIC_FIREBASE_AUTHDOMAIN` | Auth domain | Same |
 | `NEXT_PUBLIC_FIREBASE_PROJECTID` | Project id | Same |
@@ -115,7 +115,7 @@ Copy `.env.example` → `.env.local`. **Never commit real values.**
 ### Firebase / Stripe setup
 
 1. Enable Google, Email/Password, and Email link auth as needed.
-2. Deploy `firestore.rules` and `storage.rules` (`firebase.json` / `.firebaserc`).
+2. Deploy Firestore rules. `firebase.json` is `{ "firestore": { "rules": "firestore.rules" } }`.
 3. Configure Stripe keys and catalog purchase amount validation (`src/utils/paymentAmount.ts` / credit ledger).
 
 ### Run locally

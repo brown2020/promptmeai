@@ -25,12 +25,12 @@ const features: Feature[] = [
   {
     icon: FaChartLine,
     title: "Track Usage",
-    description: "Monitor token usage and costs with detailed analytics.",
+    description: "Credits follow a simple estimate: about four characters count as one token.",
   },
   {
     icon: FaShieldAlt,
     title: "Secure & Private",
-    description: "Your conversations are encrypted and never shared.",
+    description: "Chats are saved to your account as text and are not shared with other users.",
   },
 ];
 

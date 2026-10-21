@@ -3,6 +3,7 @@
 import { useAuthStore } from "@/zustand/useAuthStore";
 import { isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
 import { auth, hasClientConfig } from "@/firebase/firebaseClient";
+import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import useProfileStore from "@/zustand/useProfileStore";
 import Spinner from "@/components/Spinner";
@@ -17,6 +18,7 @@ export default function LoginFinishPage() {
   const setAuthDetails = useAuthStore((s) => s.setAuthDetails);
   const updateProfile = useProfileStore((s) => s.updateProfile);
   const [status, setStatus] = useState("Completing sign in...");
+  const [destination, setDestination] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -73,14 +75,14 @@ export default function LoginFinishPage() {
         });
         updateProfile({ displayName: selectedName });
         setStatus("Redirecting…");
-        window.location.assign("/chat");
+        setDestination("/chat");
       } catch (error) {
         const errorMessage = mapAuthError(error);
         console.warn("[auth] loginfinish-failed");
         if (!cancelled) {
           toast.error(errorMessage);
           setStatus(errorMessage);
-          window.location.assign("/");
+          setDestination("/");
         }
       } finally {
         window.localStorage.removeItem("promptmeEmail");
@@ -94,9 +96,11 @@ export default function LoginFinishPage() {
     };
   }, [setAuthDetails, updateProfile]);
 
+  if (destination) redirect(destination);
+
   return (
     <div className="h-screen w-screen flex items-center justify-center">
-      <Spinner message={status} />
+      <Spinner message={destination ? `Opening ${destination}` : status} />
     </div>
   );
 }
