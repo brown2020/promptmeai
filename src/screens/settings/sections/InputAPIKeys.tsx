@@ -55,11 +55,6 @@ const InputAPIKeys = () => {
             changeApiKeyHandler("googleGenerativeAi", e.target.value)
           }
         />
-        <Input
-          title="Mistral"
-          value={apiKeys.mistral}
-          onChange={(e) => changeApiKeyHandler("mistral", e.target.value)}
-        />
       </div>
       <Button
         disabled={areObjectsEqual<APIKeys>(apiKeys, profile.APIKeys)}

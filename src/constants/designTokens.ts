@@ -75,7 +75,6 @@ export const colors = {
     gpt: "#14A27F",
     claude: "#F39C12",
     gemini: "#FF6F61",
-    mistral: "#3498DB",
   },
 } as const;
 

@@ -14,7 +14,6 @@
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.85",
     "@ai-sdk/google": "^4.0.102",
-    "@ai-sdk/mistral": "^4.0.69",
     "@ai-sdk/openai": "^4.0.99",
     "@ai-sdk/rsc": "^3.0.148",
     "@nextui-org/react": "^2.6.11",

@@ -3,7 +3,7 @@
 import { useChatStore } from "@/zustand/useChatStore";
 import ChatResponseEmptyState from "./ChatResponseEmptyState";
 import { Fragment, useEffect, useRef } from "react";
-import { MODEL_NAMES } from "@/constants/modelNames";
+import { responseEntriesForDisplay } from "@/constants/modelNames";
 import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { getChat } from "@/services/chatService";
 import ChatResponseCard from "./ChatResponseCard";
@@ -92,15 +92,15 @@ const ChatResponseList = () => {
               }
             />
 
-            {MODEL_NAMES.map((model) => {
-              const response = message.responses[model.value];
+            {responseEntriesForDisplay(Object.keys(message.responses)).map(({ key, label }) => {
+              const response = message.responses[key];
               if (!response) return null;
 
               return (
                 <ChatResponseCard
-                  key={model.value}
+                  key={key}
                   type="ai"
-                  aiModel={model.label}
+                  aiModel={label}
                   content={response.content as string}
                   tokenUsage={
                     message.mode === UsageMode.Credits

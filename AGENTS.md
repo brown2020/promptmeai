@@ -8,7 +8,7 @@ For product scope, current-state inventory, and roadmap, see [`spec.md`](./spec.
 
 ## Project overview
 
-**Prompt.me AI** is an open-source web app that sends one prompt to four large language models at once and streams all four responses side-by-side in real time. It is a single-purpose comparison tool, not a general chat client: every prompt fans out to every configured model so users can compare quality, tone, speed, and correctness.
+**Prompt.me AI** is an open-source web app that sends one prompt to three large language models at once and streams all three responses side-by-side in real time. It is a single-purpose comparison tool, not a general chat client: every prompt fans out to every configured model so users can compare quality, tone, speed, and correctness.
 
 The app is a Next.js App Router project that runs almost entirely on the client. Server-side code is limited to thin server-action modules (AI streaming, Stripe payment intents, and profile creation) plus Firebase Admin auth verification. Firebase (Auth + Firestore) is the backend; Stripe handles credit purchases.
 
@@ -22,7 +22,7 @@ The app is a Next.js App Router project that runs almost entirely on the client.
 
 - **Framework**: Next.js 16 (App Router) with React 19, TypeScript (strict).
 - **Styling/UI**: Tailwind CSS 4 (via `@tailwindcss/postcss`), NextUI (`@nextui-org/react`), Framer Motion, `lucide-react` + `react-icons`.
-- **AI**: Vercel AI SDK (`ai`, `@ai-sdk/rsc`) with provider packages `@ai-sdk/openai`, `@ai-sdk/anthropic`, `@ai-sdk/google`, `@ai-sdk/mistral`. Streaming uses `streamText` + `createStreamableValue`.
+- **AI**: Vercel AI SDK (`ai`, `@ai-sdk/rsc`) with provider packages `@ai-sdk/openai`, `@ai-sdk/anthropic`, `@ai-sdk/google`. Streaming uses `streamText` + `createStreamableValue`.
 - **Backend/data**: Firebase Web SDK (`firebase`) client-side, Firebase Admin (`firebase-admin`) server-side, Firestore for data, Firebase Auth for identity.
 - **Payments**: Stripe (`stripe` server SDK, `@stripe/react-stripe-js` + `@stripe/stripe-js` client).
 - **State**: Zustand 5 (multiple small stores, no persistence middleware).
@@ -67,7 +67,7 @@ Root config: `next.config.mjs`, `tsconfig.json` (`@/*` → `./src/*`), `eslint.c
 
 ## Key app features that exist today
 
-- Four-model side-by-side streaming comparison (OpenAI GPT, Anthropic Claude, Google Gemini, and Mistral).
+- Three-model side-by-side streaming comparison (OpenAI GPT, Anthropic Claude, and Google Gemini).
 - Stop/abort an in-flight generation (`AbortController` per request).
 - Chat history with create, update, pin/unpin, delete, and debounced search.
 - Dual usage modes: platform credits or bring-your-own API keys, switchable in Settings.

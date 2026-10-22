@@ -6,7 +6,7 @@ Send one prompt to multiple leading AI models and compare streaming answers side
 
 Verified from the current codebase:
 
-- Parallel multi-model chat against four configured models (`src/constants/modelNames.ts`): GPT-5.5 (OpenAI), Claude Sonnet 4.6 (Anthropic), Gemini 3.5 Flash (Google), Mistral Small 4 (`mistral-small-latest`)
+- Parallel multi-model chat against three configured models (`src/constants/modelNames.ts`): GPT-6.1 Sol (`gpt-6.1-sol`, OpenAI), Claude Opus 5.5 (`claude-opus-5-5`, Anthropic), Gemini 4 Argon (`gemini-4-argon`, Google). Answers saved by earlier lineups still display with their original model name.
 - Streaming via Vercel AI SDK (`streamText` + `@ai-sdk/rsc`) in `src/actions/generateActions.ts`
 - Usage modes: platform **credits** (server provider keys + credit ledger) or **bring-your-own API keys** (stored on profile / settings)
 - Auth: Google popup, email/password, email link (`/loginfinish`); password reset; account deletion
@@ -25,7 +25,7 @@ Verified from the current codebase:
 | Styling | Tailwind CSS + typography plugin | ^4.3.0 |
 | State | Zustand | ^5.0.14 |
 | Auth / data | Firebase client + firebase-admin | ^13.0.0 / ^14.5.0 |
-| AI | `ai` + OpenAI / Anthropic / Google / Mistral + `@ai-sdk/rsc` | ai ^7.0.148 |
+| AI | `ai` + OpenAI / Anthropic / Google + `@ai-sdk/rsc` | ai ^7.0.148 |
 | Payments | Stripe + React Stripe.js | stripe ^23.0.0 |
 | Markdown | react-markdown + remark-gfm + rehype sanitize/raw | — |
 | Tests | Vitest | ^5.0.5 |
@@ -97,7 +97,6 @@ Copy `.env.example` → `.env.local`. **Never commit real values.**
 | `OPENAI_API_KEY` | Platform credits → GPT models | OpenAI |
 | `ANTHROPIC_API_KEY` | Platform credits → Claude | Anthropic |
 | `GOOGLE_GENERATIVE_AI_API_KEY` | Platform credits → Gemini | Google AI Studio |
-| `MISTRAL_API_KEY` | Platform credits → Mistral | Mistral |
 | `STRIPE_SECRET_KEY` | PaymentIntents | Stripe Dashboard |
 | `FIREBASE_TYPE` | Service account type | Service account JSON |
 | `FIREBASE_PROJECT_ID` | Admin project id | Same |

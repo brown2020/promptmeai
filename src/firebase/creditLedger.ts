@@ -73,7 +73,6 @@ export async function ensureUserProfile(
         openAi: "",
         anthropic: "",
         googleGenerativeAi: "",
-        mistral: "",
       },
     });
     transaction.set(markerRef, { signupBonusGranted: true });

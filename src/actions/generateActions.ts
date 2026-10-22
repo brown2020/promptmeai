@@ -6,7 +6,6 @@ import { ModelMessage, streamText } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { APIKeys, UsageMode } from "@/zustand/useProfileStore";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { createMistral } from "@ai-sdk/mistral";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { verifyAuth } from "@/firebase/firebaseAdmin";
 import {
@@ -15,7 +14,7 @@ import {
 } from "@/firebase/creditLedger";
 import { calculateCreditCost, countTokens } from "@/utils/token";
 
-const DEFAULT_MODEL = (MODEL_NAMES[0]?.value ?? "gpt-5.5") as ModelName;
+const DEFAULT_MODEL: ModelName = "gpt-6.1-sol";
 
 const isUsageMode = (value: APIKeys | UsageMode): value is UsageMode =>
   typeof value === "string";
@@ -66,10 +65,6 @@ async function getModel(modelName: ModelName, apiKeys: APIKeys | UsageMode) {
       })(config.modelId);
     case "google":
       return createGoogleGenerativeAI({
-        apiKey,
-      })(config.modelId);
-    case "mistral":
-      return createMistral({
         apiKey,
       })(config.modelId);
     case "anthropic":

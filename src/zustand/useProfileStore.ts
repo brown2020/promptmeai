@@ -16,7 +16,6 @@ export type APIKeys = {
   openAi: string;
   anthropic: string;
   googleGenerativeAi: string;
-  mistral: string;
 };
 
 export interface ProfileType {
@@ -44,7 +43,6 @@ const defaultProfile: ProfileType = {
     openAi: "",
     anthropic: "",
     googleGenerativeAi: "",
-    mistral: "",
   },
 };
 

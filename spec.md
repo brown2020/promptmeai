@@ -21,7 +21,7 @@ Send one prompt to multiple leading AI models at once and watch their answers st
 ### Core workflows
 
 1. **Sign in** (Google, email/password, or email link).
-2. **Ask once, compare many**: type a prompt; it is sent to all four configured models in parallel and each response streams into its own card.
+2. **Ask once, compare many**: type a prompt; it is sent to all three configured models in parallel and each response streams into its own card.
 3. **Pay for inference** either with platform **credits** or with the user's **own provider API keys** (chosen in Settings).
 4. **Manage conversations**: comparisons auto-save to history; pin, search, revisit, or delete them.
 5. **Top up**: buy credits through Stripe when the balance runs low.
@@ -39,15 +39,15 @@ Send one prompt to multiple leading AI models at once and watch their answers st
 
 ### What the app currently does
 
-Prompt.me AI is a client-first Next.js (App Router) single-page application backed by Firebase (Auth + Firestore) and Stripe. Authenticated users submit a prompt that fans out to four models via a single server action; responses stream back per model and the full comparison is persisted to Firestore.
+Prompt.me AI is a client-first Next.js (App Router) single-page application backed by Firebase (Auth + Firestore) and Stripe. Authenticated users submit a prompt that fans out to three models via a single server action; responses stream back per model and the full comparison is persisted to Firestore.
 
 ### Current feature inventory
 
-- **Multi-model comparison** across 4 models (current `MODEL_CONFIG`):
-  - GPT-5.5 — OpenAI
-  - Claude Sonnet 4.6 — Anthropic
-  - Gemini 3.5 Flash — Google
-  - Mistral Small 4 (`mistral-small-latest`) — Mistral
+- **Multi-model comparison** across 3 models (current `MODEL_CONFIG`, IDs confirmed against provider docs on 2026-10-21):
+  - GPT-6.1 Sol (`gpt-6.1-sol`) — OpenAI
+  - Claude Opus 5.5 (`claude-opus-5-5`) — Anthropic
+  - Gemini 4 Argon (`gemini-4-argon`) — Google
+- **Saved history across lineups**: answers stored under earlier model keys still render, labeled with their original model name.
 - **Real-time streaming** via Vercel AI SDK (`streamText` + `@ai-sdk/rsc` streamable values).
 - **Parallel fan-out** with per-request abort/stop (`Promise.allSettled` + `AbortController`).
 - **Dual usage modes**: platform **credits** or **user-supplied API keys**, toggled in Settings.
@@ -74,7 +74,7 @@ Prompt.me AI is a client-first Next.js (App Router) single-page application back
   - `users/{uid}/payments/{id}`
   - `promptme_chats/{uid}/chat/{id}` (messages stored JSON-serialized)
 - **Firebase Admin SDK** — server-side ID-token verification (`verifyAuth`).
-- **AI providers** via Vercel AI SDK — OpenAI, Anthropic, Google, Mistral, and Fireworks (OpenAI-compatible).
+- **AI providers** via Vercel AI SDK — OpenAI, Anthropic, and Google.
 - **Stripe** — PaymentIntents for credit purchases.
 
 ### Current architecture summary
@@ -130,8 +130,8 @@ Roadmap items are ordered by product impact and dependency order. Each is scoped
   - Lint, typecheck, and build pass.
 
 ### Milestone 3 — Selectable models per comparison (core workflow + activation)
-- **User value**: users compare exactly the models they care about, reduce cost/noise, and aren't forced into all four.
-- **Implementation intent**: add a model-selection control in the chat UI backed by `MODEL_CONFIG`; persist the selection (profile or local store); fan-out only to selected models. Default to all four for first-time users.
+- **User value**: users compare exactly the models they care about, reduce cost/noise, and aren't forced into all three.
+- **Implementation intent**: add a model-selection control in the chat UI backed by `MODEL_CONFIG`; persist the selection (profile or local store); fan-out only to selected models. Default to all three for first-time users.
 - **Acceptance criteria**:
   - Users can enable/disable individual models; the comparison fans out only to enabled ones.
   - Selection persists across sessions.

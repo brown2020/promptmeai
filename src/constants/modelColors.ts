@@ -1,36 +1,23 @@
-import { ModelName } from "./modelNames";
-
 /**
- * Background colors for each AI model's response cards.
- * Uses brand-appropriate colors with transparency for light mode.
+ * Background colors for AI response cards, keyed by provider family so
+ * responses saved by earlier model lineups keep their color.
  */
-const MODEL_COLORS: Record<ModelName, string> = {
-  "gpt-5.5": "bg-[#14A27F]/[0.15]",
-  "claude-sonnet-4-6": "bg-[#F39C12]/[0.15]",
-  "gemini-3.5-flash": "bg-[#FF6F61]/[0.15]",
-  "mistral-small-latest": "bg-[#3498DB]/[0.15]",
+const PROVIDER_COLORS = {
+  gpt: "bg-[#14A27F]/[0.15]",
+  claude: "bg-[#F39C12]/[0.15]",
+  gemini: "bg-[#FF6F61]/[0.15]",
 } as const;
 
 /**
- * Get the background color class for a model by its key.
- * Falls back to transparent if model not found.
- */
-const getModelColor = (modelKey: string): string => {
-  return MODEL_COLORS[modelKey as ModelName] ?? "bg-transparent";
-};
-
-/**
  * Get the background color class for a model by its display label.
- * Falls back to transparent if model not found.
+ * Falls back to transparent for unknown models.
  */
 export const getModelColorByLabel = (label: string): string => {
   const lowerLabel = label.toLowerCase();
 
-  if (lowerLabel.includes("gpt")) return MODEL_COLORS["gpt-5.5"];
-  if (lowerLabel.includes("claude")) return MODEL_COLORS["claude-sonnet-4-6"];
-  if (lowerLabel.includes("gemini")) return MODEL_COLORS["gemini-3.5-flash"];
-  if (lowerLabel.includes("mistral"))
-    return MODEL_COLORS["mistral-small-latest"];
+  if (lowerLabel.includes("gpt")) return PROVIDER_COLORS.gpt;
+  if (lowerLabel.includes("claude")) return PROVIDER_COLORS.claude;
+  if (lowerLabel.includes("gemini")) return PROVIDER_COLORS.gemini;
 
   return "bg-transparent";
 };
