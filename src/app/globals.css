@@ -285,6 +285,12 @@
   html,
   body {
     overflow-x: hidden; /* Keep this to prevent horizontal scrolling */
+    background-color: #ffffff;
+  }
+
+  html.dark,
+  html.dark body {
+    background-color: #272a2e;
   }
 
   /* Ensure all scrollable elements have space for scrollbar */

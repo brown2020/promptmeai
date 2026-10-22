@@ -2,6 +2,7 @@
 
 import { MODEL_CONFIG, MODEL_NAMES, ModelName } from "@/constants/modelNames";
 import { createStreamableValue } from '@ai-sdk/rsc';
+import { after } from "next/server";
 import { ModelMessage, streamText } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { APIKeys, UsageMode } from "@/zustand/useProfileStore";
@@ -14,7 +15,11 @@ import {
 } from "@/firebase/creditLedger";
 import type { StreamableValue } from "@ai-sdk/rsc";
 import { calculateCreditCost, countTokens } from "@/utils/token";
-import { parseConversationInput } from "./inputs";
+import { parseConversationInput, parseRequestId } from "./inputs";
+import {
+  requestCancellation,
+  watchCancellation,
+} from "@/firebase/generationControl";
 
 const DEFAULT_MODEL: ModelName = "gpt-6.1-sol";
 
@@ -74,13 +79,15 @@ export type ConversationResponse =
 export async function continueConversation(
   rawMessages: ModelMessage[],
   rawModelName: ModelName = DEFAULT_MODEL,
-  rawApiKeys: APIKeys | UsageMode
+  rawApiKeys: APIKeys | UsageMode,
+  rawRequestId?: string
 ): Promise<ConversationResponse> {
   const uid = await verifyAuth();
-  const { messages, modelName, apiKeys } = parseConversationInput(
+  const { messages, modelName, apiKeys, requestId } = parseConversationInput(
     rawMessages,
     rawModelName,
-    rawApiKeys
+    rawApiKeys,
+    rawRequestId
   );
   const chargesCredits = apiKeys === UsageMode.Credits;
 
@@ -89,9 +96,25 @@ export async function continueConversation(
   }
 
   const model = getModel(modelName, apiKeys);
+  const abort = new AbortController();
+  const stopWatching = requestId
+    ? watchCancellation(uid, requestId, () => abort.abort())
+    : () => undefined;
   const result = streamText({
     model,
     messages,
+    abortSignal: abort.signal,
+    onFinish: () => stopWatching(),
+    onAbort: () => stopWatching(),
+    onError: ({ error }) => {
+      stopWatching();
+      after(() =>
+        console.warn(
+          `[generate] ${modelName} failed:`,
+          error instanceof Error ? error.message : error
+        )
+      );
+    },
   });
 
   const inputTokens = messages.reduce(
@@ -143,4 +166,10 @@ async function deductStream(
   } catch (error) {
     console.error("Error deducting credits:", error);
   }
+}
+
+/** Stops every model call that shares this request id, on any server instance. */
+export async function cancelGeneration(rawRequestId: string) {
+  const uid = await verifyAuth();
+  await requestCancellation(uid, parseRequestId(rawRequestId));
 }

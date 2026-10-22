@@ -46,6 +46,7 @@ const PaymentHistory = () => {
       ) : (
         <Table
           label="Payment history"
+          emptyMessage="No payments yet."
           data={tableData}
           headers={[
             { key: "no", label: "No" },

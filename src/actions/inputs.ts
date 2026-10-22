@@ -36,26 +36,37 @@ const apiKeysSchema = z.object({
   googleGenerativeAi: z.string().max(500).default(""),
 });
 
+const requestIdSchema = z.uuid();
+
 const conversationSchema = z.object({
   messages: z.array(messageSchema).min(1).max(MAX_MESSAGES),
   modelName: modelNameSchema,
   apiKeys: z.union([z.literal(CREDITS_MODE), apiKeysSchema]),
+  requestId: requestIdSchema.optional(),
 });
 
 export type ConversationInput = {
   messages: ModelMessage[];
   modelName: ModelName;
   apiKeys: APIKeys | UsageMode.Credits;
+  requestId?: string;
 };
 
 export const parseConversationInput = (
   messages: unknown,
   modelName: unknown,
-  apiKeys: unknown
+  apiKeys: unknown,
+  requestId?: unknown
 ): ConversationInput => {
-  const result = conversationSchema.safeParse({ messages, modelName, apiKeys });
+  const result = conversationSchema.safeParse({ messages, modelName, apiKeys, requestId });
   if (!result.success) throw new InvalidActionInput("continueConversation");
   return result.data as ConversationInput;
+};
+
+export const parseRequestId = (value: unknown): string => {
+  const result = requestIdSchema.safeParse(value);
+  if (!result.success) throw new InvalidActionInput("requestId");
+  return result.data;
 };
 
 const paymentIntentIdSchema = z

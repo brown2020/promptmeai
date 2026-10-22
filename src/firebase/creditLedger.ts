@@ -135,6 +135,7 @@ export async function deleteUserData(uid: string): Promise<void> {
   await adminDb.recursiveDelete(
     adminDb.collection(`${collections.PROMPTME_CHATS}/${uid}/${collections.CHAT}`)
   );
+  await adminDb.recursiveDelete(adminDb.collection(paths.userGenerations(uid)));
   await adminDb.doc(paths.userProfile(uid)).delete();
   await adminAuth.deleteUser(uid);
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { continueConversation } from "@/actions/generateActions";
+import { cancelGeneration, continueConversation } from "@/actions/generateActions";
 import { ModalWarning } from "@/components/modals";
 import { MODEL_NAMES, ModelName } from "@/constants/modelNames";
 import { saveChat, updateChat } from "@/services/chatService";
@@ -56,6 +56,7 @@ const ChatInput = () => {
   // awaited save, so rapid Enter presses could fire two submissions (and double
   // the credit charge) before state updates. A ref blocks that immediately.
   const isSubmittingRef = useRef<boolean>(false);
+  const requestIdRef = useRef<string | undefined>(undefined);
   const showAlert =
     profile.usageMode === UsageMode.Credits
       ? profile.credits <= 10
@@ -97,7 +98,8 @@ const ChatInput = () => {
           model,
           profile.usageMode === UsageMode.Credits
             ? profile.usageMode
-            : profile.APIKeys
+            : profile.APIKeys,
+          requestIdRef.current
         );
 
         if (response.status === "insufficient_credits") return "no_credits";
@@ -203,6 +205,7 @@ const ChatInput = () => {
       await initialMessage();
 
       setIsLoading(true);
+      requestIdRef.current = crypto.randomUUID();
       const abortController = new AbortController();
       setAbortController(abortController);
       const signal = abortController.signal;
@@ -269,6 +272,7 @@ const ChatInput = () => {
   const stopRequest = () => {
     if (!isStopRequest) {
       setIsStopRequest(true);
+      if (requestIdRef.current) void cancelGeneration(requestIdRef.current).catch(() => undefined);
       abortController?.abort();
       setAbortController(undefined);
     }

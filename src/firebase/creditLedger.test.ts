@@ -74,8 +74,11 @@ describe("deleteUserData", () => {
     store.set("users/u4/profile/userData", { credits: 10 });
     store.set("users/u4/payments/p1", { amount: 9999 });
     store.set("users/u4/billing/state", { signupBonusGranted: true });
+    store.set("users/u4/generations/r1", { cancelled: true });
 
     await deleteUserData("u4");
+
+    expect(store.has("users/u4/generations/r1")).toBe(false);
 
     expect(store.has("promptme_chats/u4/chat/a")).toBe(false);
     expect(store.has("promptme_chats/u4/chat/b")).toBe(false);

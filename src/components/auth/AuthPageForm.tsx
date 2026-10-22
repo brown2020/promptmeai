@@ -320,7 +320,7 @@ export function AuthPageForm({ mode }: Props) {
             </button>
             <div className="flex h-8 items-center justify-center">
               <hr className="h-px grow border-0 bg-gray-300" />
-              <span className="px-3 text-sm text-gray-500">or</span>
+              <span className="px-3 text-sm text-gray-500 dark:text-gray-300">or</span>
               <hr className="h-px grow border-0 bg-gray-300" />
             </div>
           </>
