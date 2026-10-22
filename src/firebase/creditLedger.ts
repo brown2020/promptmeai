@@ -1,6 +1,6 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { adminAuth, adminDb } from "@/firebase/firebaseAdmin";
-import { paths } from "@/firebase/paths";
+import { collections, paths } from "@/firebase/paths";
 import { CATALOG_AMOUNT_CENTS } from "@/utils/paymentAmount";
 
 export const SIGNUP_CREDITS = 1000;
@@ -125,6 +125,18 @@ export async function grantCatalogCredits(
     });
     return { alreadyProcessed: false, credits };
   });
+}
+
+/**
+ * Removes a user's chats, profile, and sign-in. Payment records and the
+ * signup-bonus marker stay for accounting, as the privacy policy allows.
+ */
+export async function deleteUserData(uid: string): Promise<void> {
+  await adminDb.recursiveDelete(
+    adminDb.collection(`${collections.PROMPTME_CHATS}/${uid}/${collections.CHAT}`)
+  );
+  await adminDb.doc(paths.userProfile(uid)).delete();
+  await adminAuth.deleteUser(uid);
 }
 
 export async function loadAuthIdentity(uid: string) {

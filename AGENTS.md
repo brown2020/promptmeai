@@ -72,7 +72,7 @@ Root config: `next.config.mjs`, `tsconfig.json` (`@/*` → `./src/*`), `eslint.c
 - Chat history with create, update, pin/unpin, delete, and debounced search.
 - Dual usage modes: platform credits or bring-your-own API keys, switchable in Settings.
 - Stripe credit purchase flow (`/payment-attempt` → `/payment-success`) with payment history.
-- Firebase Auth: Google popup, email/password, and email-link sign-in; sign-out with explicit cookie deletion; account deletion.
+- Firebase Auth: Google popup, email/password, and email-link sign-in; sign-out with explicit cookie deletion; account deletion (server action `deleteAccount` removes chats, profile, and the sign-in; payment records stay).
 - Light/dark/system theme, responsive 3-panel layout, cookie-consent banner, static legal/support pages.
 
 ## Important commands

@@ -56,7 +56,7 @@ interface ProfileState {
   reduceCredits: (amount: number) => Promise<boolean>;
   addCredits: (amount: number) => Promise<void>;
   // Kept for backward compatibility - delegates to useAccountStore
-  deleteAccount: () => Promise<void>;
+  deleteAccount: () => Promise<boolean>;
 }
 
 /**
@@ -151,7 +151,7 @@ const useProfileStore = create<ProfileState>((set, get) => ({
   // Backward compatibility - delegates to useAccountStore
   deleteAccount: async () => {
     const { useAccountStore } = await import("./useAccountStore");
-    await useAccountStore.getState().deleteAccount();
+    return useAccountStore.getState().deleteAccount();
   },
 }));
 

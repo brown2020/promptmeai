@@ -20,13 +20,8 @@ const SettingOption = () => {
     setShowDeleteModal(true);
   };
 
-  const handleLogout = useCallback(async () => {
+  const clearSession = useCallback(() => {
     const cookieName = process.env.NEXT_PUBLIC_COOKIE_NAME || "authToken";
-    try {
-      await signOut(auth);
-    } catch {
-      console.warn("[auth] sign-out-failed");
-    }
     clearAuthDetails();
     for (const name of [cookieName, "authToken", "promptme_auth"]) {
       deleteCookie(name, { path: "/" });
@@ -37,17 +32,22 @@ const SettingOption = () => {
     router.replace("/");
   }, [router, clearAuthDetails]);
 
+  const handleLogout = useCallback(async () => {
+    try {
+      await signOut(auth);
+    } catch {
+      console.warn("[auth] sign-out-failed");
+    }
+    clearSession();
+  }, [clearSession]);
+
   const onDeleteConfirm = useCallback(async () => {
     setShowDeleteModal(false);
-    try {
-      await deleteAccount();
-      clearAuthDetails();
-      toast.success("Account deleted successfully.");
-      router.replace("/");
-    } catch (error) {
-      console.error("Error on deletion of account:", error);
+    if (await deleteAccount()) {
+      toast.success("Your account and chats were deleted.");
+      clearSession();
     }
-  }, [deleteAccount, clearAuthDetails, router]);
+  }, [deleteAccount, clearSession]);
 
   return (
     <div className="col-span-1 lg:col-span-2 xl:col-span-3 flex flex-col col-12 px-5 py-3 gap-3 border border-gray-500 rounded-md">

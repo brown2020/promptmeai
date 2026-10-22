@@ -9,7 +9,7 @@ Verified from the current codebase:
 - Parallel multi-model chat against three configured models (`src/constants/modelNames.ts`): GPT-6.1 Sol (`gpt-6.1-sol`, OpenAI), Claude Opus 5.5 (`claude-opus-5-5`, Anthropic), Gemini 4 Argon (`gemini-4-argon`, Google). Answers saved by earlier lineups still display with their original model name.
 - Streaming via Vercel AI SDK (`streamText` + `@ai-sdk/rsc`) in `src/actions/generateActions.ts`
 - Usage modes: platform **credits** (server provider keys + credit ledger) or **bring-your-own API keys** (stored on profile / settings)
-- Auth: Google popup, email/password, email link (`/loginfinish`); password reset; account deletion
+- Auth: Google popup, email/password, email link (`/loginfinish`); password reset; account deletion (server action `deleteAccount` removes chats, profile, and the sign-in; payment records stay)
 - Chat history with pin/search/delete; Zustand stores for auth, profile, credits, chat, payments, etc.
 - Stripe PaymentIntents for credit purchases (`/payment-attempt`, `/payment-success`, `/settings`)
 - Themes (next-themes), markdown responses, cookie consent, privacy/terms/support pages

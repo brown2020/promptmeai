@@ -1,11 +1,14 @@
 "use client";
 
 import { useAuthStore } from "@/zustand/useAuthStore";
-import { isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
+import {
+  isSignInWithEmailLink,
+  signInWithEmailLink,
+  updateProfile as updateAuthProfile,
+} from "firebase/auth";
 import { auth, hasClientConfig } from "@/firebase/firebaseClient";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
-import useProfileStore from "@/zustand/useProfileStore";
 import Spinner from "@/components/Spinner";
 import toast from "react-hot-toast";
 import { mapAuthError } from "@/utils/authErrors";
@@ -16,7 +19,6 @@ const COOKIE_NAME = process.env.NEXT_PUBLIC_COOKIE_NAME || "authToken";
 
 export default function LoginFinishPage() {
   const setAuthDetails = useAuthStore((s) => s.setAuthDetails);
-  const updateProfile = useProfileStore((s) => s.updateProfile);
   const [status, setStatus] = useState("Completing sign in…");
   const [destination, setDestination] = useState<string | null>(null);
 
@@ -73,7 +75,10 @@ export default function LoginFinishPage() {
           authReady: true,
           authPending: false,
         });
-        updateProfile({ displayName: selectedName });
+        if (selectedName && selectedName !== user.displayName) {
+          await updateAuthProfile(user, { displayName: selectedName });
+        }
+        if (cancelled) return;
         setStatus("Redirecting…");
         setDestination("/chat");
       } catch (error) {
@@ -94,7 +99,7 @@ export default function LoginFinishPage() {
     return () => {
       cancelled = true;
     };
-  }, [setAuthDetails, updateProfile]);
+  }, [setAuthDetails]);
 
   if (destination) redirect(destination);
 

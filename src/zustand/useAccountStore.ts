@@ -1,10 +1,9 @@
 import { create } from "zustand";
-import { deleteDoc, doc } from "firebase/firestore";
+import { signOut } from "firebase/auth";
 import { useAuthStore } from "./useAuthStore";
-import { db } from "@/firebase/firebaseClient";
-import { paths } from "@/firebase/paths";
+import { auth } from "@/firebase/firebaseClient";
+import { deleteAccount as deleteAccountOnServer } from "@/actions/profileActions";
 import { logger } from "@/utils/logger";
-import { deleteUser, getAuth } from "firebase/auth";
 import toast from "react-hot-toast";
 
 interface AccountState {
@@ -14,17 +13,13 @@ interface AccountState {
 
 /**
  * Store for account management operations.
- * Handles account deletion and related cleanup.
+ * The server deletes chats, profile, and sign-in; the client then signs out.
  */
 export const useAccountStore = create<AccountState>((set) => ({
   isDeleting: false,
 
   deleteAccount: async () => {
-    const auth = getAuth();
-    const currentUser = auth.currentUser;
-    const uid = useAuthStore.getState().uid;
-
-    if (!uid || !currentUser) {
+    if (!useAuthStore.getState().uid) {
       toast.error("You must be logged in to delete your account");
       return false;
     }
@@ -32,19 +27,11 @@ export const useAccountStore = create<AccountState>((set) => ({
     set({ isDeleting: true });
 
     try {
-      const userRef = doc(db, paths.userProfile(uid));
-
-      // Delete the user profile data from Firestore
-      await deleteDoc(userRef);
-
-      // Delete the user from Firebase Authentication
-      await deleteUser(currentUser);
-
-      logger.log("Account deleted successfully");
-      toast.success("Your account has been deleted");
+      await deleteAccountOnServer();
+      await signOut(auth).catch(() => undefined);
       return true;
     } catch (error) {
-      logger.error("Error deleting account:", error);
+      logger.warn("[account] delete-failed", error);
       toast.error("Failed to delete account. Please try again.");
       return false;
     } finally {
