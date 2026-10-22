@@ -6,12 +6,10 @@ import { useRouter } from "next/navigation";
 import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
-  getIdToken,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
-import { setCookie } from "cookies-next";
 import {
   LuEye as Eye,
   LuEyeOff as EyeOff,
@@ -22,6 +20,7 @@ import toast from "react-hot-toast";
 import Image from "next/image";
 import googleLogo from "@/app/assets/google.svg";
 import { auth, hasClientConfig } from "@/firebase/firebaseClient";
+import { settleSessionCookie } from "@/firebase/sessionCookie";
 import { mapAuthError } from "@/utils/authErrors";
 import { useAuthStore } from "@/zustand/useAuthStore";
 import { usePlatform } from "@/zustand/usePlatformStore";
@@ -30,7 +29,6 @@ export type AuthPageMode = "login" | "signup" | "forgot";
 
 type Props = { mode: AuthPageMode };
 
-const COOKIE_NAME = process.env.NEXT_PUBLIC_COOKIE_NAME || "authToken";
 const SESSION_TIMEOUT_MS = 12_000;
 
 const TITLES: Record<AuthPageMode, string> = {
@@ -52,17 +50,6 @@ function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise
         reject(e);
       }
     );
-  });
-}
-
-async function settleSessionCookie() {
-  const firebaseUser = auth.currentUser;
-  if (!firebaseUser) throw new Error("No user after auth");
-  const token = await getIdToken(firebaseUser, true);
-  setCookie(COOKIE_NAME, token, {
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
   });
 }
 

@@ -128,15 +128,13 @@ export async function grantCatalogCredits(
 }
 
 /**
- * Removes a user's chats, profile, and sign-in. Payment records and the
- * signup-bonus marker stay for accounting, as the privacy policy allows.
+ * Deletes everything stored for a user: chats, profile, payment copies, the
+ * billing marker, generation records and the user document, then the sign-in.
+ * Stripe keeps its own payment records.
  */
 export async function deleteUserData(uid: string): Promise<void> {
-  await adminDb.recursiveDelete(
-    adminDb.collection(`${collections.PROMPTME_CHATS}/${uid}/${collections.CHAT}`)
-  );
-  await adminDb.recursiveDelete(adminDb.collection(paths.userGenerations(uid)));
-  await adminDb.doc(paths.userProfile(uid)).delete();
+  await adminDb.recursiveDelete(adminDb.doc(`${collections.PROMPTME_CHATS}/${uid}`));
+  await adminDb.recursiveDelete(adminDb.doc(paths.user(uid)));
   await adminAuth.deleteUser(uid);
 }
 

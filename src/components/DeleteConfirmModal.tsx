@@ -56,6 +56,9 @@ export default function DeleteConfirmModal({
       <h2 id="delete-account-title" className="text-lg">
         Are you sure you want to delete your account?
       </h2>
+      <p className="mt-2">
+        This permanently deletes your sign-in, chats, credits and payment history. It can’t be undone.
+      </p>
       <p className="mb-4 mt-2">
         Please type <strong>DELETE ACCOUNT</strong> to confirm.
       </p>
@@ -74,8 +77,8 @@ export default function DeleteConfirmModal({
         <button type="button" className={`${buttonClass} bg-gray-500`} onClick={onHideModal}>
           Cancel
         </button>
-        <button type="button" className={`${buttonClass} bg-[#2563EB]`} onClick={handleDeleteConfirm}>
-          Confirm
+        <button type="button" className={`${buttonClass} bg-[#B91C1C]`} onClick={handleDeleteConfirm}>
+          Delete account
         </button>
       </div>
     </dialog>

@@ -54,10 +54,10 @@ Prompt.me AI is a client-first Next.js (App Router) single-page application back
 - **Chat history**: auto-save, update, pin/unpin, debounced search, delete.
 - **Credit system**: token estimate (~4 chars/token) → flat-rate credit cost; balance decremented via Firestore transactions.
 - **Payments**: Stripe PaymentIntent creation/validation server actions; credit purchase flow (`/payment-attempt` → `/payment-success`); payment history.
-- **Authentication**: Google popup, email/password, and email-link sign-in; password reset; sign-out with explicit cookie deletion; account deletion (server action `deleteAccount` removes chats, profile, and the sign-in; payment records stay).
+- **Authentication**: Google popup, email/password, and email-link sign-in; password reset; sign-out with explicit cookie deletion; account deletion (server action `deleteAccount` recursively deletes `promptme_chats/{uid}` and `users/{uid}` — chats, profile, payment copies, billing marker, generations — then the sign-in; Stripe keeps its own payment records).
 - **Settings**: usage-mode selection, credit information, API-key entry, payment history, account options.
 - **UX**: responsive 3-panel layout, light/dark/system themes, markdown rendering of responses, cookie-consent banner, static legal/support pages.
-- **Mobile webview awareness**: detects React Native WebView and hides web-only UI (Google sign-in, API-key entry, credit purchase) inside the iOS wrapper app (`promptmeai_expo`), which has no in-app purchase flow.
+- **Mobile webview awareness**: detects React Native WebView and hides web-only UI (Google sign-in, API-key entry, credit purchase) inside the iOS wrapper app (`promptmeai_expo`), which has no in-app purchase flow; `/payment-attempt` redirects to Settings there instead of loading Stripe.
 
 ### Current user flows
 

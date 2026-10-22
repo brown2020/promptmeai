@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { signOut } from "firebase/auth";
-import { useAuthStore } from "./useAuthStore";
 import { auth } from "@/firebase/firebaseClient";
+import { settleSessionCookie } from "@/firebase/sessionCookie";
 import { deleteAccount as deleteAccountOnServer } from "@/actions/profileActions";
 import { logger } from "@/utils/logger";
 import toast from "react-hot-toast";
@@ -13,20 +13,22 @@ interface AccountState {
 
 /**
  * Store for account management operations.
- * The server deletes chats, profile, and sign-in; the client then signs out.
+ * Waits for Firebase to restore the session and refreshes the session cookie,
+ * then the server deletes all of the user's data and sign-in; the client signs out.
  */
 export const useAccountStore = create<AccountState>((set) => ({
   isDeleting: false,
 
   deleteAccount: async () => {
-    if (!useAuthStore.getState().uid) {
-      toast.error("You must be logged in to delete your account");
-      return false;
-    }
-
     set({ isDeleting: true });
 
     try {
+      await auth.authStateReady();
+      if (!auth.currentUser) {
+        toast.error("You must be logged in to delete your account");
+        return false;
+      }
+      await settleSessionCookie();
       await deleteAccountOnServer();
       await signOut(auth).catch(() => undefined);
       return true;

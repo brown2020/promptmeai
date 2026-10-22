@@ -44,7 +44,7 @@ const SettingOption = () => {
   const onDeleteConfirm = useCallback(async () => {
     setShowDeleteModal(false);
     if (await deleteAccount()) {
-      toast.success("Your account and chats were deleted.");
+      toast.success("Your account and all of its data were deleted.");
       clearSession();
     }
   }, [deleteAccount, clearSession]);

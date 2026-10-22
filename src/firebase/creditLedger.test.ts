@@ -26,7 +26,9 @@ vi.mock("@/firebase/firebaseAdmin", () => {
       doc,
       collection: (path: string) => ({ path }),
       recursiveDelete: async (ref: { path: string }) => {
-        for (const key of [...store.keys()]) if (key.startsWith(`${ref.path}/`)) store.delete(key);
+        for (const key of [...store.keys()]) {
+          if (key === ref.path || key.startsWith(`${ref.path}/`)) store.delete(key);
+        }
       },
       runTransaction: async (
         fn: (t: {
@@ -67,25 +69,23 @@ describe("hasCreditsAvailable", () => {
 });
 
 describe("deleteUserData", () => {
-  it("removes chats, profile, and sign-in but keeps payments and the bonus marker", async () => {
+  it("removes everything stored for the user and the sign-in, and nothing of other users", async () => {
+    store.set("promptme_chats/u4", { userId: "u4" });
     store.set("promptme_chats/u4/chat/a", { userId: "u4" });
     store.set("promptme_chats/u4/chat/b", { userId: "u4" });
     store.set("promptme_chats/u5/chat/c", { userId: "u5" });
+    store.set("users/u4", { email: "u4@example.test", lastSignIn: 1 });
     store.set("users/u4/profile/userData", { credits: 10 });
     store.set("users/u4/payments/p1", { amount: 9999 });
     store.set("users/u4/billing/state", { signupBonusGranted: true });
     store.set("users/u4/generations/r1", { cancelled: true });
+    store.set("users/u5/profile/userData", { credits: 5 });
 
     await deleteUserData("u4");
 
-    expect(store.has("users/u4/generations/r1")).toBe(false);
-
-    expect(store.has("promptme_chats/u4/chat/a")).toBe(false);
-    expect(store.has("promptme_chats/u4/chat/b")).toBe(false);
-    expect(store.has("promptme_chats/u5/chat/c")).toBe(true);
-    expect(store.has("users/u4/profile/userData")).toBe(false);
+    expect([...store.keys()].filter((key) => key.includes("u4") && !key.startsWith("auth/"))).toEqual([]);
     expect(store.get("auth/u4")).toEqual({ deleted: true });
-    expect(store.has("users/u4/payments/p1")).toBe(true);
-    expect(store.has("users/u4/billing/state")).toBe(true);
+    expect(store.has("promptme_chats/u5/chat/c")).toBe(true);
+    expect(store.has("users/u5/profile/userData")).toBe(true);
   });
 });
