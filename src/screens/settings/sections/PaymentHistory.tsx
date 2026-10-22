@@ -45,6 +45,7 @@ const PaymentHistory = () => {
         <Spinner />
       ) : (
         <Table
+          label="Payment history"
           data={tableData}
           headers={[
             { key: "no", label: "No" },

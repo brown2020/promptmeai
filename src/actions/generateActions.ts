@@ -49,7 +49,10 @@ function getModel(modelName: ModelName, apiKeys: APIKeys | UsageMode.Credits) {
     case "openai":
       return createOpenAI({ apiKey })(config.modelId);
     case "google":
-      return createGoogleGenerativeAI({ apiKey })(config.modelId);
+      return createGoogleGenerativeAI({
+        apiKey,
+        baseURL: process.env.GOOGLE_GENERATIVE_AI_BASE_URL,
+      })(config.modelId);
     case "anthropic":
       return createAnthropic({ apiKey })(config.modelId);
   }

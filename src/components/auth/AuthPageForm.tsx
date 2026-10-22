@@ -124,7 +124,7 @@ function AuthFooterLinks({ mode }: { mode: AuthPageMode }) {
     return (
       <p>
         No account?{" "}
-        <Link href="/signup" className="text-[#1A8F70] underline">
+        <Link href="/signup" className="text-[#0B6B52] underline hover:text-[#084D3B] dark:text-[#7DDFC4] dark:hover:text-white">
           Create account
         </Link>
       </p>
@@ -134,7 +134,7 @@ function AuthFooterLinks({ mode }: { mode: AuthPageMode }) {
     return (
       <p>
         Already have an account?{" "}
-        <Link href="/login" className="text-[#1A8F70] underline">
+        <Link href="/login" className="text-[#0B6B52] underline hover:text-[#084D3B] dark:text-[#7DDFC4] dark:hover:text-white">
           Sign in
         </Link>
       </p>
@@ -143,7 +143,7 @@ function AuthFooterLinks({ mode }: { mode: AuthPageMode }) {
   return (
     <p>
       Remembered it?{" "}
-      <Link href="/login" className="text-[#1A8F70] underline">
+      <Link href="/login" className="text-[#0B6B52] underline hover:text-[#084D3B] dark:text-[#7DDFC4] dark:hover:text-white">
         Back to sign in
       </Link>
     </p>
@@ -360,7 +360,7 @@ export function AuthPageForm({ mode }: Props) {
           <div className="text-right">
             <Link
               href="/forgot-password"
-              className="text-sm text-[#1A8F70] underline hover:text-[#158060]"
+              className="text-sm text-[#0B6B52] underline hover:text-[#084D3B] dark:text-[#7DDFC4] dark:hover:text-white"
             >
               Forgot password?
             </Link>

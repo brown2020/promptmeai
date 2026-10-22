@@ -64,7 +64,7 @@ export default function AuthComponent() {
       </Link>
       <Link
         href="/login"
-        className="text-sm font-medium text-[#1A8F70] underline underline-offset-2"
+        className="text-sm font-medium text-[#0B6B52] underline underline-offset-2 hover:text-[#084D3B] dark:text-[#7DDFC4]"
       >
         Sign in
       </Link>

@@ -28,6 +28,7 @@ import {
 } from "react";
 import { PiPaperPlaneTilt } from "react-icons/pi";
 import { Spinner } from "@nextui-org/react";
+import toast from "react-hot-toast";
 import { auth } from "@/firebase/firebaseClient";
 
 const ChatInput = () => {
@@ -122,7 +123,7 @@ const ChatInput = () => {
           if (error.name === "AbortError") {
             logger.log("Request aborted.");
           } else {
-            logger.error("Error fetching assistant response:", error.message);
+            logger.warn("[chat] model did not respond:", model, error.message);
           }
         } else {
           logger.error("Unknown error:", error);
@@ -204,11 +205,13 @@ const ChatInput = () => {
         MODEL_NAMES.map(({ value }) => getAssistantResponse(value, signal))
       );
 
-      const successfulResponses = results.filter(
-        (result) => result.status === "fulfilled" && result.value
-      );
+      const silentModels = MODEL_NAMES.filter(
+        (_, i) => !(results[i].status === "fulfilled" && results[i].value)
+      ).map(({ label }) => label);
 
-      if (successfulResponses.length > 0) {
+      if (signal.aborted) {
+        await saveChatFunction();
+      } else if (silentModels.length < MODEL_NAMES.length) {
         const totalTokenUsage = await saveChatFunction();
 
         logger.log("Total token proceed", totalTokenUsage);
@@ -216,11 +219,30 @@ const ChatInput = () => {
         if (totalTokenUsage && profile.usageMode === UsageMode.Credits) {
           await fetchProfile();
         }
+        if (silentModels.length > 0) {
+          toast.error(
+            `${silentModels.join(" and ")} did not respond. The other answers were saved.`,
+            { id: "partial-outage" }
+          );
+        }
       } else {
-        logger.error("All promises failed.");
-
-        setIsAlertAPIKeysNotWorking(true);
-        setMessages([]);
+        logger.warn("No model responded.");
+        const unanswered = useChatStore.getState().messages.at(-1);
+        const remaining = useChatStore.getState().messages.slice(0, -1);
+        setMessages(remaining);
+        setInput(String(unanswered?.userMessage.content ?? ""));
+        const activeChatId = useChatSideBarStore.getState().activeChatId;
+        if (user?.uid && activeChatId && remaining.length > 0) {
+          await updateChat(user.uid, activeChatId, remaining);
+        }
+        if (profile.usageMode === UsageMode.Credits) {
+          toast.error(
+            "The models did not respond, so nothing was charged. Your prompt is back in the box. Try again in a moment.",
+            { id: "full-outage" }
+          );
+        } else {
+          setIsAlertAPIKeysNotWorking(true);
+        }
       }
 
       setIsStopRequest(false);
@@ -279,10 +301,10 @@ const ChatInput = () => {
       <ModalWarning
         isOpen={(!isDefaultData && showAlert) || isAlertAPIKeysNotWorking}
         title={
-          profile?.usageMode === UsageMode.Credits
-            ? alertCredits
-            : isAlertAPIKeysNotWorking
+          isAlertAPIKeysNotWorking
             ? alertAPIKeysNotWorking
+            : profile?.usageMode === UsageMode.Credits
+            ? alertCredits
             : alertAPIKeys
         }
         confirmText="Go to settings page"

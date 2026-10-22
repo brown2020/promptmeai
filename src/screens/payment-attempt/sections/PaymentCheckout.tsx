@@ -24,6 +24,7 @@ const PaymentCheckout = ({ amount }: PaymentCheckoutProps) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [clientSecret, setClientSecret] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   const priceLabel = usdFormatter.format(amount);
 
   useEffect(() => {
@@ -40,7 +41,7 @@ const PaymentCheckout = ({ amount }: PaymentCheckoutProps) => {
     return () => {
       cancelled = true;
     };
-  }, [amount]);
+  }, [amount, attempt]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -78,8 +79,26 @@ const PaymentCheckout = ({ amount }: PaymentCheckoutProps) => {
     }
   };
 
+  if (!clientSecret && errorMessage) {
+    return (
+      <div role="alert" className="flex flex-col items-center gap-4 py-16 px-4 text-center">
+        <p className="text-red-700 dark:text-red-300">{errorMessage}</p>
+        <button
+          type="button"
+          className="btn-primary w-auto"
+          onClick={() => {
+            setErrorMessage(null);
+            setAttempt((n) => n + 1);
+          }}
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
+
   if (!clientSecret || !stripe || !elements) {
-    return <Spinner />;
+    return <Spinner message="Preparing checkout…" />;
   }
 
   return (

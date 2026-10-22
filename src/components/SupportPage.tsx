@@ -47,7 +47,7 @@ export default function Support({
         <p className="text-gray-700">Email Address:</p>
         <a
           href={`mailto:${companyEmail}`}
-          className="text-blue-500 hover:text-blue-700 transition-colors"
+          className="text-blue-700 underline hover:text-blue-900 transition-colors dark:text-blue-300 dark:hover:text-blue-100"
         >
           {companyEmail}
         </a>

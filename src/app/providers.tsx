@@ -51,7 +51,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         {isHydrated && body}
         {isHydrated && isWeb && (
           <aside aria-label="Cookie consent">
-            <CookieConsent>
+            <CookieConsent buttonText="Accept cookies" ariaAcceptLabel="Accept cookies">
               This app uses cookies to enhance the user experience.
             </CookieConsent>
           </aside>

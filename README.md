@@ -125,6 +125,10 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000). Chat UI lives at `/chat` after sign-in.
 
+#### Local emulators (no real accounts or model spend)
+
+On a `localhost` / `127.0.0.1` page the web client connects to Firebase emulators when `NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_HOST` / `NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST` are set at build time, or when `localStorage` holds `promptmeAuthEmulator` / `promptmeFirestoreEmulator` (for example `127.0.0.1:9099`). Deployed hosts ignore both. Start the server with `FIREBASE_AUTH_EMULATOR_HOST`, `FIRESTORE_EMULATOR_HOST`, and a matching `FIREBASE_PROJECT_ID` so Firebase Admin uses the same emulators. `OPENAI_BASE_URL`, `ANTHROPIC_BASE_URL`, and `GOOGLE_GENERATIVE_AI_BASE_URL` point the three providers at a local fixture server.
+
 ## Scripts
 
 | Script | Description |
@@ -139,7 +143,7 @@ Open [http://localhost:3000](http://localhost:3000). Chat UI lives at `/chat` af
 
 ## Testing and CI
 
-- Vitest covers proxy/routes, payment amount helpers, token/text/object utilities, and related modules.
+- Vitest covers proxy/routes, server action input contracts (`src/actions/actionInputs.test.ts`), payment amount helpers, model ids and saved-response labels, token/text/object utilities, and related modules.
 - CI: `npm ci --ignore-scripts`, lint, typecheck, test, doctor, build (Node 22). Public Firebase/Stripe env for build come from Actions secrets when set; client init soft-skips when missing.
 - `malware-scan.yml` runs static IOC matching via `scripts/malware-scan.sh`.
 
