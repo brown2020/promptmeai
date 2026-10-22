@@ -249,9 +249,10 @@ const ChatInput = () => {
           </label>
           <input
             id="chat-prompt"
+            name="prompt"
             ref={inputRef}
-            className="w-full text-base bg-transparent dark:bg-transparent text-gray-600 dark:text-gray-300 outline-none"
-            placeholder="Type your question here..."
+            className="w-full text-base bg-transparent dark:bg-transparent text-gray-600 dark:text-gray-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70]"
+            placeholder="Type your question here…"
             aria-label="Type your question"
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -260,16 +261,18 @@ const ChatInput = () => {
           <button
             type="button"
             aria-label={isLoading ? "Stop generating" : "Send prompt"}
-            className="flex items-center justify-center h-8 w-8 rounded-lg cursor-pointer shrink-0 -mr-1"
+            className="flex size-11 items-center justify-center rounded-lg cursor-pointer shrink-0 -mr-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70]"
             onClick={() => (isLoading ? stopRequest() : submitHandler())}
           >
-            {isLoading && !isStopRequest ? (
-              <FaStopCircle size={24} />
-            ) : isStopRequest ? (
-              <Spinner size="sm" color="default" />
-            ) : (
-              <PiPaperPlaneTilt size={20} className="text-gray-400" />
-            )}
+            <span aria-hidden className="flex items-center justify-center">
+              {isLoading && !isStopRequest ? (
+                <FaStopCircle size={24} />
+              ) : isStopRequest ? (
+                <Spinner size="sm" color="default" />
+              ) : (
+                <PiPaperPlaneTilt size={20} className="text-gray-400" />
+              )}
+            </span>
           </button>
         </div>
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -71,10 +71,14 @@ function PasswordField({
   value,
   onChange,
   autoComplete,
+  invalid,
+  describedBy,
 }: {
   value: string;
   onChange: (v: string) => void;
   autoComplete: string;
+  invalid?: boolean;
+  describedBy?: string;
 }) {
   const [show, setShow] = useState(false);
   return (
@@ -90,17 +94,20 @@ function PasswordField({
           autoComplete={autoComplete}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="Enter your password"
+          placeholder="Enter your password…"
           className="input-primary w-full pr-12"
           required
+          aria-invalid={invalid || undefined}
+          aria-describedby={describedBy}
+          spellCheck={false}
         />
         <button
           type="button"
           aria-label={show ? "Hide password" : "Show password"}
           onClick={() => setShow((v) => !v)}
-          className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-600 hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70] dark:text-gray-300 dark:hover:bg-gray-700"
         >
-          {show ? <EyeOff size={20} /> : <Eye size={20} />}
+          {show ? <EyeOff size={20} aria-hidden /> : <Eye size={20} aria-hidden />}
         </button>
       </div>
     </>
@@ -138,6 +145,36 @@ function AuthFooterLinks({ mode }: { mode: AuthPageMode }) {
   );
 }
 
+type ErrorField = "email" | "password" | "terms" | null;
+
+function errorFieldFor(error: string | null): ErrorField {
+  if (!error) return null;
+  const lower = error.toLowerCase();
+  if (lower.includes("terms")) return "terms";
+  if (lower.includes("password") && !lower.includes("email")) return "password";
+  return "email";
+}
+
+function useFocusErrorField(error: string | null): ErrorField {
+  const field = errorFieldFor(error);
+  useEffect(() => {
+    if (field) document.getElementById(`auth-${field}`)?.focus();
+  }, [field, error]);
+  return field;
+}
+
+function SubmitLabel({ mode, loading }: { mode: AuthPageMode; loading: boolean }) {
+  if (loading) return <span aria-live="polite">Working…</span>;
+  const Icon = mode === "forgot" ? MailIcon : LockIcon;
+  const label = mode === "forgot" ? "Send reset link" : TITLES[mode];
+  return (
+    <>
+      <Icon size={18} aria-hidden />
+      {label}
+    </>
+  );
+}
+
 export function AuthPageForm({ mode }: Props) {
   const router = useRouter();
   const setAuthDetails = useAuthStore((s) => s.setAuthDetails);
@@ -148,6 +185,7 @@ export function AuthPageForm({ mode }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resetSent, setResetSent] = useState(false);
+  const errorField = useFocusErrorField(error);
 
   const finishSignedIn = async () => {
     await withTimeout(settleSessionCookie(), SESSION_TIMEOUT_MS, "Session sync");
@@ -268,7 +306,7 @@ export function AuthPageForm({ mode }: Props) {
               type="button"
               onClick={onGoogle}
               disabled={loading}
-              className="flex w-full items-center gap-2 rounded-md border px-4 py-2 hover:bg-gray-50 disabled:opacity-60 dark:hover:bg-gray-800"
+              className="flex w-full items-center gap-2 rounded-md border px-4 py-2 hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70] disabled:opacity-60 dark:hover:bg-gray-800"
             >
               <span className="relative h-6 w-6">
                 <Image src={googleLogo} alt="" fill sizes="24px" className="object-contain" />
@@ -293,9 +331,14 @@ export function AuthPageForm({ mode }: Props) {
           autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="Enter your email"
+          placeholder="Enter your email…"
           className="input-primary"
           required
+          spellCheck={false}
+          autoCapitalize="none"
+          autoCorrect="off"
+          aria-invalid={errorField === "email" || undefined}
+          aria-describedby={error ? "auth-error" : undefined}
         />
 
         {mode !== "forgot" && (
@@ -303,6 +346,8 @@ export function AuthPageForm({ mode }: Props) {
             value={password}
             onChange={setPassword}
             autoComplete={mode === "signup" ? "new-password" : "current-password"}
+            invalid={errorField === "password"}
+            describedBy={error ? "auth-error" : undefined}
           />
         )}
 
@@ -318,13 +363,15 @@ export function AuthPageForm({ mode }: Props) {
         )}
 
         {mode === "signup" && (
-          <label className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
+          <label className="flex min-h-11 items-center gap-3 text-sm text-gray-700 dark:text-gray-300">
             <input
+              id="auth-terms"
               type="checkbox"
               checked={acceptTerms}
               onChange={(e) => setAcceptTerms(e.target.checked)}
-              className="mt-1"
+              className="size-5 shrink-0"
               required
+              aria-invalid={errorField === "terms" || undefined}
             />
             <span>
               I accept the{" "}
@@ -341,31 +388,14 @@ export function AuthPageForm({ mode }: Props) {
         )}
 
         {error && (
-          <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
+          <p id="auth-error" role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
             {error}
           </p>
         )}
 
         <button type="submit" className="btn-primary disabled:opacity-60" disabled={loading}>
           <span className="flex h-8 items-center justify-center gap-2">
-            {loading ? (
-              <span aria-live="polite">Working…</span>
-            ) : mode === "forgot" ? (
-              <>
-                <MailIcon size={18} />
-                Send reset link
-              </>
-            ) : mode === "signup" ? (
-              <>
-                <LockIcon size={18} />
-                Create account
-              </>
-            ) : (
-              <>
-                <LockIcon size={18} />
-                Sign in
-              </>
-            )}
+            <SubmitLabel mode={mode} loading={loading} />
           </span>
         </button>
 

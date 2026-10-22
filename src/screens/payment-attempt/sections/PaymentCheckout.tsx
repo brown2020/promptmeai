@@ -11,6 +11,11 @@ import { createPaymentIntent } from "@/actions/paymentActions";
 import { convertToSubcurrency } from "@/utils/number";
 import Spinner from "@/components/Spinner";
 
+const usdFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
 type PaymentCheckoutProps = { amount: number };
 
 const PaymentCheckout = ({ amount }: PaymentCheckoutProps) => {
@@ -19,6 +24,7 @@ const PaymentCheckout = ({ amount }: PaymentCheckoutProps) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [clientSecret, setClientSecret] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const priceLabel = usdFormatter.format(amount);
 
   useEffect(() => {
     let cancelled = false;
@@ -77,12 +83,15 @@ const PaymentCheckout = ({ amount }: PaymentCheckoutProps) => {
   }
 
   return (
-    <main className="flex flex-col w-full items-center max-w-[1320px] py-10 px-4">
+    <div className="flex flex-col w-full items-center max-w-[1320px] py-10 px-4">
       <div className="w-full overflow-auto scrollable-container">
         <div className="mb-10 flex flex-col gap-3 items-center">
           <h1 className="text-2xl md:text-4xl">Buy 10,000 Credits</h1>
           <h2 className="text-xl md:text-2xl">
-            Purchase amount: <span className="font-bold">${amount}</span>
+            Purchase amount:{" "}
+            <span className="font-bold tabular-nums">
+              {priceLabel}
+            </span>
           </h2>
         </div>
         <form
@@ -96,13 +105,13 @@ const PaymentCheckout = ({ amount }: PaymentCheckoutProps) => {
           <button
             type="submit"
             disabled={!stripe || loading}
-            className="text-white w-full p-5 bg-black mt-2 rounded-md font-bold disabled:opacity-50 disabled:animate-pulse"
+            className="mt-2 w-full rounded-md bg-black p-5 font-bold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70] disabled:animate-pulse disabled:opacity-50"
           >
-            {!loading ? `Pay $${amount}` : "Processing..."}
+            {!loading ? `Pay ${priceLabel}` : "Processing…"}
           </button>
         </form>
       </div>
-    </main>
+    </div>
   );
 };
 

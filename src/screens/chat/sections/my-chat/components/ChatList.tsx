@@ -31,7 +31,7 @@ const ChatList = () => {
   if (isLoadingChat) {
     return (
       <div className="flex flex-col items-center justify-center h-[calc(100%-200px)]">
-        <Spinner message="Preparing your content..." />
+        <Spinner message="Preparing your content…" />
       </div>
     );
   }

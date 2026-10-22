@@ -57,7 +57,7 @@ const HomeScreen = () => {
     <ClientOnly
       fallback={
         <div className="h-screen w-screen flex flex-col items-center justify-center">
-          <Spinner message="Getting things ready..." />
+          <Spinner message="Getting things ready…" />
         </div>
       }
     >
@@ -82,7 +82,7 @@ const HomeScreen = () => {
                     y: 0,
                     transition: { duration: 0.5, delay: 0.2 },
                   }}
-                  className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white"
+                  className="text-balance text-2xl font-bold text-gray-900 sm:text-3xl dark:text-white"
                 >
                   Welcome to Prompt.me
                 </m.h1>

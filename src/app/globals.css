@@ -149,7 +149,7 @@
 }
 
 @utility btn-primary {
-  @apply cursor-pointer flex w-full outline-hidden text-center justify-center items-center gap-2 mt-2 px-6 py-2 text-white font-semibold rounded-full disabled:cursor-not-allowed transition-colors;
+  @apply cursor-pointer flex w-full text-center justify-center items-center gap-2 mt-2 px-6 py-2 text-white font-semibold rounded-full disabled:cursor-not-allowed transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70];
   background-color: var(--color-brand-primary);
   &:hover:not(:disabled) {
     background-color: var(--color-brand-primary-hover);
@@ -160,27 +160,27 @@
 }
 
 @utility btn-blue {
-  @apply cursor-pointer flex w-full outline-hidden text-center justify-center items-center gap-2 mt-2 px-6 py-2 bg-blue-500 text-white font-semibold hover:opacity-70 rounded-full disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply cursor-pointer flex w-full text-center justify-center items-center gap-2 mt-2 px-6 py-2 bg-blue-500 text-white font-semibold hover:opacity-70 rounded-full disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70];
 }
 
 @utility btn-danger {
-  @apply cursor-pointer flex w-full outline-hidden text-center justify-center items-center gap-2 mt-2 px-6 py-2 bg-red-500 text-white font-semibold hover:opacity-70 rounded-full disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply cursor-pointer flex w-full text-center justify-center items-center gap-2 mt-2 px-6 py-2 bg-red-500 text-white font-semibold hover:opacity-70 rounded-full disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70];
 }
 
 @utility btn-white {
-  @apply cursor-pointer flex outline-hidden text-center justify-center items-center gap-2 mt-2 px-6 py-2 bg-white text-black font-semibold hover:opacity-70 rounded-full disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply cursor-pointer flex text-center justify-center items-center gap-2 mt-2 px-6 py-2 bg-white text-black font-semibold hover:opacity-70 rounded-full disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70];
 }
 
 @utility btn-muted {
-  @apply cursor-pointer flex w-full outline-hidden text-center justify-center items-center gap-2 mt-2 px-6 py-2 bg-gray-400 text-white font-semibold hover:opacity-70 rounded-full disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply cursor-pointer flex w-full text-center justify-center items-center gap-2 mt-2 px-6 py-2 bg-gray-400 text-white font-semibold hover:opacity-70 rounded-full disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70];
 }
 
 @utility btn-primary2 {
-  @apply cursor-pointer flex outline-hidden items-center gap-2 mt-2 px-6 py-2 bg-black/20 text-black font-semibold hover:bg-black/30 rounded-full disabled:bg-white/10 disabled:hover:bg-white/10 disabled:cursor-not-allowed;
+  @apply cursor-pointer flex items-center gap-2 mt-2 px-6 py-2 bg-black/20 text-black font-semibold hover:bg-black/30 rounded-full disabled:bg-white/10 disabled:hover:bg-white/10 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70];
 }
 
 @utility btn-secondary {
-  @apply cursor-pointer flex outline-hidden items-center gap-2 mt-2 px-6 py-2 text-black/50 font-semibold ml-auto rounded-full transition-colors;
+  @apply cursor-pointer flex items-center gap-2 mt-2 px-6 py-2 text-black/50 font-semibold ml-auto rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70];
   background-color: var(--color-brand-primary);
   &:hover {
     background-color: var(--color-brand-primary-light);
@@ -188,7 +188,7 @@
 }
 
 @utility input-primary {
-  @apply w-full text-black px-4 py-2 outline-hidden border border-[#111113]/20  bg-white rounded-lg;
+  @apply w-full text-black px-4 py-2 border border-[#111113]/20 bg-white rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70];
 }
 
 @utility text-wrapper {
@@ -213,13 +213,13 @@
     @apply flex flex-col space-y-1;
   }
   & input {
-    @apply px-3 py-2 outline-hidden border rounded-md;
+    @apply px-3 py-2 border rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70];
   }
   & textarea {
-    @apply px-3 py-2 outline-hidden border rounded-md;
+    @apply px-3 py-2 border rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70];
   }
   & button {
-    @apply mr-auto py-2 px-3 bg-orange-500 text-black rounded-md cursor-pointer disabled:opacity-50 hover:opacity-50;
+    @apply mr-auto py-2 px-3 bg-orange-500 text-black rounded-md cursor-pointer disabled:opacity-50 hover:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70];
   }
 }
 
@@ -228,11 +228,11 @@
 }
 
 @utility form-input {
-  @apply px-2 py-2 border  border-[#111113]/20  w-full outline-hidden text-sm rounded-[4px];
+  @apply px-2 py-2 border border-[#111113]/20 w-full text-sm rounded-[4px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70];
 }
 
 @utility form-input-required {
-  @apply px-2 py-2 border border-red-500 w-full outline-hidden text-sm rounded-[4px];
+  @apply px-2 py-2 border border-red-500 w-full text-sm rounded-[4px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500;
 }
 
 @utility checkbox-container {
@@ -271,6 +271,16 @@
 }
 
 @layer base {
+  html {
+    color-scheme: light;
+    scrollbar-color: #d1d5db #f1f1f1;
+  }
+
+  html.dark {
+    color-scheme: dark;
+    scrollbar-color: #6b7280 #374151;
+  }
+
   html,
   body {
     overflow-x: hidden; /* Keep this to prevent horizontal scrolling */
@@ -315,17 +325,33 @@
     background: #6b7280;
   }
 
-  @media (prefers-color-scheme: dark) {
-    ::-webkit-scrollbar-track {
-      background: #374151;
-    }
+  .dark ::-webkit-scrollbar-track {
+    background: #374151;
+  }
 
-    ::-webkit-scrollbar-thumb {
-      background: #6b7280;
-    }
+  .dark ::-webkit-scrollbar-thumb {
+    background: #6b7280;
   }
 }
 
+
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  z-index: 200;
+  transform: translateY(-200%);
+  background: #fff;
+  color: #1e1f22;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+}
+
+.skip-link:focus {
+  transform: none;
+  outline: 2px solid #1a8f70;
+  outline-offset: 2px;
+}
 
 .sr-only {
   position: absolute;

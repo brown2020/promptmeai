@@ -21,13 +21,13 @@ const Input = ({ title, error, className, id, ...props }: InputProps) => {
         id={inputId}
         {...props}
         className={cn(
-          "py-2.5 px-3.5 rounded-md border transition-colors outline-none",
+          "py-2.5 px-3.5 rounded-md border transition-colors",
           "bg-white dark:bg-gray-800",
           "border-gray-300 dark:border-gray-700",
           "text-gray-900 dark:text-gray-300",
           "placeholder:text-gray-400 dark:placeholder:text-gray-500",
-          "focus:ring-2 focus:ring-[#1A8F70] focus:border-transparent",
-          error && "border-red-500 focus:ring-red-500",
+          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70]",
+          error && "border-red-500 focus-visible:outline-red-500",
           className
         )}
       />

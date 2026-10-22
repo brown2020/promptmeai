@@ -16,16 +16,16 @@ export default function Footer() {
   });
 
   return (
-    <div className="flex flex-wrap space-x-2 w-full h-14 items-center px-5 justify-center shrink-0 col-span-1 lg:col-span-2 xl:col-span-3">
+    <footer className="flex flex-wrap gap-x-3 gap-y-2 w-full min-h-14 items-center px-5 justify-center shrink-0 col-span-1 lg:col-span-2 xl:col-span-3">
       {menuItems.map((item) => (
         <Link
           key={item.label}
           href={item.href}
-          className="text-black/50 hover:text-black/100"
+          className="rounded-sm text-[#3B3B3B] hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70] dark:text-[#D8D8D8] dark:hover:text-white"
         >
-          <div>{item.label}</div>
+          {item.label}
         </Link>
       ))}
-    </div>
+    </footer>
   );
 }

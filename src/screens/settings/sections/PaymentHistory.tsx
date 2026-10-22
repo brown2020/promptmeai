@@ -10,6 +10,11 @@ import { PaymentType, usePaymentsStore } from "@/zustand/usePaymentsStore";
 import { Timestamp } from "firebase/firestore";
 import { useEffect } from "react";
 
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  dateStyle: "medium",
+  timeStyle: "short",
+});
+
 type TableData = {
   no: number;
   product: string;
@@ -55,7 +60,7 @@ const PaymentHistory = () => {
               label: "Transaction Date",
               render: (createdAt) =>
                 createdAt
-                  ? (createdAt as Timestamp).toDate().toLocaleString()
+                  ? dateFormatter.format((createdAt as Timestamp).toDate())
                   : "N/A",
             },
             {

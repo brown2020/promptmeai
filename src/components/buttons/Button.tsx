@@ -20,11 +20,11 @@ const Button = ({
   ...props
 }: ButtonProps) => {
   const baseStyles =
-    "rounded-md py-2 px-4 text-center text-sm transition-all disabled:pointer-events-none disabled:opacity-50";
+    "rounded-md py-2 px-4 text-center text-sm transition-[background-color,color,opacity,box-shadow,border-color] duration-150 disabled:pointer-events-none disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70]";
 
   const variants = {
     filled:
-      "bg-[#0D6E56] text-white hover:bg-[#0A5A46] active:bg-[#0A5A46] shadow-md hover:shadow-lg focus:shadow-none",
+      "bg-[#0D6E56] text-white hover:bg-[#0A5A46] active:bg-[#0A5A46] shadow-md hover:shadow-lg",
     gradient:
       "bg-gradient-to-tr from-[#1A8F70] to-[#24C69E] text-white shadow-md hover:shadow-lg hover:opacity-90",
     outlined:

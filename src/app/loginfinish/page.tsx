@@ -17,7 +17,7 @@ const COOKIE_NAME = process.env.NEXT_PUBLIC_COOKIE_NAME || "authToken";
 export default function LoginFinishPage() {
   const setAuthDetails = useAuthStore((s) => s.setAuthDetails);
   const updateProfile = useProfileStore((s) => s.updateProfile);
-  const [status, setStatus] = useState("Completing sign in...");
+  const [status, setStatus] = useState("Completing sign in…");
   const [destination, setDestination] = useState<string | null>(null);
 
   useEffect(() => {

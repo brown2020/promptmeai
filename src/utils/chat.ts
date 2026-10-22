@@ -5,9 +5,13 @@ import {
   isYesterday,
   subDays,
   isAfter,
-  format,
   compareDesc,
 } from "date-fns";
+
+const monthFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  year: "numeric",
+});
 
 type ChatGroups = {
   today: ChatDetail[];
@@ -60,7 +64,7 @@ export const groupChatByDate = (data: ChatDetail[]): ChatGroups => {
     } else if (isAfter(date, thirtyDaysAgo)) {
       groups.previous30Days.push(item);
     } else {
-      const monthName = format(date, "MMMM yyyy");
+      const monthName = monthFormatter.format(date);
       if (!groups.previousMonths[monthName]) {
         groups.previousMonths[monthName] = [];
       }

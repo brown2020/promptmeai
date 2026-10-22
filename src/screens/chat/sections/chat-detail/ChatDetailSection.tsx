@@ -32,15 +32,15 @@ const ChatDetailSection = () => {
       <div className="flex justify-between items-center gap-4 mt-[-4px]">
         <button
           type="button"
-          className="lg:hidden cursor-pointer shrink-0"
+          className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70] lg:hidden"
           onClick={() => setDrawerOpen(true)}
           aria-label="Open menu"
         >
-          <RxHamburgerMenu size={24} />
+          <RxHamburgerMenu size={24} aria-hidden />
         </button>
-        <h3 className="text-[18px] whitespace-nowrap overflow-hidden text-ellipsis text-[#1E1F22] dark:text-[#EEE]">
+        <h1 className="text-[18px] whitespace-nowrap overflow-hidden text-ellipsis text-[#1E1F22] dark:text-[#EEE]">
           {(isNewChat ? typedTitle : title) || "New chat"}
-        </h3>
+        </h1>
         <ChatDetailActions />
       </div>
       {/* Main chat detail section */}

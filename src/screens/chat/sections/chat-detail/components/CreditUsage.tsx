@@ -11,18 +11,22 @@ const CreditUsage = ({ tokenUsage }: CreditUsageProps) => {
   return (
     <Popover placement="top">
       <PopoverTrigger>
-        <span className="cursor-pointer absolute top-[-26px] right-[-18px] bg-amber-200 hover:bg-amber-300 rounded-full w-[28px] h-[28px] flex justify-center items-center drop-shadow-md">
-          <LuCoins size={14} />
-        </span>
+        <button
+          type="button"
+          aria-label="Show credit usage"
+          className="absolute -top-7 -right-3 flex size-11 cursor-pointer items-center justify-center rounded-full bg-amber-200 drop-shadow-md hover:bg-amber-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70]"
+        >
+          <LuCoins size={16} aria-hidden />
+        </button>
       </PopoverTrigger>
       <PopoverContent className="drop-shadow-md shadow-md rounded-md">
         <div className="flex flex-col gap-1 p-1 text-[12px]">
           <span>
-            Token usage: <span className="font-semibold">{tokenUsage}</span>
+            Token usage: <span className="font-semibold tabular-nums">{tokenUsage}</span>
           </span>
           <span>
             Credit usage:{" "}
-            <span className="font-semibold">
+            <span className="font-semibold tabular-nums">
               {formatNumber(calculateCreditCost(tokenUsage, false), 3)}
             </span>
           </span>

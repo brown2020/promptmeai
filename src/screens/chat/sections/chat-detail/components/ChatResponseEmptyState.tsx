@@ -11,7 +11,7 @@ const ChatResponseEmptyState = () => {
     <LazyMotion features={domAnimation}>
     <div className="h-full flex flex-col justify-center items-center gap-1">
       {!user ? (
-        <Spinner message="Setting things up for you..." />
+        <Spinner message="Setting things up for you…" />
       ) : (
         <Fragment>
           <m.div
@@ -22,7 +22,7 @@ const ChatResponseEmptyState = () => {
               transition: { duration: 0.6 },
             }}
           >
-            <MdWavingHand color="#E8E8E8" size={32} />
+            <MdWavingHand color="#E8E8E8" size={32} aria-hidden />
           </m.div>
 
           <m.span

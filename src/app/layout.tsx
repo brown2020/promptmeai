@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Layout from "@/layouts/Layout";
 import { Providers } from "./providers";
 
@@ -7,6 +7,10 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Prompt.me",
   description: "Compare chatbot models",
+};
+
+export const viewport: Viewport = {
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

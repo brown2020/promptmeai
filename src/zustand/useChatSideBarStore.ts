@@ -21,6 +21,20 @@ type ChatStore = {
   setSearchTerm: (term: string) => void;
 };
 
+const writeChatTabUrl = (tab: ActiveTab) => {
+  if (typeof window === "undefined") return;
+  if (window.location.pathname !== "/chat") return;
+
+  const url = new URL(window.location.href);
+  const current = url.searchParams.get("tab") === "pinned" ? "pinned" : "chats";
+  if (current === tab) return;
+
+  if (tab === "pinned") url.searchParams.set("tab", "pinned");
+  else url.searchParams.delete("tab");
+
+  window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
+};
+
 export const useChatSideBarStore = create<ChatStore>((set) => ({
   isDrawerOpen: false,
   isLoadingChat: true,
@@ -51,6 +65,7 @@ export const useChatSideBarStore = create<ChatStore>((set) => ({
     }),
   setActiveTab: (tab) => {
     set({ activeTab: tab });
+    writeChatTabUrl(tab);
   },
   setSearchTerm: (term) => {
     set({ searchTerm: term });

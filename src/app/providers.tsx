@@ -34,7 +34,20 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <NextUIProvider>
       <NextThemesProvider attribute="class" defaultTheme="system">
-        <Toaster />
+        <Toaster
+          toastOptions={{
+            ariaProps: {
+              role: "status",
+              "aria-live": "polite",
+            },
+            error: {
+              ariaProps: {
+                role: "alert",
+                "aria-live": "assertive",
+              },
+            },
+          }}
+        />
         {isHydrated && body}
         {isHydrated && isWeb && (
           <aside aria-label="Cookie consent">
