@@ -21,14 +21,14 @@ Verified from the current codebase:
 | --- | --- | --- |
 | Framework | Next.js (App Router) | ^16.4.2 |
 | UI | React + NextUI | ^19.2.7 / NextUI 2.x |
-| Language | TypeScript | ^6.0.3 |
+| Language | TypeScript | ^7.0.2 |
 | Styling | Tailwind CSS + typography plugin | ^4.3.0 |
 | State | Zustand | ^5.0.14 |
-| Auth / data | Firebase client + firebase-admin | ^12.14.0 / ^13.10.0 |
-| AI | `ai` + OpenAI / Anthropic / Google / Mistral + `@ai-sdk/rsc` | ai ^6.0.197 |
-| Payments | Stripe + React Stripe.js | stripe ^22.2.0 |
+| Auth / data | Firebase client + firebase-admin | ^13.0.0 / ^14.5.0 |
+| AI | `ai` + OpenAI / Anthropic / Google / Mistral + `@ai-sdk/rsc` | ai ^7.0.148 |
+| Payments | Stripe + React Stripe.js | stripe ^23.0.0 |
 | Markdown | react-markdown + remark-gfm + rehype sanitize/raw | — |
-| Tests | Vitest | ^4.1.8 |
+| Tests | Vitest | ^5.0.5 |
 
 ## Project structure
 
