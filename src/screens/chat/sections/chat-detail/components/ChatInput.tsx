@@ -48,6 +48,7 @@ const ChatInput = () => {
 
   const [isAlertAPIKeysNotWorking, setIsAlertAPIKeysNotWorking] =
     useState<boolean>(false);
+  const [isOutOfCredits, setIsOutOfCredits] = useState<boolean>(false);
   const [isStopRequest, setIsStopRequest] = useState<boolean>(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -76,7 +77,10 @@ const ChatInput = () => {
   }, []);
 
   const getAssistantResponse = useCallback(
-    async (model: ModelName, signal?: AbortSignal): Promise<boolean> => {
+    async (
+      model: ModelName,
+      signal?: AbortSignal
+    ): Promise<"answered" | "silent" | "no_credits"> => {
       try {
         // The latest user message is already part of the store (added by
         // initialMessage) and is therefore included here; do not append it
@@ -88,7 +92,7 @@ const ChatInput = () => {
             ...Object.values(message.responses),
           ]);
 
-        const result = await continueConversation(
+        const response = await continueConversation(
           currentMessages,
           model,
           profile.usageMode === UsageMode.Credits
@@ -96,9 +100,11 @@ const ChatInput = () => {
             : profile.APIKeys
         );
 
+        if (response.status === "insufficient_credits") return "no_credits";
+
         let hasContent = false;
 
-        for await (const content of readStreamableValue(result)) {
+        for await (const content of readStreamableValue(response.stream)) {
           if (signal?.aborted) {
             logger.log("Aborted request", model);
             break;
@@ -117,7 +123,7 @@ const ChatInput = () => {
           });
         }
 
-        return hasContent;
+        return hasContent ? "answered" : "silent";
       } catch (error) {
         if (error instanceof Error) {
           if (error.name === "AbortError") {
@@ -129,7 +135,7 @@ const ChatInput = () => {
           logger.error("Unknown error:", error);
         }
 
-        return false;
+        return "silent";
       }
     },
     [profile.APIKeys, profile.usageMode]
@@ -205,8 +211,11 @@ const ChatInput = () => {
         MODEL_NAMES.map(({ value }) => getAssistantResponse(value, signal))
       );
 
+      const outcomes = results.map((result) =>
+        result.status === "fulfilled" ? result.value : "silent"
+      );
       const silentModels = MODEL_NAMES.filter(
-        (_, i) => !(results[i].status === "fulfilled" && results[i].value)
+        (_, i) => outcomes[i] !== "answered"
       ).map(({ label }) => label);
 
       if (signal.aborted) {
@@ -235,7 +244,10 @@ const ChatInput = () => {
         if (user?.uid && activeChatId && remaining.length > 0) {
           await updateChat(user.uid, activeChatId, remaining);
         }
-        if (profile.usageMode === UsageMode.Credits) {
+        if (outcomes.includes("no_credits")) {
+          await fetchProfile();
+          setIsOutOfCredits(true);
+        } else if (profile.usageMode === UsageMode.Credits) {
           toast.error(
             "The models did not respond, so nothing was charged. Your prompt is back in the box. Try again in a moment.",
             { id: "full-outage" }
@@ -299,7 +311,9 @@ const ChatInput = () => {
         </div>
       </div>
       <ModalWarning
-        isOpen={(!isDefaultData && showAlert) || isAlertAPIKeysNotWorking}
+        isOpen={
+          (!isDefaultData && showAlert) || isAlertAPIKeysNotWorking || isOutOfCredits
+        }
         title={
           isAlertAPIKeysNotWorking
             ? alertAPIKeysNotWorking

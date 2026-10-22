@@ -8,16 +8,18 @@ export const CREDITS_PER_PURCHASE = 10_000;
 
 const billingState = (uid: string) => `users/${uid}/billing/state`;
 
-const readBalance = async (uid: string): Promise<number> => {
-  const snapshot = await adminDb.doc(paths.userProfile(uid)).get();
-  return snapshot.data()?.credits ?? 0;
-};
-
-export async function assertCreditsAvailable(uid: string): Promise<void> {
-  const credits = await readBalance(uid);
-  if (credits < 1) {
-    throw new Error("Insufficient credits");
+/**
+ * True when the caller can spend at least one credit. A user who prompts
+ * before their profile exists gets it created first (signup bonus once).
+ */
+export async function hasCreditsAvailable(uid: string): Promise<boolean> {
+  const ref = adminDb.doc(paths.userProfile(uid));
+  let snapshot = await ref.get();
+  if (!snapshot.exists) {
+    await ensureUserProfile(uid, await loadAuthIdentity(uid));
+    snapshot = await ref.get();
   }
+  return (snapshot.data()?.credits ?? 0) >= 1;
 }
 
 export async function deductCredits(uid: string, amount: number): Promise<void> {

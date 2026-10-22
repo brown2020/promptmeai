@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const calls = vi.hoisted(() => ({
   verifyAuth: vi.fn(async () => "user-a"),
-  assertCreditsAvailable: vi.fn(async () => undefined),
+  hasCreditsAvailable: vi.fn(async () => true),
   createOpenAI: vi.fn(),
   retrieve: vi.fn(),
   grantCatalogCredits: vi.fn(),
@@ -10,7 +10,7 @@ const calls = vi.hoisted(() => ({
 
 vi.mock("@/firebase/firebaseAdmin", () => ({ verifyAuth: calls.verifyAuth }));
 vi.mock("@/firebase/creditLedger", () => ({
-  assertCreditsAvailable: calls.assertCreditsAvailable,
+  hasCreditsAvailable: calls.hasCreditsAvailable,
   deductCredits: vi.fn(),
   grantCatalogCredits: calls.grantCatalogCredits,
 }));
@@ -48,7 +48,7 @@ describe("continueConversation input contract", () => {
       continueConversation(messages as ModelMessage[], model as ModelName, keys as UsageMode)
     ).rejects.toThrow("Invalid input for continueConversation");
     expect(calls.verifyAuth).toHaveBeenCalledOnce();
-    expect(calls.assertCreditsAvailable).not.toHaveBeenCalled();
+    expect(calls.hasCreditsAvailable).not.toHaveBeenCalled();
     expect(calls.createOpenAI).not.toHaveBeenCalled();
   });
 
@@ -57,7 +57,17 @@ describe("continueConversation input contract", () => {
     await expect(
       continueConversation(prompt, "gpt-6.1-sol", UsageMode.Credits)
     ).rejects.toThrow("Unauthorized");
-    expect(calls.assertCreditsAvailable).not.toHaveBeenCalled();
+    expect(calls.hasCreditsAvailable).not.toHaveBeenCalled();
+    expect(calls.createOpenAI).not.toHaveBeenCalled();
+  });
+});
+
+describe("continueConversation credit gate", () => {
+  it("returns insufficient_credits without building a provider client", async () => {
+    calls.hasCreditsAvailable.mockResolvedValueOnce(false);
+    await expect(
+      continueConversation(prompt, "gpt-6.1-sol", UsageMode.Credits)
+    ).resolves.toEqual({ status: "insufficient_credits" });
     expect(calls.createOpenAI).not.toHaveBeenCalled();
   });
 });

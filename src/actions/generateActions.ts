@@ -9,9 +9,10 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { verifyAuth } from "@/firebase/firebaseAdmin";
 import {
-  assertCreditsAvailable,
   deductCredits,
+  hasCreditsAvailable,
 } from "@/firebase/creditLedger";
+import type { StreamableValue } from "@ai-sdk/rsc";
 import { calculateCreditCost, countTokens } from "@/utils/token";
 import { parseConversationInput } from "./inputs";
 
@@ -66,11 +67,15 @@ const messageText = (message: ModelMessage): string => {
     .join("");
 };
 
+export type ConversationResponse =
+  | { status: "ok"; stream: StreamableValue<string> }
+  | { status: "insufficient_credits" };
+
 export async function continueConversation(
   rawMessages: ModelMessage[],
   rawModelName: ModelName = DEFAULT_MODEL,
   rawApiKeys: APIKeys | UsageMode
-) {
+): Promise<ConversationResponse> {
   const uid = await verifyAuth();
   const { messages, modelName, apiKeys } = parseConversationInput(
     rawMessages,
@@ -79,8 +84,8 @@ export async function continueConversation(
   );
   const chargesCredits = apiKeys === UsageMode.Credits;
 
-  if (chargesCredits) {
-    await assertCreditsAvailable(uid);
+  if (chargesCredits && !(await hasCreditsAvailable(uid))) {
+    return { status: "insufficient_credits" };
   }
 
   const model = getModel(modelName, apiKeys);
@@ -107,7 +112,7 @@ export async function continueConversation(
   }
 
   const stream = createStreamableValue(clientStream);
-  return stream.value;
+  return { status: "ok", stream: stream.value };
 }
 
 async function deductStream(
