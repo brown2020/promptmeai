@@ -4,11 +4,13 @@ import Stripe from "stripe";
 import { verifyAuth } from "@/firebase/firebaseAdmin";
 import { grantCatalogCredits } from "@/firebase/creditLedger";
 import { isCatalogAmount } from "@/utils/paymentAmount";
+import { parseAmountCents, parsePaymentIntentId } from "./inputs";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 
-export async function createPaymentIntent(amount: number) {
+export async function createPaymentIntent(rawAmount: number) {
   const uid = await verifyAuth();
+  const amount = parseAmountCents(rawAmount);
 
   if (!isCatalogAmount(amount)) {
     throw new Error("Invalid payment amount");
@@ -33,41 +35,9 @@ export async function createPaymentIntent(amount: number) {
   }
 }
 
-export async function validatePaymentIntent(paymentIntentId: string) {
-  await verifyAuth();
-
-  if (!paymentIntentId || typeof paymentIntentId !== "string") {
-    throw new Error("Invalid payment intent ID");
-  }
-
-  try {
-    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-
-    if (paymentIntent.status === "succeeded") {
-      return {
-        id: paymentIntent.id,
-        amount: paymentIntent.amount,
-        created: paymentIntent.created,
-        status: paymentIntent.status,
-        client_secret: paymentIntent.client_secret,
-        currency: paymentIntent.currency,
-        description: paymentIntent.description,
-      };
-    } else {
-      throw new Error("Payment was not successful");
-    }
-  } catch (error) {
-    console.error("Error validating payment intent:", error);
-    throw new Error("Failed to validate payment intent");
-  }
-}
-
-export async function grantCatalogPurchase(paymentIntentId: string) {
-  if (!paymentIntentId || typeof paymentIntentId !== "string") {
-    throw new Error("Invalid payment intent ID");
-  }
-
+export async function grantCatalogPurchase(rawPaymentIntentId: string) {
   const uid = await verifyAuth();
+  const paymentIntentId = parsePaymentIntentId(rawPaymentIntentId);
 
   const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
 

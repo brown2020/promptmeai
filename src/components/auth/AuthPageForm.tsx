@@ -12,7 +12,12 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { setCookie } from "cookies-next";
-import { Eye, EyeOff, LockIcon, MailIcon } from "lucide-react";
+import {
+  LuEye as Eye,
+  LuEyeOff as EyeOff,
+  LuLock as LockIcon,
+  LuMail as MailIcon,
+} from "react-icons/lu";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import googleLogo from "@/app/assets/google.svg";

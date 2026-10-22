@@ -21,12 +21,12 @@ The app is a Next.js App Router project that runs almost entirely on the client.
 ## Current tech stack
 
 - **Framework**: Next.js 16 (App Router) with React 19, TypeScript (strict).
-- **Styling/UI**: Tailwind CSS 4 (via `@tailwindcss/postcss`), NextUI (`@nextui-org/react`), Framer Motion, `lucide-react` + `react-icons`.
+- **Styling/UI**: Tailwind CSS 4 (via `@tailwindcss/postcss`), NextUI (`@nextui-org/react`), Framer Motion, `react-icons` (one icon package; use its `lu` set for Lucide icons).
 - **AI**: Vercel AI SDK (`ai`, `@ai-sdk/rsc`) with provider packages `@ai-sdk/openai`, `@ai-sdk/anthropic`, `@ai-sdk/google`. Streaming uses `streamText` + `createStreamableValue`.
 - **Backend/data**: Firebase Web SDK (`firebase`) client-side, Firebase Admin (`firebase-admin`) server-side, Firestore for data, Firebase Auth for identity.
 - **Payments**: Stripe (`stripe` server SDK, `@stripe/react-stripe-js` + `@stripe/stripe-js` client).
 - **State**: Zustand 5 (multiple small stores, no persistence middleware).
-- **Validation**: Zod 4 (a transitive requirement of the AI SDK; not yet used for app-level schemas).
+- **Validation**: Zod 4. Server actions parse their inputs through `src/actions/inputs.ts` right after `verifyAuth()`.
 - **Tooling**: ESLint 9 (`eslint-config-next`), TypeScript compiler for typechecking, Vitest 4 for focused unit tests, and a GitHub Actions malware IOC scan. Package manager is **npm** (lockfile: `package-lock.json`, `.npmrc` sets `legacy-peer-deps=true`).
 
 > Always trust `package.json` over prose for exact versions. Do not switch package managers.
@@ -119,7 +119,7 @@ Run this before declaring any change done. `npm run lint`, `npm run test`, and `
 ### Server/client boundary guidance
 
 - Server-only code must live in `src/actions/*` (files start with `"use server"`) or modules that import `firebase/firebaseAdmin`. **Never import `firebaseAdmin` into a client component** — it pulls in the Admin SDK and secrets.
-- Every server action must call `await verifyAuth()` as its first statement and validate its inputs before doing work (existing actions do this).
+- Every server action must call `await verifyAuth()` as its first statement and then parse its inputs with a schema from `src/actions/inputs.ts` before doing work. `src/actions/actionInputs.test.ts` covers rejected payloads.
 - Client components must not read server secrets. Only `NEXT_PUBLIC_*` env vars are safe on the client.
 - Streaming responses cross the boundary via `@ai-sdk/rsc` (`createStreamableValue` on the server, `readStreamableValue` on the client). Preserve this pattern for new model interactions.
 

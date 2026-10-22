@@ -13,14 +13,12 @@ import {
   deductCredits,
 } from "@/firebase/creditLedger";
 import { calculateCreditCost, countTokens } from "@/utils/token";
+import { parseConversationInput } from "./inputs";
 
 const DEFAULT_MODEL: ModelName = "gpt-6.1-sol";
 
-const isUsageMode = (value: APIKeys | UsageMode): value is UsageMode =>
-  typeof value === "string";
-
 const resolveApiKey = (
-  apiKeys: APIKeys | UsageMode,
+  apiKeys: APIKeys | UsageMode.Credits,
   config: (typeof MODEL_CONFIG)[ModelName]
 ): string => {
   if (apiKeys === UsageMode.Credits) {
@@ -33,12 +31,6 @@ const resolveApiKey = (
     return envKey;
   }
 
-  if (isUsageMode(apiKeys)) {
-    throw new Error(
-      "Usage mode is set to API keys, but no API key object was provided."
-    );
-  }
-
   const userKey = apiKeys[config.apiKeyProp];
   if (!userKey) {
     throw new Error(
@@ -49,30 +41,17 @@ const resolveApiKey = (
   return userKey;
 };
 
-async function getModel(modelName: ModelName, apiKeys: APIKeys | UsageMode) {
+function getModel(modelName: ModelName, apiKeys: APIKeys | UsageMode.Credits) {
   const config = MODEL_CONFIG[modelName];
-
-  if (!config) {
-    throw new Error(`Unsupported model name: ${modelName}`);
-  }
-
   const apiKey = resolveApiKey(apiKeys, config);
 
   switch (config.provider) {
     case "openai":
-      return createOpenAI({
-        apiKey,
-      })(config.modelId);
+      return createOpenAI({ apiKey })(config.modelId);
     case "google":
-      return createGoogleGenerativeAI({
-        apiKey,
-      })(config.modelId);
+      return createGoogleGenerativeAI({ apiKey })(config.modelId);
     case "anthropic":
-      return createAnthropic({
-        apiKey,
-      })(config.modelId);
-    default:
-      throw new Error(`Unsupported provider for model: ${modelName}`);
+      return createAnthropic({ apiKey })(config.modelId);
   }
 }
 
@@ -85,18 +64,23 @@ const messageText = (message: ModelMessage): string => {
 };
 
 export async function continueConversation(
-  messages: ModelMessage[],
-  modelName: ModelName = DEFAULT_MODEL,
-  apiKeys: APIKeys | UsageMode
+  rawMessages: ModelMessage[],
+  rawModelName: ModelName = DEFAULT_MODEL,
+  rawApiKeys: APIKeys | UsageMode
 ) {
   const uid = await verifyAuth();
+  const { messages, modelName, apiKeys } = parseConversationInput(
+    rawMessages,
+    rawModelName,
+    rawApiKeys
+  );
   const chargesCredits = apiKeys === UsageMode.Credits;
 
   if (chargesCredits) {
     await assertCreditsAvailable(uid);
   }
 
-  const model = await getModel(modelName, apiKeys);
+  const model = getModel(modelName, apiKeys);
   const result = streamText({
     model,
     messages,

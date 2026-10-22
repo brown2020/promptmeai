@@ -65,7 +65,7 @@ const HomeScreen = () => {
         <GreenWhiteLayout>
           <div className="min-h-screen w-full overflow-y-auto">
             <section className="min-h-screen flex justify-center items-center p-6">
-              <div className="flex flex-col gap-4 max-w-lg prose justify-center items-center text-center">
+              <div className="flex flex-col gap-4 max-w-lg justify-center items-center text-center">
                 <m.div
                   initial={{ scale: 0 }}
                   animate={{
