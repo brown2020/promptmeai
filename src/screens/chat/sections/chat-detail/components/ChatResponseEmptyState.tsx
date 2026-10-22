@@ -34,7 +34,7 @@ const ChatResponseEmptyState = () => {
               transition: { duration: 0.5, delay: 0.2 },
             }}
           >
-            Hi, {user && user.displayName}
+            {user.displayName ? `Hi, ${user.displayName}` : "Hi there"}
           </m.span>
           <m.span
             className="text-xl text-[#53494D] dark:text-[#EEE]"

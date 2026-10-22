@@ -6,6 +6,7 @@ import Spinner from "@/components/Spinner";
 import { auth } from "@/firebase/firebaseClient";
 import { usePlatform } from "@/zustand/usePlatformStore";
 import { cn } from "@/utils/tailwind";
+import { formatNumber } from "@/utils/number";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 import { CircularProgress } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
@@ -40,24 +41,20 @@ const CreditInformation = () => {
       return {
         indicator: "stroke-[#24C69E]",
         track: "stroke-[#24C69E]/10",
-        value: "text-[#24C69E]",
       };
     if (percentage >= 40)
       return {
         indicator: "stroke-[#F6CC19]",
         track: "stroke-[#F6CC19]/10",
-        value: "text-[#F6CC19]",
       };
     if (percentage >= 20)
       return {
         indicator: "stroke-[#F58B1A]",
         track: "stroke-[#F58B1A]/10",
-        value: "text-[#F58B1A]",
       };
     return {
       indicator: "stroke-[#EA4227]",
       track: "stroke-[#EA4227]/10",
-      value: "text-[#EA4227]",
     };
   };
 
@@ -73,15 +70,13 @@ const CreditInformation = () => {
       ) : (
         <div className="flex flex-col items-center justify-center">
           <CircularProgress
-            aria-label="Conversation credit usage"
+            aria-label="Credits remaining"
             classNames={{
               svg: "w-60 h-60 drop-shadow-md",
               indicator: cn("stroke-default", colorClasses.indicator),
               track: cn("stroke-default/10", colorClasses.track),
-              value: cn(
-                "text-3xl font-semibold text-default",
-                colorClasses.value
-              ),
+              value:
+                "text-3xl font-semibold tabular-nums text-[#1E1F22] dark:text-white",
             }}
             value={creditPercentage}
             strokeWidth={4}
@@ -92,7 +87,12 @@ const CreditInformation = () => {
               maximumFractionDigits: 2,
             }}
           />
-          <h4 className="self-center">{`Credit usage: ${creditUsage} from ${profile.totalCredits}`}</h4>
+          <p className="self-center text-center tabular-nums">
+            {`${formatNumber(profile.credits)} of ${formatNumber(profile.totalCredits)} credits left`}
+            <span className="block text-sm text-[#3B3B3B] dark:text-[#D8D8D8]">
+              {`${formatNumber(creditUsage)} used`}
+            </span>
+          </p>
         </div>
       )}
       {isWeb && <Button onClick={handleBuyClick}>Buy 10,000 Credits</Button>}
