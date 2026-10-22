@@ -4,7 +4,6 @@ import {
   getFirestore,
   type Firestore,
 } from "firebase/firestore";
-import { getStorage, type FirebaseStorage } from "firebase/storage";
 import {
   browserLocalPersistence,
   connectAuthEmulator,
@@ -41,13 +40,11 @@ const emulatorHost = (envValue: string | undefined, storageKey: string) => {
 
 let app: FirebaseApp | undefined;
 let db: Firestore;
-let storage: FirebaseStorage;
 let auth: Auth;
 
 if (hasClientConfig) {
   app = getApps().length ? getApp() : initializeApp(firebaseConfig);
   db = getFirestore(app);
-  storage = getStorage(app);
   auth = getAuth(app);
   if (typeof window !== "undefined") {
     const authEmulator = emulatorHost(
@@ -78,8 +75,7 @@ if (hasClientConfig) {
     "Firebase client config missing (NEXT_PUBLIC_FIREBASE_APIKEY); deferring init"
   );
   db = null as unknown as Firestore;
-  storage = null as unknown as FirebaseStorage;
   auth = null as unknown as Auth;
 }
 
-export { db, storage, auth };
+export { db, auth };

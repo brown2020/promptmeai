@@ -1,8 +1,6 @@
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
 import { getAuth, type Auth } from "firebase-admin/auth";
-import { getStorage } from "firebase-admin/storage";
-import type { Bucket } from "@google-cloud/storage";
 
 const privateKey = process.env.FIREBASE_PRIVATE_KEY;
 const projectId = process.env.FIREBASE_PROJECT_ID?.trim();
@@ -25,7 +23,6 @@ export const hasAdminConfig = Boolean(
   projectId && adminCredentials.clientEmail && adminCredentials.privateKey
 );
 
-let adminBucket: Bucket;
 let adminDb: Firestore;
 let adminAuth: Auth;
 
@@ -38,15 +35,12 @@ if (hasAdminConfig) {
           clientEmail: adminCredentials.clientEmail,
           privateKey: adminCredentials.privateKey,
         }),
-        storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGEBUCKET,
       });
     }
-    adminBucket = getStorage().bucket();
     adminDb = getFirestore();
     adminAuth = getAuth();
   } catch (e) {
     console.warn("Firebase Admin initialization failed (expected in build):", e);
-    adminBucket = {} as Bucket;
     adminDb = {} as Firestore;
     adminAuth = {} as Auth;
   }
@@ -54,7 +48,6 @@ if (hasAdminConfig) {
   console.warn(
     "Firebase Admin config missing; skipping init (expected in CI without secrets)"
   );
-  adminBucket = {} as Bucket;
   adminDb = {} as Firestore;
   adminAuth = {} as Auth;
 }
@@ -84,4 +77,4 @@ export async function verifyAuth(): Promise<string> {
   }
 }
 
-export { adminBucket, adminDb, adminAuth };
+export { adminDb, adminAuth };
