@@ -52,19 +52,13 @@ interface ProfileState {
   isDefaultData: boolean;
   fetchProfile: () => Promise<void>;
   updateProfile: (newProfile: Partial<ProfileType>) => Promise<void>;
-  // Kept for backward compatibility - delegates to useCreditsStore
-  reduceCredits: (amount: number) => Promise<boolean>;
-  addCredits: (amount: number) => Promise<void>;
   // Kept for backward compatibility - delegates to useAccountStore
   deleteAccount: () => Promise<boolean>;
 }
 
 /**
  * Store for user profile data.
- *
- * Note: Credit operations (reduceCredits, addCredits) are delegated to useCreditsStore.
- * Account operations (deleteAccount) are delegated to useAccountStore.
- * These are kept here for backward compatibility.
+ * Account deletion is delegated to useAccountStore.
  */
 const useProfileStore = create<ProfileState>((set, get) => ({
   profile: defaultProfile,
@@ -126,18 +120,6 @@ const useProfileStore = create<ProfileState>((set, get) => ({
       logger.error("Error updating profile:", error);
       toast.error("Failed to update profile. Please try again.");
     }
-  },
-
-  // Backward compatibility - delegates to useCreditsStore
-  reduceCredits: async (amount: number) => {
-    const { useCreditsStore } = await import("./useCreditsStore");
-    return useCreditsStore.getState().reduceCredits(amount);
-  },
-
-  // Backward compatibility - delegates to useCreditsStore
-  addCredits: async (amount: number) => {
-    const { useCreditsStore } = await import("./useCreditsStore");
-    return useCreditsStore.getState().addCredits(amount);
   },
 
   // Backward compatibility - delegates to useAccountStore
