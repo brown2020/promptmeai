@@ -17,6 +17,8 @@ export const paths = {
   userChats: (uid: string) => `promptme_chats/${uid}/chat`,
   userChat: (uid: string, chatId: string) =>
     `promptme_chats/${uid}/chat/${chatId}`,
+  userChatTranscript: (uid: string, chatId: string) =>
+    `promptme_chats/${uid}/chat/${chatId}/body/transcript`,
 } as const;
 
 // Collection names for use with collection() function

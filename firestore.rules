@@ -55,6 +55,12 @@ service cloud.firestore {
       allow update: if isOwner(uid)
         && request.resource.data.userId == uid
         && resource.data.userId == uid;
+
+      match /body/{docId} {
+        allow read, delete: if isOwner(uid);
+        allow create, update: if isOwner(uid)
+          && request.resource.data.userId == uid;
+      }
     }
 
     // Default deny for everything else

@@ -21,6 +21,12 @@ type ChatGroups = {
   previousMonths: Record<string, ChatDetail[]>;
 };
 
+export const truncateChatName = (name: string): string => {
+  const trimmed = name.trim();
+  if (!trimmed) return "Default Chat Name";
+  return trimmed.length > 200 ? trimmed.slice(0, 200) : trimmed;
+};
+
 export const searchChatByName = (
   data: ChatDetail[],
   searchTerm: string

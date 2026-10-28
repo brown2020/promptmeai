@@ -8,11 +8,15 @@ import {
   collection,
   doc,
   deleteDoc,
+  deleteField,
   getDoc,
   getDocs,
   serverTimestamp,
+  setDoc,
   updateDoc,
 } from "firebase/firestore";
+import { paths } from "@/firebase/paths";
+import { truncateChatName } from "@/utils/chat";
 
 const COLLECTION_NAME = collections.PROMPTME_CHATS;
 
@@ -44,7 +48,11 @@ export async function saveChat(
   const chatData = serializeMessages(messages);
   if (!chatData) return;
 
-  const chatName = messages[0]?.userMessage?.content || "Default Chat Name";
+  const chatName = truncateChatName(
+    typeof messages[0]?.userMessage?.content === "string"
+      ? messages[0].userMessage.content
+      : ""
+  );
 
   try {
     const chatRef = await addDoc(
@@ -53,10 +61,13 @@ export async function saveChat(
         userId,
         fullName,
         timestamp: serverTimestamp(),
-        chat: chatData,
         name: chatName,
       }
     );
+    await setDoc(doc(db, paths.userChatTranscript(userId, chatRef.id)), {
+      userId,
+      chat: chatData,
+    });
 
     // Get the document object after adding it
     const docSnap = await getDoc(chatRef);
@@ -85,14 +96,15 @@ export async function updateChat(
   if (!chatData) return;
 
   try {
-    await updateDoc(
-      doc(db, COLLECTION_NAME, userId, collections.CHAT, chatId),
-      {
-        docId: chatId,
-        timestamp: serverTimestamp(),
-        chat: chatData,
-      }
-    );
+    await setDoc(doc(db, paths.userChatTranscript(userId, chatId)), {
+      userId,
+      chat: chatData,
+    });
+    await updateDoc(doc(db, COLLECTION_NAME, userId, collections.CHAT, chatId), {
+      docId: chatId,
+      timestamp: serverTimestamp(),
+      chat: deleteField(),
+    });
   } catch (error) {
     handleFirestoreError(error, "Error updating chat");
   }
@@ -104,18 +116,26 @@ export async function getChat(
   chatId: string
 ): Promise<{ chat: Message[] } | null> {
   try {
+    const transcriptRef = doc(db, paths.userChatTranscript(userId, chatId));
+    const transcriptSnap = await getDoc(transcriptRef);
     const chatRef = doc(db, COLLECTION_NAME, userId, collections.CHAT, chatId);
-    const docSnap = await getDoc(chatRef);
+    const docSnap = transcriptSnap.exists() ? transcriptSnap : await getDoc(chatRef);
+    const rawChat = docSnap.data()?.chat;
 
-    if (docSnap.exists()) {
-      const chatData = docSnap.data().chat;
+    if (docSnap.exists() && typeof rawChat === "string") {
+      if (!transcriptSnap.exists()) {
+        await setDoc(transcriptRef, { userId, chat: rawChat });
+        await updateDoc(chatRef, { chat: deleteField() });
+      }
       try {
-        const parsedMessages: Message[] = JSON.parse(chatData);
-        return { ...docSnap.data(), chat: parsedMessages };
+        const parsedMessages: Message[] = JSON.parse(rawChat);
+        return { chat: parsedMessages };
       } catch (error) {
         handleFirestoreError(error, "Failed to parse chat data");
         return null;
       }
+    } else if (docSnap.exists()) {
+      return null;
     } else {
       logger.warn(`No chat found with ID: ${chatId}`);
       return null;
@@ -132,11 +152,23 @@ export async function getAllChatDetails(userId: string): Promise<ChatDetail[]> {
     const chatsRef = collection(db, COLLECTION_NAME, userId, collections.CHAT);
     const querySnapshot = await getDocs(chatsRef);
 
-    return querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      name: doc.data().name || "Unnamed Chat",
-      timestamp: doc.data().timestamp,
-      pinned: doc.data().pinned,
+    await Promise.all(
+      querySnapshot.docs.map(async (chatDoc) => {
+        const rawChat = chatDoc.data().chat;
+        if (typeof rawChat !== "string" || rawChat.length === 0) return;
+        await setDoc(doc(db, paths.userChatTranscript(userId, chatDoc.id)), {
+          userId,
+          chat: rawChat,
+        });
+        await updateDoc(chatDoc.ref, { chat: deleteField() });
+      })
+    );
+
+    return querySnapshot.docs.map((chatDoc) => ({
+      id: chatDoc.id,
+      name: chatDoc.data().name || "Unnamed Chat",
+      timestamp: chatDoc.data().timestamp,
+      pinned: chatDoc.data().pinned,
     }));
   } catch (error) {
     handleFirestoreError(error, "Error getting chat details");
