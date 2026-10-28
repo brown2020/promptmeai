@@ -31,6 +31,11 @@ describe("isPublicPath", () => {
     expect(PUBLIC_PATHS).toContain("/api/stripe/webhook");
   });
 
+  it("treats logout as public so an invalid session cookie can still be expired", () => {
+    expect(isPublicPath("/api/auth/logout")).toBe(true);
+    expect(PUBLIC_PATHS).toContain("/api/auth/logout");
+  });
+
   it("treats authenticated app routes as protected", () => {
     expect(isPublicPath("/chat")).toBe(false);
     expect(isPublicPath("/settings")).toBe(false);

@@ -11,6 +11,8 @@
  * `/loginfinish` must be public: the email-link sign-in flow lands there while
  * the user is still unauthenticated.
  * `/api/stripe/webhook` must be public: Stripe calls it with a signature, not a session cookie.
+ * `/api/auth/logout` must be public: it only expires the caller's own cookie, including
+ * when that cookie's ID token is already missing or invalid.
  */
 export const PUBLIC_PATHS = [
   "/",
@@ -22,6 +24,7 @@ export const PUBLIC_PATHS = [
   "/privacy",
   "/support",
   "/api/stripe/webhook",
+  "/api/auth/logout",
 ] as const;
 
 /**

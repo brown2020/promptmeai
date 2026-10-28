@@ -23,11 +23,3 @@ export async function establishSession(idToken: string) {
   );
 }
 
-/** Clears the session cookie. Callable without a valid session. */
-export async function clearSession() {
-  const store = await cookies();
-  store.set(cookieName(), "", {
-    ...sessionCookieOptions(process.env.NODE_ENV === "production"),
-    maxAge: 0,
-  });
-}

@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import useProfileStore from "@/zustand/useProfileStore";
 import { signOut } from "firebase/auth";
 import { auth } from "@/firebase/firebaseClient";
-import { clearSession as clearServerSession } from "@/actions/sessionActions";
+import { clearSession as clearServerSession } from "@/firebase/sessionCookie";
 import { useAuthStore } from "@/zustand/useAuthStore";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";

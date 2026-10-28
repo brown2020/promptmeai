@@ -1,7 +1,8 @@
 import { useEffect, useCallback, useRef } from "react";
 import { getIdToken } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { clearSession, establishSession } from "@/actions/sessionActions";
+import { establishSession } from "@/actions/sessionActions";
+import { clearSession } from "@/firebase/sessionCookie";
 import { useAuthStore } from "@/zustand/useAuthStore";
 import { auth } from "@/firebase/firebaseClient";
 

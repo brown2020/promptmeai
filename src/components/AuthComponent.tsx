@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { signOut } from "firebase/auth";
-import { clearSession } from "@/actions/sessionActions";
+import { clearSession } from "@/firebase/sessionCookie";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { auth, hasClientConfig } from "@/firebase/firebaseClient";

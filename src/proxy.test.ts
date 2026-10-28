@@ -23,7 +23,7 @@ describe("proxy route protection", () => {
   });
 
   it("allows public routes without a cookie", () => {
-    for (const path of ["/", "/terms", "/loginfinish", "/api/stripe/webhook"]) {
+    for (const path of ["/", "/terms", "/loginfinish", "/api/stripe/webhook", "/api/auth/logout"]) {
       const res = proxy(request(path));
       expect(res.headers.get("location")).toBeNull();
     }
