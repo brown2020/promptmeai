@@ -25,6 +25,8 @@ type ChatStore = {
   setIsLoading: (isLoading: boolean) => void;
   abortController?: AbortController;
   setAbortController: (abortController?: AbortController) => void;
+  activeRequestId?: string;
+  setActiveRequestId: (requestId?: string) => void;
 };
 
 export const useChatStore = create<ChatStore>((set) => ({
@@ -86,4 +88,6 @@ export const useChatStore = create<ChatStore>((set) => ({
 
   setAbortController: (abortController?: AbortController) =>
     set({ abortController }),
+
+  setActiveRequestId: (activeRequestId?: string) => set({ activeRequestId }),
 }));

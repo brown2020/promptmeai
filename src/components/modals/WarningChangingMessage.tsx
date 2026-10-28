@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import ModalWarning from "./ModalWarning";
 import { Spinner } from "@nextui-org/react";
+import { cancelGeneration } from "@/actions/generateActions";
 import { useChatStore } from "@/zustand/useChatStore";
 
 type WarningChangingMessageProps = {
@@ -57,6 +58,8 @@ const WarningChangingMessage = ({
     }
 
     setWaitingForSettle(true);
+    const requestId = useChatStore.getState().activeRequestId;
+    if (requestId) void cancelGeneration(requestId).catch(() => undefined);
     abortController?.abort();
   };
 

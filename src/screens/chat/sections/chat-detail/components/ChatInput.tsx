@@ -144,7 +144,7 @@ const ChatInput = () => {
         return "silent";
       }
     },
-    [profile.APIKeys, profile.usageMode]
+    [profile.usageMode]
   );
 
   const saveChatFunction = async () => {
@@ -210,6 +210,7 @@ const ChatInput = () => {
 
       setIsLoading(true);
       requestIdRef.current = crypto.randomUUID();
+      useChatStore.getState().setActiveRequestId(requestIdRef.current);
       const abortController = new AbortController();
       setAbortController(abortController);
       const signal = abortController.signal;
@@ -270,6 +271,7 @@ const ChatInput = () => {
     } finally {
       setIsLoading(false);
       isSubmittingRef.current = false;
+      useChatStore.getState().setActiveRequestId(undefined);
     }
   };
 
