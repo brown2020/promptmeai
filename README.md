@@ -1,48 +1,48 @@
 # Prompt.me AI (`promptmeai`)
 
-Send one prompt to multiple leading AI models and compare streaming answers side by side. Sign in, use platform credits or your own provider keys, save comparison history, and top up via Stripe. Live site: [prompt.me](https://prompt.me/).
+Send one prompt to three models and compare the answers as they stream. Sign in, pay with platform credits or your own provider keys, keep comparison history, and buy credits with Stripe. Live site: [prompt.me](https://prompt.me/).
 
 ## Features
 
-Verified from the current codebase:
-
-- Parallel multi-model chat against three configured models (`src/constants/modelNames.ts`): GPT-6.1 Sol (`gpt-6.1-sol`, OpenAI), Claude Opus 5.5 (`claude-opus-5-5`, Anthropic), Gemini 4 Argon (`gemini-4-argon`, Google). Answers saved by earlier lineups still display with their original model name.
-- Streaming via Vercel AI SDK (`streamText` + `@ai-sdk/rsc`) in `src/actions/generateActions.ts`
-- Usage modes: platform **credits** (server provider keys + credit ledger) or **bring-your-own API keys** (stored on profile / settings)
-- Auth: Google popup, email/password, email link (`/loginfinish`); password reset; account deletion (server action `deleteAccount` removes chats, profile, and the sign-in; payment records stay)
-- Chat history with pin/search/delete; Zustand stores for auth, profile, credits, chat, payments, etc.
-- Stripe PaymentIntents for credit purchases (`/payment-attempt`, `/payment-success`, `/settings`)
-- Themes (next-themes), markdown responses, cookie consent, privacy/terms/support pages
-- Route gate in `src/proxy.ts` (cookie presence); authoritative checks via Firebase Admin `verifyAuth` + Firestore rules
+- Three models, defined in `src/constants/modelNames.ts`: GPT-6.1 Sol (`gpt-6.1-sol`, OpenAI), Claude Opus 5.5 (`claude-opus-5-5`, Anthropic), and Gemini 4 Argon (`gemini-4-argon`, Google). Older saved answers still display under their original model name.
+- Streaming through the Vercel AI SDK (`streamText` and `@ai-sdk/rsc`) in `src/actions/generateActions.ts`. Each comparison fans out to all three models. Leaving the chat cancels the provider call.
+- Credits mode reserves the estimated cost before the provider call and refunds unused credits after the stream. Bring-your-own-key mode loads provider keys on the server. Those keys are encrypted at rest when `API_KEYS_ENCRYPTION_KEY` is set, and that mode fails closed when it is not.
+- Auth: Google popup, email/password, and email link (`/loginfinish`). The Firebase ID token is stored in an HttpOnly cookie. Email/password accounts get the starting credits after the address is verified. Account deletion removes chats, profile, and the sign-in; Stripe keeps its own payment records.
+- Chat history with pin, search, and delete. Transcripts live on a nested document so the sidebar does not download them.
+- Stripe PaymentIntents for a catalog credit purchase (`/payment-attempt`, `/payment-success`). `POST /api/stripe/webhook` grants the same purchase when `STRIPE_WEBHOOK_SECRET` is set. Without that secret the webhook returns 503 and the success page still grants after it reloads the PaymentIntent.
+- Light, dark, and system themes, markdown responses, cookie consent, and privacy, terms, and support pages.
+- Route gate in `src/proxy.ts` (cookie presence only). Server actions call `verifyAuth()`, which checks the ID token with Firebase Admin.
 
 ## Tech stack
 
-| Area | Choice | Version (package.json) |
+Versions are the ranges in `package.json`.
+
+| Area | Choice | Version |
 | --- | --- | --- |
-| Framework | Next.js (App Router) | ^16.4.2 |
-| UI | React + NextUI | ^19.2.7 / NextUI 2.x |
-| Language | TypeScript | ^7.0.2 |
-| Styling | Tailwind CSS + typography plugin | ^4.3.0 |
-| State | Zustand | ^5.0.14 |
-| Auth / data | Firebase client + firebase-admin | ^13.0.0 / ^14.5.0 |
-| AI | `ai` + OpenAI / Anthropic / Google + `@ai-sdk/rsc` | ai ^7.0.148 |
-| Payments | Stripe + React Stripe.js | stripe ^23.0.0 |
-| Markdown | react-markdown + remark-gfm + rehype sanitize/raw | — |
+| Framework | Next.js App Router | ^16.4.3 |
+| UI | React, NextUI | ^19.3.1, NextUI ^2.6.11 |
+| Language | TypeScript | 7.0.2 for `tsc`; Next loads TypeScript 6 (`typescript` package) |
+| Styling | Tailwind CSS | ^4.3.3 |
+| State | Zustand | ^5.0.16 |
+| Auth and data | Firebase client, firebase-admin | ^13.1.0, ^14.5.0 |
+| AI | `ai`, OpenAI, Anthropic, Google, `@ai-sdk/rsc` | ai ^7.0.156 |
+| Payments | Stripe, React Stripe.js | stripe ^23.0.1 |
+| Markdown | react-markdown, remark-gfm, rehype-sanitize, rehype-raw | — |
 | Tests | Vitest | ^5.0.5 |
+
+`firebase-admin` 14 uses `jwks-rsa` 4. `package.json` overrides that package to `jose` 5.10.0 so `require("firebase-admin/auth")` does not load the ESM-only `jose` 6 build.
 
 ## Project structure
 
 ```
 src/
-  app/
-    page.tsx, chat/, settings/
-    login/, signup/, forgot-password/, loginfinish/
-    payment-attempt/, payment-success/
-    privacy/, terms/, support/
-  actions/                 # generateActions, paymentActions, profileActions
+  app/                     # /, /chat, /settings, auth, payments, legal
+  app/api/auth/logout/     # expires the HttpOnly session cookie
+  app/api/stripe/webhook/  # catalog credit grant
+  actions/                 # generate, payment, profile, session
   components/ layouts/
-  firebase/                # client, admin, creditLedger, paths
-  zustand/                 # auth, profile, credits, chat, payments, …
+  firebase/                # client, admin, credit ledger, paths
+  zustand/
   constants/modelNames.ts
   proxy.ts
 firestore.rules
@@ -57,13 +57,13 @@ firebase.json
 
 ### Prerequisites
 
-- Node.js 22 (matches CI) or a current LTS
+- Node.js 22, which is what CI uses
 - npm
-- Firebase project + service account
-- Provider API keys for credits mode
-- Stripe account for purchases
+- A Firebase project and a service account for server auth
+- Provider API keys if you want platform-credit inference
+- A Stripe account if you want credit purchases
 
-### Clone and install
+### Install
 
 ```bash
 git clone https://github.com/brown2020/promptmeai.git
@@ -73,52 +73,56 @@ npm install
 
 ### Environment variables
 
-Copy `.env.example` → `.env.local`. **Never commit real values.**
+Copy `.env.example` to `.env.local`. Never commit real values. Names only are listed here.
 
-#### Public / client
+#### Public
 
-| Name | Purpose | Where to get it |
-| --- | --- | --- |
-| `NEXT_PUBLIC_COOKIE_NAME` | Auth cookie name for proxy + client. Default when unset is `authToken` (`NEXT_PUBLIC_COOKIE_NAME=authToken`). | A non-secret name |
-| `NEXT_PUBLIC_FIREBASE_APIKEY` | Firebase web API key | Firebase Console → Your apps |
-| `NEXT_PUBLIC_FIREBASE_AUTHDOMAIN` | Auth domain | Same |
-| `NEXT_PUBLIC_FIREBASE_PROJECTID` | Project id | Same |
-| `NEXT_PUBLIC_FIREBASE_STORAGEBUCKET` | Storage bucket | Same |
-| `NEXT_PUBLIC_FIREBASE_MESSAGINGSENDERID` | Messaging sender id | Same |
-| `NEXT_PUBLIC_FIREBASE_APPID` | App id | Same |
-| `NEXT_PUBLIC_FIREBASE_MEASUREMENTID` | Analytics measurement id (optional) | Same |
-| `NEXT_PUBLIC_FIREBASE_APP_CHECK_SITE_KEY` | reCAPTCHA v3 site key for App Check (optional). When unset, App Check is not started. Enforcement is turned on in the Firebase console. | Firebase Console → App Check |
-| `NEXT_PUBLIC_STRIPE_KEY` | Stripe publishable key | Stripe Dashboard → API keys |
-| `NEXT_PUBLIC_STRIPE_PRODUCT_NAME` | Product label on PaymentIntents | Your naming |
+| Name | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_COOKIE_NAME` | Auth cookie name. When unset, the server uses `authToken` (`NEXT_PUBLIC_COOKIE_NAME=authToken`). |
+| `NEXT_PUBLIC_FIREBASE_APIKEY` | Firebase web API key |
+| `NEXT_PUBLIC_FIREBASE_AUTHDOMAIN` | Auth domain |
+| `NEXT_PUBLIC_FIREBASE_PROJECTID` | Project id |
+| `NEXT_PUBLIC_FIREBASE_STORAGEBUCKET` | Storage bucket |
+| `NEXT_PUBLIC_FIREBASE_MESSAGINGSENDERID` | Messaging sender id |
+| `NEXT_PUBLIC_FIREBASE_APPID` | App id |
+| `NEXT_PUBLIC_FIREBASE_MEASUREMENTID` | Analytics measurement id (optional) |
+| `NEXT_PUBLIC_FIREBASE_APP_CHECK_SITE_KEY` | reCAPTCHA v3 site key (optional). Unset skips App Check. |
+| `NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_HOST` | Auth emulator host for local web client (optional) |
+| `NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST` | Firestore emulator host for local web client (optional) |
+| `NEXT_PUBLIC_STRIPE_KEY` | Stripe publishable key |
+| `NEXT_PUBLIC_STRIPE_PRODUCT_NAME` | Label stored on PaymentIntents |
 
-#### Server secrets
+#### Server
 
-| Name | Purpose | Where to get it |
-| --- | --- | --- |
-| `OPENAI_API_KEY` | Platform credits → GPT models | OpenAI |
-| `ANTHROPIC_API_KEY` | Platform credits → Claude | Anthropic |
-| `GOOGLE_GENERATIVE_AI_API_KEY` | Platform credits → Gemini | Google AI Studio |
-| `API_KEYS_ENCRYPTION_KEY` | Encrypt bring-your-own provider keys at rest (32 bytes, base64). When unset, key storage and API-key mode fail closed. | Generate locally, for example `openssl rand -base64 32` |
-| `STRIPE_SECRET_KEY` | PaymentIntents | Stripe Dashboard |
-| `STRIPE_WEBHOOK_SECRET` | Verify `payment_intent.succeeded` (optional). When unset, `POST /api/stripe/webhook` returns 503 and grants nothing. The success page still grants after a verified PaymentIntent. | Stripe Dashboard → Webhooks |
-| `FIREBASE_TYPE` | Service account type | Service account JSON |
-| `FIREBASE_PROJECT_ID` | Admin project id | Same |
-| `FIREBASE_PRIVATE_KEY_ID` | Key id | Same |
-| `FIREBASE_PRIVATE_KEY` | PEM key (`\n` escaped) | Same |
-| `FIREBASE_CLIENT_EMAIL` | Service account email | Same |
-| `FIREBASE_CLIENT_ID` | Client id | Same |
-| `FIREBASE_AUTH_URI` | OAuth auth URI | Same |
-| `FIREBASE_TOKEN_URI` | Token URI | Same |
-| `FIREBASE_AUTH_PROVIDER_X509_CERT_URL` | Cert URL | Same |
-| `FIREBASE_CLIENT_CERTS_URL` | Client cert URL | Same |
+| Name | Purpose |
+| --- | --- |
+| `OPENAI_API_KEY` | Platform credits for GPT |
+| `ANTHROPIC_API_KEY` | Platform credits for Claude |
+| `GOOGLE_GENERATIVE_AI_API_KEY` | Platform credits for Gemini |
+| `GOOGLE_GENERATIVE_AI_BASE_URL` | Optional Gemini base URL passed into the provider client |
+| `API_KEYS_ENCRYPTION_KEY` | 32-byte base64 key. Unset makes bring-your-own-key mode fail closed. |
+| `STRIPE_SECRET_KEY` | PaymentIntents. Unset makes checkout and grant actions fail when called. |
+| `STRIPE_WEBHOOK_SECRET` | Optional. Unset makes `POST /api/stripe/webhook` return 503. |
+| `FIREBASE_TYPE` | Service account type |
+| `FIREBASE_PROJECT_ID` | Admin project id |
+| `FIREBASE_PRIVATE_KEY_ID` | Key id |
+| `FIREBASE_PRIVATE_KEY` | PEM private key, with newlines escaped |
+| `FIREBASE_CLIENT_EMAIL` | Service account email |
+| `FIREBASE_CLIENT_ID` | Client id |
+| `FIREBASE_AUTH_URI` | OAuth auth URI |
+| `FIREBASE_TOKEN_URI` | Token URI |
+| `FIREBASE_AUTH_PROVIDER_X509_CERT_URL` | Cert URL |
+| `FIREBASE_CLIENT_CERTS_URL` | Client cert URL |
+| `FIREBASE_UNIVERSE_DOMAIN` | Present in `.env.example`. `firebaseAdmin.ts` does not read it. |
 
-`FIREBASE_UNIVERSE_DOMAIN` is listed in `.env.example` but is not read by `firebaseAdmin.ts` today.
+The Firebase Admin SDK also honors `FIREBASE_AUTH_EMULATOR_HOST` and `FIRESTORE_EMULATOR_HOST` when you run against emulators.
 
-### Firebase / Stripe setup
+### Firebase and Stripe
 
-1. Enable Google, Email/Password, and Email link auth as needed. Email/password accounts receive the starting credits after the address is verified.
-2. Deploy Firestore and Storage rules. `firebase.json` includes `"rules": "firestore.rules"` and `"rules": "storage.rules"`. Uploads are limited to 5 MB and to images, PDF, or plain text.
-3. Configure Stripe keys and catalog purchase amount validation (`src/utils/paymentAmount.ts` / credit ledger). Point a webhook at `/api/stripe/webhook` for `payment_intent.succeeded` and set `STRIPE_WEBHOOK_SECRET`. Without that secret the route stays disabled.
+1. Enable Google, email/password, and email-link auth. The starting credit balance is granted once the email is verified.
+2. Deploy Firestore and Storage rules when those files change. `firebase.json` includes `"rules": "firestore.rules"` and `"rules": "storage.rules"`. Storage writes are limited to 5 MB and to images, PDF, or plain text.
+3. Point a Stripe webhook at `/api/stripe/webhook` for `payment_intent.succeeded` and set `STRIPE_WEBHOOK_SECRET` if you want grants when the browser never returns.
 
 ### Run locally
 
@@ -126,11 +130,7 @@ Copy `.env.example` → `.env.local`. **Never commit real values.**
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Chat UI lives at `/chat` after sign-in.
-
-#### Local emulators (no real accounts or model spend)
-
-On a `localhost` / `127.0.0.1` page the web client connects to Firebase emulators when `NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_HOST` / `NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST` are set at build time, or when `localStorage` holds `promptmeAuthEmulator` / `promptmeFirestoreEmulator` (for example `127.0.0.1:9099`). Deployed hosts ignore both. Start the server with `FIREBASE_AUTH_EMULATOR_HOST`, `FIRESTORE_EMULATOR_HOST`, and a matching `FIREBASE_PROJECT_ID` so Firebase Admin uses the same emulators. `OPENAI_BASE_URL`, `ANTHROPIC_BASE_URL`, and `GOOGLE_GENERATIVE_AI_BASE_URL` point the three providers at a local fixture server.
+Open [http://localhost:3000](http://localhost:3000). Chat is at `/chat` after sign-in.
 
 ## Scripts
 
@@ -140,25 +140,25 @@ On a `localhost` / `127.0.0.1` page the web client connects to Firebase emulator
 | `npm run build` | Production build |
 | `npm start` | Serve the production build |
 | `npm run lint` | ESLint |
-| `npm run typecheck` | `tsc --noEmit` |
+| `npm run typecheck` | `tsc --noEmit` (TypeScript 7) |
 | `npm test` | Vitest |
-| `npm run doctor` | `react-doctor` |
+| `npm run doctor` | React Doctor |
 
 ## Testing and CI
 
-- Vitest covers proxy/routes, server action input contracts (`src/actions/actionInputs.test.ts`), payment amount helpers, model ids and saved-response labels, token/text/object utilities, and related modules.
-- CI: `npm ci --ignore-scripts`, lint, typecheck, test, doctor, build (Node 22). Public Firebase/Stripe env for build come from Actions secrets when set; client init soft-skips when missing.
-- `malware-scan.yml` runs static IOC matching via `scripts/malware-scan.sh`.
+Vitest covers routes and the proxy, server-action inputs, credit reservation and grants, the Stripe webhook, logout cookie expiry, token estimates, and the `jose` pin.
+
+CI on `dev` and `main` (`.github/workflows/ci.yml`) uses Node 22 and runs `npm ci --ignore-scripts`, lint, typecheck, unit tests, React Doctor, and the production build. Public Firebase and Stripe names come from Actions secrets when set. Client init skips when they are missing. `.github/workflows/malware-scan.yml` runs `scripts/malware-scan.sh`.
 
 ## Deployment
 
-Production: [prompt.me](https://prompt.me/). Set all required env vars on the host. Keep Firestore rules in sync so clients cannot mutate frozen credit fields.
+Production is [prompt.me](https://prompt.me/). Set the env names above on the host. Do not put secret values in the repo. Promote `dev` to `main` only after QA. `main` requires signed commits.
 
 ## Contributing
 
 1. Branch from `dev`.
-2. Keep `verifyAuth` + credit ledger checks on generative and payment actions.
-3. Run lint, typecheck, and tests before opening a PR.
+2. Keep `verifyAuth()` first on server actions that read or change account data.
+3. Run lint, typecheck, and tests before pushing.
 4. Never commit secrets or `.env.local`.
 
 ## License
