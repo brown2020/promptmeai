@@ -9,13 +9,22 @@ service firebase.storage {
       return isSignedIn() && request.auth.uid == uid;
     }
 
+    function isAllowedUpload() {
+      return request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*|application/pdf|text/plain');
+    }
+
     // Store user-owned files under one of these prefixes.
     match /users/{uid}/{allPaths=**} {
-      allow read, write: if isOwner(uid);
+      allow read: if isOwner(uid);
+      allow create, update: if isOwner(uid) && isAllowedUpload();
+      allow delete: if isOwner(uid);
     }
 
     match /promptme_chats/{uid}/{allPaths=**} {
-      allow read, write: if isOwner(uid);
+      allow read: if isOwner(uid);
+      allow create, update: if isOwner(uid) && isAllowedUpload();
+      allow delete: if isOwner(uid);
     }
 
     // Default deny

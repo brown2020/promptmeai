@@ -117,7 +117,7 @@ Copy `.env.example` → `.env.local`. **Never commit real values.**
 ### Firebase / Stripe setup
 
 1. Enable Google, Email/Password, and Email link auth as needed. Email/password accounts receive the starting credits after the address is verified.
-2. Deploy Firestore rules. `firebase.json` is `{ "firestore": { "rules": "firestore.rules" } }`.
+2. Deploy Firestore and Storage rules. `firebase.json` includes `"rules": "firestore.rules"` and `"rules": "storage.rules"`. Uploads are limited to 5 MB and to images, PDF, or plain text.
 3. Configure Stripe keys and catalog purchase amount validation (`src/utils/paymentAmount.ts` / credit ledger). Point a webhook at `/api/stripe/webhook` for `payment_intent.succeeded` and set `STRIPE_WEBHOOK_SECRET`. Without that secret the route stays disabled.
 
 ### Run locally

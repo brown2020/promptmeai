@@ -61,7 +61,7 @@ Prompt.me AI is a client-first Next.js (App Router) single-page application back
 
 ### Current user flows
 
-- **New user**: land on `/` → sign in → redirected to `/chat` → profile auto-created in Firestore with a starting credit balance (default 1000) → prompt → compare.
+- **New user**: land on `/` → sign in → redirected to `/chat` → profile auto-created in Firestore. A starting balance (default 1000) is granted once the email is verified → prompt → compare.
 - **Returning user**: auth cookie/token restored → profile + chat list loaded → resume or start a comparison.
 - **Out of credits**: a warning modal prompts the user to buy credits or switch to API keys, deep-linking to `/settings`.
 - **Buy credits**: Settings → purchase → Stripe checkout → payment recorded → credits added.
@@ -82,7 +82,7 @@ Prompt.me AI is a client-first Next.js (App Router) single-page application back
 - **Next.js 16 App Router, React 19, TypeScript (strict)**; almost all routes are `"use client"` and build to static output **(inferred from build output: all routes prerender as static)**.
 - **Two server actions only**: `generateActions.ts` (AI streaming) and `paymentActions.ts` (Stripe). Both call `verifyAuth()` first.
 - **Auth bridging**: `useAuthToken` writes the Firebase ID token to a cookie and refreshes it every 50 minutes; server actions verify that cookie via the Admin SDK.
-- **State**: Zustand stores split by concern (`auth`, `profile`, `credits`, `account`, `chat`, `chatSideBar`, `payments`, `platform`); no persistence middleware (auth persists via Firebase + cookie).
+- **State**: Zustand stores split by concern (`auth`, `profile`, `account`, `chat`, `chatSideBar`, `payments`, `platform`); no persistence middleware (auth persists via Firebase + cookie). Credit balances are not mutated from the client.
 - **Security boundary**: Firestore/Storage rules (`firestore.rules`, `storage.rules`) scope every document to its owning uid; server actions enforce auth.
 - **Styling**: Tailwind 4 + NextUI, shared design tokens/CSS variables.
 
@@ -97,13 +97,13 @@ Prompt.me AI is a client-first Next.js (App Router) single-page application back
 
 ### Known limitations
 
-- **Credit deduction for platform inference is enforced in `continueConversation`.** The action rejects a credits-mode caller with an empty balance and deducts the token estimate with the Admin SDK after a response. A purchase grants 10,000 credits only from `grantCatalogPurchase` when the PaymentIntent succeeded for the 9999-cent catalog amount and belongs to the caller. The published Firestore rules freeze client writes to `credits` and `totalCredits` on the live project.
+- **Credit deduction for platform inference is enforced in `continueConversation`.** Before the provider call, the action reserves the estimated cost of the bounded input plus the maximum output, at least 1 credit, and refunds unused credits after the stream. A failed settlement keeps the hold. A purchase grants 10,000 credits only from `grantCatalogPurchase` when the PaymentIntent succeeded for the 9999-cent catalog amount and belongs to the caller. The published Firestore rules freeze client writes to `credits`, `totalCredits`, and `APIKeys`, and deny client deletes of the profile.
 - **Stripe webhook is optional.** `POST /api/stripe/webhook` verifies `STRIPE_WEBHOOK_SECRET` and grants catalog credits on `payment_intent.succeeded`. When the secret is unset the route returns 503. The success page still calls `grantCatalogPurchase`, which reloads the PaymentIntent. Grants are idempotent on a server-only billing document.
 - **User API keys are encrypted at rest** with `API_KEYS_ENCRYPTION_KEY` (AES-256-GCM). When that variable is unset, keys are not written and API-key mode fails closed. Firestore rules also reject client writes to `APIKeys`.
 - **The model set is fixed at four** and hard-coded in `MODEL_CONFIG`; users cannot choose which/how many models to query.
 - **No export/share** of comparisons; **no conversation branching**; **no prompt templates**; **no programmatic API**.
 - **Token "counting" is an approximation**, so credit charges and any usage display do not reflect real provider token usage.
-- `README.md` references a `firebase.json` and a CLI deploy flow, but `firebase.json` is not in the repo **(inferred: rules are deployed manually or out-of-repo)**.
+- `firebase.json` points at `firestore.rules` and `storage.rules`. Those files are committed; deploying them is a separate operator step.
 
 ---
 

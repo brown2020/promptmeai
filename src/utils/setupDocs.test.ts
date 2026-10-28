@@ -11,6 +11,7 @@ describe("setup docs", () => {
     expect(readme).not.toContain("promptme_auth");
     expect(JSON.parse(readFileSync("firebase.json", "utf8"))).toEqual({
       firestore: { rules: "firestore.rules" },
+      storage: { rules: "storage.rules" },
     });
     expect(readme).toContain('"rules": "firestore.rules"');
     expect(readme).not.toContain("storage:rules");

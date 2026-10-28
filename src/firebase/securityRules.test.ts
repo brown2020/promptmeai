@@ -19,8 +19,11 @@ describe("firestore rules", () => {
 });
 
 describe("storage rules", () => {
-  it("keeps objects owner-scoped", () => {
-    expect(storage).toContain("allow read, write: if isOwner(uid)");
+  it("keeps objects owner-scoped and limits uploads", () => {
+    expect(storage).toContain("allow read: if isOwner(uid)");
+    expect(storage).toContain("allow create, update: if isOwner(uid) && isAllowedUpload()");
+    expect(storage).toContain("request.resource.size < 5 * 1024 * 1024");
+    expect(storage).toContain("image/.*|application/pdf|text/plain");
     expect(storage).toContain("match /{allPaths=**}");
   });
 });
