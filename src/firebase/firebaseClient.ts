@@ -1,4 +1,5 @@
 import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import {
   connectFirestoreEmulator,
   getFirestore,
@@ -67,6 +68,17 @@ if (hasClientConfig) {
       }
     }
     void setPersistence(auth, browserLocalPersistence);
+    const appCheckSiteKey = process.env.NEXT_PUBLIC_FIREBASE_APP_CHECK_SITE_KEY?.trim();
+    if (appCheckSiteKey) {
+      try {
+        initializeAppCheck(app, {
+          provider: new ReCaptchaV3Provider(appCheckSiteKey),
+          isTokenAutoRefreshEnabled: true,
+        });
+      } catch {
+        // Already started after a hot reload, or the host rejected the provider.
+      }
+    }
   }
 } else {
   // CI gate jobs / SSG without Actions secrets: skip module-level init so

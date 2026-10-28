@@ -13,12 +13,8 @@ const billingState = (uid: string) => `users/${uid}/billing/state`;
  * before their profile exists gets it created first (signup bonus once).
  */
 export async function hasCreditsAvailable(uid: string): Promise<boolean> {
-  const ref = adminDb.doc(paths.userProfile(uid));
-  let snapshot = await ref.get();
-  if (!snapshot.exists) {
-    await ensureUserProfile(uid, await loadAuthIdentity(uid));
-    snapshot = await ref.get();
-  }
+  await ensureUserProfile(uid, await loadAuthIdentity(uid));
+  const snapshot = await adminDb.doc(paths.userProfile(uid)).get();
   return (snapshot.data()?.credits ?? 0) >= 1;
 }
 
@@ -77,12 +73,24 @@ export async function ensureUserProfile(
     if (profile.exists) {
       if (!marker.exists) {
         transaction.set(markerRef, { signupBonusGranted: true });
+        return;
+      }
+      if (identity.emailVerified && marker.data()?.signupBonusGranted !== true) {
+        const current = profile.data()?.credits ?? 0;
+        const total = profile.data()?.totalCredits ?? 0;
+        transaction.update(profileRef, {
+          credits: current + SIGNUP_CREDITS,
+          totalCredits: total + SIGNUP_CREDITS,
+          emailVerified: true,
+        });
+        transaction.set(markerRef, { signupBonusGranted: true });
       }
       return;
     }
 
-    const signupBonusGranted = marker.data()?.signupBonusGranted === true;
-    const credits = signupBonusGranted ? 0 : SIGNUP_CREDITS;
+    const alreadyGranted = marker.data()?.signupBonusGranted === true;
+    const grantBonus = identity.emailVerified && !alreadyGranted;
+    const credits = grantBonus ? SIGNUP_CREDITS : 0;
     transaction.set(profileRef, {
       email: identity.email,
       contactEmail: identity.email,
@@ -98,7 +106,9 @@ export async function ensureUserProfile(
         googleGenerativeAi: "",
       },
     });
-    transaction.set(markerRef, { signupBonusGranted: true });
+    transaction.set(markerRef, {
+      signupBonusGranted: alreadyGranted || identity.emailVerified,
+    });
   });
 }
 

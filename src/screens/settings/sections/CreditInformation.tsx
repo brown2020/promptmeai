@@ -7,6 +7,7 @@ import { auth } from "@/firebase/firebaseClient";
 import { usePlatform } from "@/zustand/usePlatformStore";
 import { cn } from "@/utils/tailwind";
 import { formatNumber } from "@/utils/number";
+import { useAuthStore } from "@/zustand/useAuthStore";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 import { CircularProgress } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
@@ -15,6 +16,7 @@ import { useCallback, useMemo } from "react";
 const CreditInformation = () => {
   const user = auth.currentUser;
   const { profile, isLoading, isDefaultData } = useProfileStore();
+  const emailVerified = useAuthStore((state) => state.authEmailVerified);
   const router = useRouter();
   const { isWeb } = usePlatform();
 
@@ -94,6 +96,11 @@ const CreditInformation = () => {
             </span>
           </p>
         </div>
+      )}
+      {!emailVerified && (
+        <p className="text-sm text-center text-[#3B3B3B] dark:text-[#D8D8D8]">
+          Verify your email to receive the starting credits.
+        </p>
       )}
       {isWeb && <Button onClick={handleBuyClick}>Buy 10,000 Credits</Button>}
     </CardContent>

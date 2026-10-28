@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
+  sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -248,7 +249,8 @@ export function AuthPageForm({ mode }: Props) {
 
     void runAuth(async () => {
       if (mode === "signup") {
-        await createUserWithEmailAndPassword(auth, email.trim(), password);
+        const credential = await createUserWithEmailAndPassword(auth, email.trim(), password);
+        await sendEmailVerification(credential.user).catch(() => undefined);
       } else {
         await signInWithEmailAndPassword(auth, email.trim(), password);
       }

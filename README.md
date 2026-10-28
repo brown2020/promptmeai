@@ -87,6 +87,7 @@ Copy `.env.example` → `.env.local`. **Never commit real values.**
 | `NEXT_PUBLIC_FIREBASE_MESSAGINGSENDERID` | Messaging sender id | Same |
 | `NEXT_PUBLIC_FIREBASE_APPID` | App id | Same |
 | `NEXT_PUBLIC_FIREBASE_MEASUREMENTID` | Analytics measurement id (optional) | Same |
+| `NEXT_PUBLIC_FIREBASE_APP_CHECK_SITE_KEY` | reCAPTCHA v3 site key for App Check (optional). When unset, App Check is not started. Enforcement is turned on in the Firebase console. | Firebase Console → App Check |
 | `NEXT_PUBLIC_STRIPE_KEY` | Stripe publishable key | Stripe Dashboard → API keys |
 | `NEXT_PUBLIC_STRIPE_PRODUCT_NAME` | Product label on PaymentIntents | Your naming |
 
@@ -115,7 +116,7 @@ Copy `.env.example` → `.env.local`. **Never commit real values.**
 
 ### Firebase / Stripe setup
 
-1. Enable Google, Email/Password, and Email link auth as needed.
+1. Enable Google, Email/Password, and Email link auth as needed. Email/password accounts receive the starting credits after the address is verified.
 2. Deploy Firestore rules. `firebase.json` is `{ "firestore": { "rules": "firestore.rules" } }`.
 3. Configure Stripe keys and catalog purchase amount validation (`src/utils/paymentAmount.ts` / credit ledger). Point a webhook at `/api/stripe/webhook` for `payment_intent.succeeded` and set `STRIPE_WEBHOOK_SECRET`. Without that secret the route stays disabled.
 

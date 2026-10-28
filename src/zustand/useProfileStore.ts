@@ -77,32 +77,24 @@ const useProfileStore = create<ProfileState>((set, get) => ({
 
     try {
       set({ isLoading: true });
+      await ensureProfile();
       const userRef = doc(db, paths.userProfile(uid));
       const docSnap = await getDoc(userRef);
 
-      if (docSnap.exists()) {
-        const profileData = docSnap.data() as ProfileType;
+      if (!docSnap.exists()) {
+        throw new Error("Profile not found");
+      }
 
-        const newProfile = {
+      const profileData = docSnap.data() as ProfileType;
+      set({
+        profile: {
           ...profileData,
-          totalCredits:
-            profileData?.totalCredits || defaultProfile.totalCredits,
+          totalCredits: profileData?.totalCredits || defaultProfile.totalCredits,
           usageMode: profileData?.usageMode || defaultProfile.usageMode,
           APIKeys: profileData?.APIKeys || defaultProfile.APIKeys,
-        };
-
-        set({ profile: newProfile, isDefaultData: false });
-      } else {
-        await ensureProfile();
-        const created = await getDoc(userRef);
-        if (!created.exists()) {
-          throw new Error("Profile not found");
-        }
-        set({
-          profile: created.data() as ProfileType,
-          isDefaultData: false,
-        });
-      }
+        },
+        isDefaultData: false,
+      });
     } catch (error) {
       logger.error("Error fetching or creating profile:", error);
       toast.error("Failed to load profile");

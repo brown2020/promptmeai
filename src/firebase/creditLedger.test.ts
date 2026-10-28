@@ -15,11 +15,11 @@ vi.mock("@/firebase/firebaseAdmin", () => {
   return {
     adminAuth: {
       deleteUser: vi.fn(async (uid: string) => void store.set(`auth/${uid}`, { deleted: true })),
-      getUser: vi.fn(async () => ({
+      getUser: vi.fn(async (uid: string) => ({
         email: "new@example.test",
         displayName: "",
         photoURL: "",
-        emailVerified: false,
+        emailVerified: store.get(`auth/${uid}`)?.emailVerified === true,
       })),
     },
     adminDb: {
@@ -62,8 +62,29 @@ beforeEach(() => store.clear());
 
 describe("hasCreditsAvailable", () => {
   it("creates a missing profile with the signup bonus before checking", async () => {
+    store.set("auth/u1", { emailVerified: true });
     await expect(hasCreditsAvailable("u1")).resolves.toBe(true);
     expect(store.get("users/u1/profile/userData")?.credits).toBe(SIGNUP_CREDITS);
+  });
+
+  it("waits to grant the signup bonus until the email is verified", async () => {
+    await expect(hasCreditsAvailable("u-new")).resolves.toBe(false);
+    expect(store.get("users/u-new/profile/userData")?.credits).toBe(0);
+    expect(store.get("users/u-new/billing/state")?.signupBonusGranted).toBe(false);
+
+    store.set("auth/u-new", { emailVerified: true });
+    await expect(hasCreditsAvailable("u-new")).resolves.toBe(true);
+    expect(store.get("users/u-new/profile/userData")?.credits).toBe(SIGNUP_CREDITS);
+    await hasCreditsAvailable("u-new");
+    expect(store.get("users/u-new/profile/userData")?.credits).toBe(SIGNUP_CREDITS);
+  });
+
+  it("does not grant a second bonus to a profile that already exists", async () => {
+    store.set("auth/u-legacy", { emailVerified: true });
+    store.set("users/u-legacy/profile/userData", { credits: 1000, totalCredits: 1000 });
+    await expect(hasCreditsAvailable("u-legacy")).resolves.toBe(true);
+    expect(store.get("users/u-legacy/profile/userData")?.credits).toBe(1000);
+    expect(store.get("users/u-legacy/billing/state")?.signupBonusGranted).toBe(true);
   });
 
   it("does not grant the bonus twice when the profile was deleted", async () => {
