@@ -24,24 +24,29 @@ const ChatResponseList = () => {
   // messages already live in the store and are still streaming, so re-fetching
   // the (partially saved) document here would wipe in-flight responses.
   useEffect(() => {
-    const updateMessages = async (userId: string, activeChatId: string) => {
-      const result = await getChat(userId, activeChatId);
+    let cancelled = false;
 
-      if (result && result.chat) {
-        setMessages(
-          result.chat.map((message, index) => ({
-            ...message,
-            id:
-              message.id ||
-              `hydrated-${activeChatId}-${index}-${String(message.userMessage?.content ?? "").slice(0, 24)}`,
-          }))
-        );
-      }
+    const updateMessages = async (userId: string, chatId: string) => {
+      const result = await getChat(userId, chatId);
+      if (cancelled || !result?.chat) return;
+
+      setMessages(
+        result.chat.map((message, index) => ({
+          ...message,
+          id:
+            message.id ||
+            `hydrated-${chatId}-${index}-${String(message.userMessage?.content ?? "").slice(0, 24)}`,
+        }))
+      );
     };
 
     if (user?.uid && activeChatId && !isNewChat) {
-      updateMessages(user.uid, activeChatId);
+      void updateMessages(user.uid, activeChatId);
     }
+
+    return () => {
+      cancelled = true;
+    };
   }, [activeChatId, isNewChat, setMessages, user?.uid]);
 
   // Handle scroll events to detect if user has scrolled up
