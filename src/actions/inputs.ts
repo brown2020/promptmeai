@@ -88,3 +88,18 @@ export const parseAmountCents = (value: unknown): number => {
   if (!result.success) throw new InvalidActionInput("amount");
   return result.data;
 };
+
+const apiKeyUpdateSchema = z.object({
+  openAi: z.string().max(500).default(""),
+  anthropic: z.string().max(500).default(""),
+  googleGenerativeAi: z.string().max(500).default(""),
+  clearOpenAi: z.boolean().optional(),
+  clearAnthropic: z.boolean().optional(),
+  clearGoogle: z.boolean().optional(),
+});
+
+export const parseApiKeyUpdate = (value: unknown) => {
+  const result = apiKeyUpdateSchema.safeParse(value);
+  if (!result.success) throw new InvalidActionInput("saveApiKeys");
+  return result.data;
+};

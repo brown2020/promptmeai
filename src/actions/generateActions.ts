@@ -8,6 +8,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { APIKeys, UsageMode } from "@/zustand/useProfileStore";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createAnthropic } from "@ai-sdk/anthropic";
+import { loadDecryptedApiKeys } from "@/firebase/apiKeys";
 import { verifyAuth } from "@/firebase/firebaseAdmin";
 import {
   ensureUserProfile,
@@ -147,7 +148,8 @@ export async function continueConversation(
   }
 
   try {
-    const model = getModel(modelName, apiKeys);
+    const providerKeys = chargesCredits ? apiKeys : await loadDecryptedApiKeys(uid);
+    const model = getModel(modelName, providerKeys);
     const abort = new AbortController();
     const stopWatching = requestId
       ? watchCancellation(uid, requestId, () => abort.abort())

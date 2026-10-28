@@ -21,7 +21,8 @@ service cloud.firestore {
         allow create: if false;
         allow update: if isOwner(uid)
           && request.resource.data.credits == resource.data.credits
-          && request.resource.data.totalCredits == resource.data.totalCredits;
+          && request.resource.data.totalCredits == resource.data.totalCredits
+          && request.resource.data.APIKeys == resource.data.APIKeys;
       }
 
       // App reads/creates: users/{uid}/payments/{paymentDocId}

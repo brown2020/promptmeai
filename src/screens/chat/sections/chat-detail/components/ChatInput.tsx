@@ -98,7 +98,11 @@ const ChatInput = () => {
           model,
           profile.usageMode === UsageMode.Credits
             ? profile.usageMode
-            : profile.APIKeys,
+            : {
+                openAi: "",
+                anthropic: "",
+                googleGenerativeAi: "",
+              },
           requestIdRef.current
         );
 

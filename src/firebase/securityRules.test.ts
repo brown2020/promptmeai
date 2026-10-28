@@ -10,6 +10,7 @@ describe("firestore rules", () => {
     expect(firestore).toContain(
       "request.resource.data.totalCredits == resource.data.totalCredits"
     );
+    expect(firestore).toContain("request.resource.data.APIKeys == resource.data.APIKeys");
     expect(firestore).toContain("match /billing/{document=**}");
     expect(firestore).toContain("allow read, write: if false");
   });

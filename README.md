@@ -97,6 +97,7 @@ Copy `.env.example` → `.env.local`. **Never commit real values.**
 | `OPENAI_API_KEY` | Platform credits → GPT models | OpenAI |
 | `ANTHROPIC_API_KEY` | Platform credits → Claude | Anthropic |
 | `GOOGLE_GENERATIVE_AI_API_KEY` | Platform credits → Gemini | Google AI Studio |
+| `API_KEYS_ENCRYPTION_KEY` | Encrypt bring-your-own provider keys at rest (32 bytes, base64). When unset, key storage and API-key mode fail closed. | Generate locally, for example `openssl rand -base64 32` |
 | `STRIPE_SECRET_KEY` | PaymentIntents | Stripe Dashboard |
 | `STRIPE_WEBHOOK_SECRET` | Verify `payment_intent.succeeded` (optional). When unset, `POST /api/stripe/webhook` returns 503 and grants nothing. The success page still grants after a verified PaymentIntent. | Stripe Dashboard → Webhooks |
 | `FIREBASE_TYPE` | Service account type | Service account JSON |

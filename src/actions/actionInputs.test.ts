@@ -8,6 +8,11 @@ const calls = vi.hoisted(() => ({
   grantCatalogCredits: vi.fn(),
   watchCancellation: vi.fn((_uid: string, _id: string, _onCancel: () => void) => () => undefined),
   requestCancellation: vi.fn(async () => undefined),
+  loadDecryptedApiKeys: vi.fn(async () => ({
+    openAi: "stored-key",
+    anthropic: "stored-anthropic",
+    googleGenerativeAi: "stored-google",
+  })),
   streamText: vi.fn((_options: { abortSignal: AbortSignal }) => ({
     textStream: new ReadableStream<string>({ start: (c) => c.close() }),
   })),
@@ -30,6 +35,9 @@ vi.mock("@/zustand/useProfileStore", () => ({
   UsageMode: { Credits: "CREDITS", ApiKeys: "API_KEYS" },
 }));
 vi.mock("@ai-sdk/openai", () => ({ createOpenAI: calls.createOpenAI }));
+vi.mock("@/firebase/apiKeys", () => ({
+  loadDecryptedApiKeys: calls.loadDecryptedApiKeys,
+}));
 vi.mock("@/firebase/generationControl", () => ({
   watchCancellation: calls.watchCancellation,
   requestCancellation: calls.requestCancellation,
@@ -83,6 +91,20 @@ describe("continueConversation input contract", () => {
     ).rejects.toThrow("Unauthorized");
     expect(calls.hasCreditsAvailable).not.toHaveBeenCalled();
     expect(calls.createOpenAI).not.toHaveBeenCalled();
+  });
+});
+
+describe("stored API keys", () => {
+  it("ignores client-supplied keys and uses the decrypted profile keys", async () => {
+    calls.createOpenAI.mockReturnValueOnce(() => ({}));
+    await continueConversation(prompt, "gpt-6.1-sol", {
+      openAi: "client-sent",
+      anthropic: "client-sent",
+      googleGenerativeAi: "client-sent",
+    });
+    expect(calls.loadDecryptedApiKeys).toHaveBeenCalledWith("user-a");
+    expect(calls.createOpenAI).toHaveBeenCalledWith({ apiKey: "stored-key" });
+    expect(calls.hasCreditsAvailable).not.toHaveBeenCalled();
   });
 });
 
