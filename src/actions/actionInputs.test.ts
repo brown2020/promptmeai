@@ -128,6 +128,10 @@ describe("stopping a generation", () => {
 });
 
 describe("payment action input contract", () => {
+  beforeEach(() => {
+    vi.stubEnv("STRIPE_SECRET_KEY", "sk_test_dummy");
+  });
+
   it("rejects a malformed payment intent id after auth and before Stripe", async () => {
     await expect(grantCatalogPurchase("../../v1/charges")).rejects.toThrow(
       "Invalid input for paymentIntentId"

@@ -22,11 +22,21 @@ const PaymentSuccess = () => {
 
   const missingIntent = !paymentIntent;
   const [isLoading, setIsLoading] = useState(!missingIntent);
+  const [sessionExpired, setSessionExpired] = useState(false);
   const [id, setId] = useState<string>("");
   const [message, setMessage] = useState<string>(
     missingIntent ? "No payment intent found" : ""
   );
   const [amount, setAmount] = useState<number>(0);
+
+  useEffect(() => {
+    if (missingIntent || uid) return;
+    const timeout = window.setTimeout(() => {
+      setSessionExpired(true);
+      setIsLoading(false);
+    }, 8000);
+    return () => window.clearTimeout(timeout);
+  }, [missingIntent, uid]);
 
   useEffect(() => {
     if (missingIntent || !uid) return;
@@ -112,7 +122,11 @@ const PaymentSuccess = () => {
               </Button>
             </Fragment>
           ) : (
-            <div>{message}</div>
+            <div>
+              {sessionExpired && !message
+                ? "Sign in again to finish adding these credits. A confirmed payment is also applied from Stripe when webhooks are configured."
+                : message}
+            </div>
           )}
         </CardContent>
       </div>

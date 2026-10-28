@@ -26,6 +26,11 @@ describe("isPublicPath", () => {
     expect(PUBLIC_PATHS).toContain("/loginfinish");
   });
 
+  it("treats the Stripe webhook as public so Stripe can post without a session", () => {
+    expect(isPublicPath("/api/stripe/webhook")).toBe(true);
+    expect(PUBLIC_PATHS).toContain("/api/stripe/webhook");
+  });
+
   it("treats authenticated app routes as protected", () => {
     expect(isPublicPath("/chat")).toBe(false);
     expect(isPublicPath("/settings")).toBe(false);

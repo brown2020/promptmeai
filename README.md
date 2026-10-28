@@ -98,6 +98,7 @@ Copy `.env.example` → `.env.local`. **Never commit real values.**
 | `ANTHROPIC_API_KEY` | Platform credits → Claude | Anthropic |
 | `GOOGLE_GENERATIVE_AI_API_KEY` | Platform credits → Gemini | Google AI Studio |
 | `STRIPE_SECRET_KEY` | PaymentIntents | Stripe Dashboard |
+| `STRIPE_WEBHOOK_SECRET` | Verify `payment_intent.succeeded` (optional). When unset, `POST /api/stripe/webhook` returns 503 and grants nothing. The success page still grants after a verified PaymentIntent. | Stripe Dashboard → Webhooks |
 | `FIREBASE_TYPE` | Service account type | Service account JSON |
 | `FIREBASE_PROJECT_ID` | Admin project id | Same |
 | `FIREBASE_PRIVATE_KEY_ID` | Key id | Same |
@@ -115,7 +116,7 @@ Copy `.env.example` → `.env.local`. **Never commit real values.**
 
 1. Enable Google, Email/Password, and Email link auth as needed.
 2. Deploy Firestore rules. `firebase.json` is `{ "firestore": { "rules": "firestore.rules" } }`.
-3. Configure Stripe keys and catalog purchase amount validation (`src/utils/paymentAmount.ts` / credit ledger).
+3. Configure Stripe keys and catalog purchase amount validation (`src/utils/paymentAmount.ts` / credit ledger). Point a webhook at `/api/stripe/webhook` for `payment_intent.succeeded` and set `STRIPE_WEBHOOK_SECRET`. Without that secret the route stays disabled.
 
 ### Run locally
 

@@ -1,12 +1,10 @@
 "use server";
 
-import Stripe from "stripe";
 import { verifyAuth } from "@/firebase/firebaseAdmin";
 import { grantCatalogCredits } from "@/firebase/creditLedger";
+import { getStripe } from "@/server/stripe";
 import { isCatalogAmount } from "@/utils/paymentAmount";
 import { parseAmountCents, parsePaymentIntentId } from "./inputs";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 
 export async function createPaymentIntent(rawAmount: number) {
   const uid = await verifyAuth();
@@ -21,7 +19,7 @@ export async function createPaymentIntent(rawAmount: number) {
   try {
     if (!product) throw new Error("Stripe product name is not defined");
 
-    const paymentIntent = await stripe.paymentIntents.create({
+    const paymentIntent = await getStripe().paymentIntents.create({
       amount,
       currency: "usd",
       metadata: { product, uid },
@@ -39,7 +37,7 @@ export async function grantCatalogPurchase(rawPaymentIntentId: string) {
   const uid = await verifyAuth();
   const paymentIntentId = parsePaymentIntentId(rawPaymentIntentId);
 
-  const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+  const paymentIntent = await getStripe().paymentIntents.retrieve(paymentIntentId);
 
   if (paymentIntent.status !== "succeeded") {
     throw new Error("Payment was not successful");
