@@ -53,11 +53,9 @@ const useAuthToken = (cookieName = "authToken") => {
   const scheduleTokenRefresh = useCallback(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
-    if (typeof document !== "undefined" && document.visibilityState === "visible") {
-      timeoutRef.current = setTimeout(() => {
-        void refreshAuthToken();
-      }, REFRESH_INTERVAL);
-    }
+    timeoutRef.current = setTimeout(() => {
+      void refreshAuthToken().finally(() => scheduleTokenRefresh());
+    }, REFRESH_INTERVAL);
   }, [refreshAuthToken]);
 
   useEffect(() => {
@@ -69,16 +67,23 @@ const useAuthToken = (cookieName = "authToken") => {
       }, DEBOUNCE_MS);
     };
 
+    const onVisible = () => {
+      if (document.visibilityState !== "visible") return;
+      void refreshAuthToken().finally(() => scheduleTokenRefresh());
+    };
+
     if (!window.ReactNativeWebView) {
       window.addEventListener("storage", handler);
     }
+    document.addEventListener("visibilitychange", onVisible);
 
     return () => {
       window.removeEventListener("storage", handler);
+      document.removeEventListener("visibilitychange", onVisible);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [lastTokenRefresh, scheduleTokenRefresh]);
+  }, [lastTokenRefresh, refreshAuthToken, scheduleTokenRefresh]);
 
   useEffect(() => {
     if (loading) return;
