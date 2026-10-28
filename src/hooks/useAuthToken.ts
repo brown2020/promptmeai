@@ -34,15 +34,21 @@ const useAuthToken = (cookieName = "authToken") => {
       await clearSession().catch(() => undefined);
       return false;
     }
-  }, [cookieName, lastTokenRefresh]);
+  }, [lastTokenRefresh]);
+
+  const scheduleTokenRefreshRef = useRef<() => void>(() => undefined);
 
   const scheduleTokenRefresh = useCallback(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
     timeoutRef.current = setTimeout(() => {
-      void refreshAuthToken().finally(() => scheduleTokenRefresh());
+      void refreshAuthToken().finally(() => scheduleTokenRefreshRef.current());
     }, REFRESH_INTERVAL);
   }, [refreshAuthToken]);
+
+  useEffect(() => {
+    scheduleTokenRefreshRef.current = scheduleTokenRefresh;
+  }, [scheduleTokenRefresh]);
 
   useEffect(() => {
     const handler = (e: StorageEvent) => {
