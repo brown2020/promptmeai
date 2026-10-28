@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import useProfileStore from "@/zustand/useProfileStore";
 import { signOut } from "firebase/auth";
 import { auth } from "@/firebase/firebaseClient";
-import { deleteCookie } from "cookies-next";
+import { clearSession as clearServerSession } from "@/actions/sessionActions";
 import { useAuthStore } from "@/zustand/useAuthStore";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -20,15 +20,9 @@ const SettingOption = () => {
     setShowDeleteModal(true);
   };
 
-  const clearSession = useCallback(() => {
-    const cookieName = process.env.NEXT_PUBLIC_COOKIE_NAME || "authToken";
+  const clearSession = useCallback(async () => {
+    await clearServerSession().catch(() => undefined);
     clearAuthDetails();
-    for (const name of [cookieName, "authToken", "promptme_auth"]) {
-      deleteCookie(name, { path: "/" });
-      if (typeof document !== "undefined") {
-        document.cookie = `${name}=; Max-Age=0; path=/`;
-      }
-    }
     router.replace("/");
   }, [router, clearAuthDetails]);
 
@@ -38,14 +32,14 @@ const SettingOption = () => {
     } catch {
       console.warn("[auth] sign-out-failed");
     }
-    clearSession();
+    await clearSession();
   }, [clearSession]);
 
   const onDeleteConfirm = useCallback(async () => {
     setShowDeleteModal(false);
     if (await deleteAccount()) {
       toast.success("Your account and all of its data were deleted.");
-      clearSession();
+      await clearSession();
     }
   }, [deleteAccount, clearSession]);
 

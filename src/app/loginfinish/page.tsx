@@ -12,10 +12,8 @@ import { useEffect, useState } from "react";
 import Spinner from "@/components/Spinner";
 import toast from "react-hot-toast";
 import { mapAuthError } from "@/utils/authErrors";
-import { setCookie } from "cookies-next";
+import { establishSession } from "@/actions/sessionActions";
 import { getIdToken } from "firebase/auth";
-
-const COOKIE_NAME = process.env.NEXT_PUBLIC_COOKIE_NAME || "authToken";
 
 export default function LoginFinishPage() {
   const setAuthDetails = useAuthStore((s) => s.setAuthDetails);
@@ -60,11 +58,7 @@ export default function LoginFinishPage() {
         }
 
         const token = await getIdToken(user, true);
-        setCookie(COOKIE_NAME, token, {
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
-          path: "/",
-        });
+        await establishSession(token);
 
         if (cancelled) return;
 

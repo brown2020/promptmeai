@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { deleteCookie } from "cookies-next";
 import { signOut } from "firebase/auth";
+import { clearSession } from "@/actions/sessionActions";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { auth, hasClientConfig } from "@/firebase/firebaseClient";
@@ -18,10 +18,7 @@ export default function AuthComponent() {
   const handleSignOut = async () => {
     setSigningOut(true);
     try {
-      deleteCookie(process.env.NEXT_PUBLIC_COOKIE_NAME || "authToken", {
-        path: "/",
-      });
-      deleteCookie("authToken", { path: "/" });
+      await clearSession().catch(() => undefined);
       if (hasClientConfig) {
         await signOut(auth);
       }

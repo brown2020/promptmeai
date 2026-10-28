@@ -1,11 +1,9 @@
 import { useEffect, useCallback, useRef } from "react";
 import { getIdToken } from "firebase/auth";
-import { deleteCookie, setCookie } from "cookies-next";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { clearSession, establishSession } from "@/actions/sessionActions";
 import { useAuthStore } from "@/zustand/useAuthStore";
 import { auth } from "@/firebase/firebaseClient";
-
-const isValidCookieName = (name: string) => /^[a-zA-Z0-9-_]+$/.test(name);
 
 const REFRESH_INTERVAL = 50 * 60 * 1000; // 50 minutes
 const DEBOUNCE_MS = 1000;
@@ -21,20 +19,10 @@ const useAuthToken = (cookieName = "authToken") => {
 
   const refreshAuthToken = useCallback(async (): Promise<boolean> => {
     try {
-      if (!isValidCookieName(cookieName)) {
-        console.warn(`Invalid cookie name: ${cookieName}`);
-        return false;
-      }
-
       if (!auth.currentUser) return false;
 
       const idTokenResult = await getIdToken(auth.currentUser, true);
-
-      setCookie(cookieName, idTokenResult, {
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-      });
+      await establishSession(idTokenResult);
 
       if (!window.ReactNativeWebView) {
         window.localStorage.setItem(lastTokenRefresh, Date.now().toString());
@@ -43,9 +31,7 @@ const useAuthToken = (cookieName = "authToken") => {
       return true;
     } catch {
       console.warn("[auth] token-refresh-failed");
-      if (isValidCookieName(cookieName)) {
-        deleteCookie(cookieName, { path: "/" });
-      }
+      await clearSession().catch(() => undefined);
       return false;
     }
   }, [cookieName, lastTokenRefresh]);
@@ -93,9 +79,7 @@ const useAuthToken = (cookieName = "authToken") => {
     async function syncAuthState() {
       if (!user?.uid) {
         clearAuthDetails();
-        if (isValidCookieName(cookieName)) {
-          deleteCookie(cookieName, { path: "/" });
-        }
+        await clearSession().catch(() => undefined);
         return;
       }
 
