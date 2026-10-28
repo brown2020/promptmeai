@@ -112,18 +112,19 @@ export async function grantCatalogCredits(
   }
 
   const profileRef = adminDb.doc(paths.userProfile(uid));
+  const grantRef = adminDb.doc(paths.userGrant(uid, paymentIntentId));
   const payments = adminDb.collection(paths.userPayments(uid));
 
   return adminDb.runTransaction(async (transaction) => {
     const [existing, profile] = await Promise.all([
-      transaction.get(payments.where("id", "==", paymentIntentId).limit(1)),
+      transaction.get(grantRef),
       transaction.get(profileRef),
     ]);
     if (!profile.exists) {
       throw new Error("Profile not found");
     }
 
-    if (!existing.empty) {
+    if (existing.exists) {
       return {
         alreadyProcessed: true,
         credits: profile.data()?.credits ?? 0,
@@ -134,6 +135,11 @@ export async function grantCatalogCredits(
     const totalCredits =
       (profile.data()?.totalCredits ?? 0) + CREDITS_PER_PURCHASE;
     transaction.update(profileRef, { credits, totalCredits });
+    transaction.set(grantRef, {
+      paymentIntentId,
+      amount,
+      createdAt: FieldValue.serverTimestamp(),
+    });
     transaction.set(payments.doc(), {
       id: paymentIntentId,
       amount,

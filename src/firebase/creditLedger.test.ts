@@ -24,7 +24,10 @@ vi.mock("@/firebase/firebaseAdmin", () => {
     },
     adminDb: {
       doc,
-      collection: (path: string) => ({ path }),
+      collection: (path: string) => ({
+        path,
+        doc: (id?: string) => doc(`${path}/${id ?? `auto${store.size + 1}`}`),
+      }),
       recursiveDelete: async (ref: { path: string }) => {
         for (const key of [...store.keys()]) {
           if (key === ref.path || key.startsWith(`${ref.path}/`)) store.delete(key);
@@ -48,6 +51,7 @@ vi.mock("@/firebase/firebaseAdmin", () => {
 
 import {
   deleteUserData,
+  grantCatalogCredits,
   hasCreditsAvailable,
   refundCredits,
   reserveCredits,
@@ -91,6 +95,31 @@ describe("reserveCredits", () => {
     store.set("users/u8/profile/userData", { credits: 7 });
     await refundCredits("u8", 33);
     expect(store.get("users/u8/profile/userData")?.credits).toBe(40);
+  });
+});
+
+describe("grantCatalogCredits", () => {
+  it("grants once even if the client already wrote a payment row", async () => {
+    store.set("users/u9/profile/userData", { credits: 5, totalCredits: 5 });
+    store.set("users/u9/payments/client", { id: "pi_abc", status: "succeeded" });
+
+    const first = await grantCatalogCredits("u9", "pi_abc", 9999);
+    const second = await grantCatalogCredits("u9", "pi_abc", 9999);
+
+    expect(first).toMatchObject({ alreadyProcessed: false, credits: 10_005 });
+    expect(second).toMatchObject({ alreadyProcessed: true, credits: 10_005 });
+    expect(store.get("users/u9/billing/grants/pi_abc")).toMatchObject({
+      paymentIntentId: "pi_abc",
+    });
+  });
+
+  it("rejects a non-catalog amount before writing", async () => {
+    store.set("users/u10/profile/userData", { credits: 1, totalCredits: 1 });
+    await expect(grantCatalogCredits("u10", "pi_bad", 100)).rejects.toThrow(
+      "Invalid payment amount"
+    );
+    expect(store.get("users/u10/profile/userData")?.credits).toBe(1);
+    expect(store.has("users/u10/billing/grants/pi_bad")).toBe(false);
   });
 });
 

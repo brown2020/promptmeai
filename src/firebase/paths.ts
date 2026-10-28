@@ -10,6 +10,8 @@ export const paths = {
   userGenerations: (uid: string) => `users/${uid}/generations`,
   userGeneration: (uid: string, requestId: string) =>
     `users/${uid}/generations/${requestId}`,
+  userGrant: (uid: string, paymentIntentId: string) =>
+    `users/${uid}/billing/grants/${paymentIntentId}`,
 
   // Chat paths
   userChats: (uid: string) => `promptme_chats/${uid}/chat`,

@@ -25,9 +25,15 @@ service cloud.firestore {
       }
 
       // App reads/creates: users/{uid}/payments/{paymentDocId}
+      // Purchase history only. Credit grants are keyed on billing/grants,
+      // which clients cannot write.
       match /payments/{paymentDocId} {
         allow read, create: if isOwner(uid);
         allow update, delete: if false;
+      }
+
+      match /billing/{document=**} {
+        allow read, write: if false;
       }
 
       // Default deny for any other subcollections under users/{uid}
