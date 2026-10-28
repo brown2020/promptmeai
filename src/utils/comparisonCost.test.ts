@@ -7,7 +7,7 @@ describe("comparison cost", () => {
     expect(MODEL_NAMES).toHaveLength(3);
 
     const source = readFileSync("src/actions/generateActions.ts", "utf8");
-    const creditCheck = source.indexOf("hasCreditsAvailable(uid)");
+    const creditCheck = source.indexOf("reserveCredits(uid");
     const providerClient = source.indexOf("= getModel(");
     expect(creditCheck).toBeGreaterThan(-1);
     expect(providerClient).toBeGreaterThan(creditCheck);

@@ -3,6 +3,11 @@ import {
   countTokens,
   calculateCreditCost,
   calculateTotalTokenUsage,
+  billableCredits,
+  boundPromptText,
+  reservedCredits,
+  MAX_INPUT_LENGTH,
+  MAX_OUTPUT_TOKENS,
 } from "./token";
 import type { Message } from "@/zustand/useChatStore";
 
@@ -36,6 +41,32 @@ describe("calculateCreditCost", () => {
     // 1000 tokens * ($0.04 / 1000) = $0.04 -> 4 credits (subcurrency)
     expect(calculateCreditCost(1000)).toBe(4);
     expect(calculateCreditCost(0)).toBe(0);
+  });
+});
+
+describe("billableCredits", () => {
+  it("charges at least one credit for any non-empty usage", () => {
+    expect(billableCredits(0)).toBe(0);
+    expect(billableCredits(1)).toBe(1);
+    expect(billableCredits(124)).toBe(1);
+    expect(billableCredits(1000)).toBe(4);
+  });
+});
+
+describe("reservedCredits", () => {
+  it("holds the full prompt plus the output cap before a provider call", () => {
+    expect(reservedCredits(0)).toBe(calculateCreditCost(MAX_OUTPUT_TOKENS));
+    expect(reservedCredits(500)).toBe(calculateCreditCost(500 + MAX_OUTPUT_TOKENS));
+    expect(reservedCredits(0)).toBeGreaterThanOrEqual(1);
+  });
+});
+
+describe("boundPromptText", () => {
+  it("keeps the text that billing is allowed to count", () => {
+    expect(boundPromptText("hello")).toBe("hello");
+    const huge = "a".repeat(MAX_INPUT_LENGTH + 50);
+    expect(boundPromptText(huge)).toHaveLength(MAX_INPUT_LENGTH);
+    expect(countTokens(boundPromptText(huge))).toBe(countTokens(huge));
   });
 });
 

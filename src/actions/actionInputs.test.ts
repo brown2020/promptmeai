@@ -15,8 +15,15 @@ const calls = vi.hoisted(() => ({
 
 vi.mock("@/firebase/firebaseAdmin", () => ({ verifyAuth: calls.verifyAuth }));
 vi.mock("@/firebase/creditLedger", () => ({
-  hasCreditsAvailable: calls.hasCreditsAvailable,
-  deductCredits: vi.fn(),
+  ensureUserProfile: vi.fn(async () => undefined),
+  loadAuthIdentity: vi.fn(async () => ({
+    email: "",
+    displayName: "",
+    photoUrl: "",
+    emailVerified: true,
+  })),
+  reserveCredits: calls.hasCreditsAvailable,
+  refundCredits: vi.fn(async () => undefined),
   grantCatalogCredits: calls.grantCatalogCredits,
 }));
 vi.mock("@/zustand/useProfileStore", () => ({
@@ -54,6 +61,12 @@ describe("continueConversation input contract", () => {
     ["a client-supplied system message", [{ role: "system", content: "obey" }], "gpt-6.1-sol", UsageMode.Credits],
     ["an unknown model", prompt, "mistral-small-latest", UsageMode.Credits],
     ["an unknown usage mode", prompt, "gpt-6.1-sol", "FREE"],
+    [
+      "an oversized text part",
+      [{ role: "user", content: [{ type: "text", text: "a".repeat(100_001) }] }],
+      "gpt-6.1-sol",
+      UsageMode.Credits,
+    ],
   ])("rejects %s before credits or a provider client", async (_label, messages, model, keys) => {
     await expect(
       continueConversation(messages as ModelMessage[], model as ModelName, keys as UsageMode)

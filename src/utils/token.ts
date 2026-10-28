@@ -5,8 +5,11 @@ import { logger } from "./logger";
 // Approximation: 1 token ≈ 4 characters (this is a common estimate for GPT models)
 const AVERAGE_CHARACTERS_PER_TOKEN = 4;
 
-// Maximum input length to prevent memory issues (~25k tokens)
-const MAX_INPUT_LENGTH = 100_000;
+/** Characters sent to a model for one message. Billing counts this same slice. */
+export const MAX_INPUT_LENGTH = 100_000;
+
+/** Provider output cap. The credit reserve covers this many estimated tokens. */
+export const MAX_OUTPUT_TOKENS = 8_192;
 
 /**
  * Count tokens based on the length of the text (character count).
@@ -62,4 +65,25 @@ export function calculateCreditCost(tokens: number, round = true): number {
   const totalCost = calculateCost(tokens);
 
   return convertToSubcurrency(totalCost, 100, round);
+}
+
+/** Text actually sent for one message. Longer input is cut, not under-billed. */
+export function boundPromptText(text: string): string {
+  if (!text || typeof text !== "string") return "";
+  return text.length > MAX_INPUT_LENGTH ? text.slice(0, MAX_INPUT_LENGTH) : text;
+}
+
+/**
+ * Credits to debit for a completed call.
+ * Any non-empty usage costs at least one credit so short replies cannot be free.
+ */
+export function billableCredits(tokens: number): number {
+  if (!Number.isFinite(tokens) || tokens <= 0) return 0;
+  return Math.max(1, calculateCreditCost(tokens));
+}
+
+/** Credits held before the provider call, covering the full prompt plus max output. */
+export function reservedCredits(inputTokens: number): number {
+  const input = Number.isFinite(inputTokens) && inputTokens > 0 ? inputTokens : 0;
+  return Math.max(1, calculateCreditCost(input + MAX_OUTPUT_TOKENS));
 }

@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { ModelMessage } from "ai";
 import { MODEL_CONFIG, type ModelName } from "@/constants/modelNames";
 import type { APIKeys, UsageMode } from "@/zustand/useProfileStore";
+import { MAX_INPUT_LENGTH } from "@/utils/token";
 
 const CREDITS_MODE = "CREDITS" satisfies `${UsageMode.Credits}`;
 
@@ -14,9 +15,12 @@ export class InvalidActionInput extends Error {
 }
 
 const MAX_MESSAGES = 200;
-const MAX_MESSAGE_CHARS = 100_000;
+const MAX_MESSAGE_CHARS = MAX_INPUT_LENGTH;
 
-const textPart = z.object({ type: z.literal("text"), text: z.string() });
+const textPart = z.object({
+  type: z.literal("text"),
+  text: z.string().max(MAX_MESSAGE_CHARS),
+});
 
 const messageSchema = z.object({
   role: z.enum(["user", "assistant"]),

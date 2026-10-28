@@ -1,6 +1,6 @@
 "use server";
 
-import { MODEL_CONFIG, MODEL_NAMES, ModelName } from "@/constants/modelNames";
+import { MODEL_CONFIG, ModelName } from "@/constants/modelNames";
 import { createStreamableValue } from '@ai-sdk/rsc';
 import { after } from "next/server";
 import { ModelMessage, streamText } from "ai";
@@ -10,11 +10,19 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { verifyAuth } from "@/firebase/firebaseAdmin";
 import {
-  deductCredits,
-  hasCreditsAvailable,
+  ensureUserProfile,
+  loadAuthIdentity,
+  refundCredits,
+  reserveCredits,
 } from "@/firebase/creditLedger";
 import type { StreamableValue } from "@ai-sdk/rsc";
-import { calculateCreditCost, countTokens } from "@/utils/token";
+import {
+  billableCredits,
+  boundPromptText,
+  countTokens,
+  MAX_OUTPUT_TOKENS,
+  reservedCredits,
+} from "@/utils/token";
 import { parseConversationInput, parseRequestId } from "./inputs";
 import {
   requestCancellation,
@@ -72,6 +80,38 @@ const messageText = (message: ModelMessage): string => {
     .join("");
 };
 
+/** Cuts each message to the slice that token billing counts. */
+const boundMessages = (messages: ModelMessage[]): ModelMessage[] =>
+  messages.map((message) => {
+    const content = boundPromptText(messageText(message));
+    if (message.role === "assistant") return { ...message, content };
+    if (message.role === "system") return { ...message, content };
+    if (message.role === "user") return { ...message, content };
+    return message;
+  });
+
+/** Aborts the provider call when the browser stops reading the response. */
+const abortOnCancel = (
+  stream: ReadableStream<string>,
+  abort: AbortController
+): ReadableStream<string> => {
+  const reader = stream.getReader();
+  return new ReadableStream<string>({
+    async pull(controller) {
+      const { done, value } = await reader.read();
+      if (done) {
+        controller.close();
+        return;
+      }
+      controller.enqueue(value);
+    },
+    cancel(reason) {
+      abort.abort();
+      return reader.cancel(reason);
+    },
+  });
+};
+
 export type ConversationResponse =
   | { status: "ok"; stream: StreamableValue<string> }
   | { status: "insufficient_credits" };
@@ -83,64 +123,80 @@ export async function continueConversation(
   rawRequestId?: string
 ): Promise<ConversationResponse> {
   const uid = await verifyAuth();
-  const { messages, modelName, apiKeys, requestId } = parseConversationInput(
+  const parsed = parseConversationInput(
     rawMessages,
     rawModelName,
     rawApiKeys,
     rawRequestId
   );
+  const messages = boundMessages(parsed.messages);
+  const { modelName, apiKeys, requestId } = parsed;
   const chargesCredits = apiKeys === UsageMode.Credits;
-
-  if (chargesCredits && !(await hasCreditsAvailable(uid))) {
-    return { status: "insufficient_credits" };
-  }
-
-  const model = getModel(modelName, apiKeys);
-  const abort = new AbortController();
-  const stopWatching = requestId
-    ? watchCancellation(uid, requestId, () => abort.abort())
-    : () => undefined;
-  const result = streamText({
-    model,
-    messages,
-    abortSignal: abort.signal,
-    onFinish: () => stopWatching(),
-    onAbort: () => stopWatching(),
-    onError: ({ error }) => {
-      stopWatching();
-      after(() =>
-        console.warn(
-          `[generate] ${modelName} failed:`,
-          error instanceof Error ? error.message : error
-        )
-      );
-    },
-  });
-
   const inputTokens = messages.reduce(
     (sum, message) => sum + countTokens(messageText(message)),
     0
   );
-  const inputShare =
-    inputTokens === 0 ? 0 : Math.ceil(inputTokens / MODEL_NAMES.length);
 
-  const textStream = chargesCredits
-    ? result.textStream.tee()
-    : [result.textStream];
-  const clientStream = textStream[0];
-  const billingStream = textStream[1];
-
-  if (billingStream) {
-    void deductStream(uid, inputShare, billingStream);
+  let reserved = 0;
+  if (chargesCredits) {
+    await ensureUserProfile(uid, await loadAuthIdentity(uid));
+    reserved = reservedCredits(inputTokens);
+    if (!(await reserveCredits(uid, reserved))) {
+      return { status: "insufficient_credits" };
+    }
   }
 
-  const stream = createStreamableValue(clientStream);
-  return { status: "ok", stream: stream.value };
+  try {
+    const model = getModel(modelName, apiKeys);
+    const abort = new AbortController();
+    const stopWatching = requestId
+      ? watchCancellation(uid, requestId, () => abort.abort())
+      : () => undefined;
+    const result = streamText({
+      model,
+      messages,
+      maxOutputTokens: MAX_OUTPUT_TOKENS,
+      abortSignal: abort.signal,
+      onFinish: () => stopWatching(),
+      onAbort: () => stopWatching(),
+      onError: ({ error }) => {
+        stopWatching();
+        after(() =>
+          console.warn(
+            `[generate] ${modelName} failed:`,
+            error instanceof Error ? error.message : error
+          )
+        );
+      },
+    });
+
+    const branches = chargesCredits
+      ? result.textStream.tee()
+      : [result.textStream];
+    const clientStream = abortOnCancel(branches[0], abort);
+    const billingStream = branches[1];
+
+    if (billingStream) {
+      const settling = settleReservation(uid, reserved, inputTokens, billingStream);
+      try {
+        after(() => settling);
+      } catch {
+        void settling;
+      }
+    }
+
+    const stream = createStreamableValue(clientStream);
+    return { status: "ok", stream: stream.value };
+  } catch (error) {
+    if (reserved > 0) await refundCredits(uid, reserved).catch(() => undefined);
+    throw error;
+  }
 }
 
-async function deductStream(
+async function settleReservation(
   uid: string,
-  inputShare: number,
+  reserved: number,
+  inputTokens: number,
   billingStream: ReadableStream<string>
 ) {
   const reader = billingStream.getReader();
@@ -152,19 +208,25 @@ async function deductStream(
       if (done) break;
       if (value) output += value;
     }
+  } catch (error) {
+    console.error("Error reading billable output:", error);
+    return;
   } finally {
     reader.releaseLock();
   }
 
-  if (!output.trim()) return;
-
   try {
-    await deductCredits(
-      uid,
-      calculateCreditCost(inputShare + countTokens(output))
-    );
+    if (!output.trim()) {
+      await refundCredits(uid, reserved);
+      return;
+    }
+
+    const actual = billableCredits(inputTokens + countTokens(output));
+    if (actual < reserved) {
+      await refundCredits(uid, reserved - actual);
+    }
   } catch (error) {
-    console.error("Error deducting credits:", error);
+    console.error("Error settling credits:", error);
   }
 }
 

@@ -22,7 +22,28 @@ export async function hasCreditsAvailable(uid: string): Promise<boolean> {
   return (snapshot.data()?.credits ?? 0) >= 1;
 }
 
-export async function deductCredits(uid: string, amount: number): Promise<void> {
+/**
+ * Hold `amount` credits before a provider call.
+ * Fails closed when the balance cannot cover the whole hold.
+ */
+export async function reserveCredits(uid: string, amount: number): Promise<boolean> {
+  if (!Number.isInteger(amount) || amount <= 0) return false;
+
+  return adminDb.runTransaction(async (transaction) => {
+    const ref = adminDb.doc(paths.userProfile(uid));
+    const snapshot = await transaction.get(ref);
+    if (!snapshot.exists) return false;
+
+    const current = Math.trunc(snapshot.data()?.credits ?? 0);
+    if (current < amount) return false;
+
+    transaction.update(ref, { credits: current - amount });
+    return true;
+  });
+}
+
+/** Return an unused hold. Does not change lifetime credits granted. */
+export async function refundCredits(uid: string, amount: number): Promise<void> {
   if (!Number.isInteger(amount) || amount <= 0) return;
 
   await adminDb.runTransaction(async (transaction) => {
@@ -30,8 +51,8 @@ export async function deductCredits(uid: string, amount: number): Promise<void> 
     const snapshot = await transaction.get(ref);
     if (!snapshot.exists) return;
 
-    const current = snapshot.data()?.credits ?? 0;
-    transaction.update(ref, { credits: Math.max(0, current - amount) });
+    const current = Math.trunc(snapshot.data()?.credits ?? 0);
+    transaction.update(ref, { credits: current + amount });
   });
 }
 

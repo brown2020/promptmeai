@@ -46,7 +46,13 @@ vi.mock("@/firebase/firebaseAdmin", () => {
   };
 });
 
-import { deleteUserData, hasCreditsAvailable, SIGNUP_CREDITS } from "./creditLedger";
+import {
+  deleteUserData,
+  hasCreditsAvailable,
+  refundCredits,
+  reserveCredits,
+  SIGNUP_CREDITS,
+} from "./creditLedger";
 
 beforeEach(() => store.clear());
 
@@ -65,6 +71,26 @@ describe("hasCreditsAvailable", () => {
   it("reports an empty balance as unavailable", async () => {
     store.set("users/u3/profile/userData", { credits: 0 });
     await expect(hasCreditsAvailable("u3")).resolves.toBe(false);
+  });
+});
+
+describe("reserveCredits", () => {
+  it("rejects a hold the balance cannot cover and leaves the balance unchanged", async () => {
+    store.set("users/u6/profile/userData", { credits: 10 });
+    await expect(reserveCredits("u6", 11)).resolves.toBe(false);
+    expect(store.get("users/u6/profile/userData")?.credits).toBe(10);
+  });
+
+  it("debits the full hold up front", async () => {
+    store.set("users/u7/profile/userData", { credits: 40 });
+    await expect(reserveCredits("u7", 33)).resolves.toBe(true);
+    expect(store.get("users/u7/profile/userData")?.credits).toBe(7);
+  });
+
+  it("returns an unused hold without dropping below the remainder", async () => {
+    store.set("users/u8/profile/userData", { credits: 7 });
+    await refundCredits("u8", 33);
+    expect(store.get("users/u8/profile/userData")?.credits).toBe(40);
   });
 });
 
