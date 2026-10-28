@@ -11,6 +11,7 @@ describe("firestore rules", () => {
       "request.resource.data.totalCredits == resource.data.totalCredits"
     );
     expect(firestore).toContain("request.resource.data.APIKeys == resource.data.APIKeys");
+    expect(firestore).toContain("allow create, delete: if false");
     expect(firestore).toContain("match /billing/{document=**}");
     expect(firestore).toContain("match /body/{docId}");
     expect(firestore).toContain("allow read, write: if false");
