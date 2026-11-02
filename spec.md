@@ -28,7 +28,7 @@ Prompt.me AI is a Next.js App Router app. Most screens are client components. Se
 - In credits mode the server reserves `max(1, estimated cost of the bounded input plus the maximum output)` before calling the provider, then refunds the unused part. A settlement failure keeps the hold. An empty reply refunds the whole hold. Any non-empty reply costs at least 1 credit.
 - The estimate is about 4 characters per token, times `0.004`, rounded. It is not provider-reported usage.
 - A new profile receives 1,000 credits once, and only after Firebase Auth says the email is verified. Profiles that already existed before that marker do not get a second grant.
-- A catalog purchase is 9,999 cents and grants 10,000 credits. The grant is stored at `users/{uid}/billing/grants/{paymentIntentId}`. Clients cannot write that tree.
+- A catalog purchase is 9,999 cents and grants 10,000 credits. The grant is stored at `users/{uid}/billingGrants/{paymentIntentId}`. Clients cannot write that document. The Admin SDK writes it, so the path is not in the client rules.
 - `POST /api/stripe/webhook` verifies `STRIPE_WEBHOOK_SECRET` and grants the same catalog purchase. If the secret is unset the route returns 503. The success page can still grant after it reloads the PaymentIntent, and the grant document makes that idempotent.
 - Bring-your-own keys are AES-256-GCM ciphertext when `API_KEYS_ENCRYPTION_KEY` is a 32-byte base64 key. Otherwise key storage fails closed. Firestore rules reject client writes to `APIKeys`, `credits`, and `totalCredits`, and reject client deletes of the profile.
 

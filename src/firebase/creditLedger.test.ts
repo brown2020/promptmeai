@@ -129,7 +129,7 @@ describe("grantCatalogCredits", () => {
 
     expect(first).toMatchObject({ alreadyProcessed: false, credits: 10_005 });
     expect(second).toMatchObject({ alreadyProcessed: true, credits: 10_005 });
-    expect(store.get("users/u9/billing/grants/pi_abc")).toMatchObject({
+    expect(store.get("users/u9/billingGrants/pi_abc")).toMatchObject({
       paymentIntentId: "pi_abc",
     });
   });
@@ -140,7 +140,7 @@ describe("grantCatalogCredits", () => {
       "Invalid payment amount"
     );
     expect(store.get("users/u10/profile/userData")?.credits).toBe(1);
-    expect(store.has("users/u10/billing/grants/pi_bad")).toBe(false);
+    expect(store.has("users/u10/billingGrants/pi_bad")).toBe(false);
   });
 });
 
