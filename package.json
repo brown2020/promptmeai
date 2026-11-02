@@ -12,22 +12,22 @@
     "doctor": "npx -y react-doctor@0.9.14 . --verbose"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^4.0.91",
-    "@ai-sdk/google": "^4.0.107",
-    "@ai-sdk/openai": "^4.0.104",
-    "@ai-sdk/rsc": "^3.0.156",
+    "@ai-sdk/anthropic": "^4.0.94",
+    "@ai-sdk/google": "^4.0.109",
+    "@ai-sdk/openai": "^4.0.106",
+    "@ai-sdk/rsc": "^3.0.159",
     "@nextui-org/react": "^2.6.11",
     "@nextui-org/system": "^2.4.6",
     "@nextui-org/theme": "^2.4.5",
     "@stripe/react-stripe-js": "^7.0.1",
     "@stripe/stripe-js": "^10.2.0",
-    "ai": "^7.0.156",
+    "ai": "^7.0.159",
     "clsx": "^2.1.1",
     "cookies-next": "^6.1.1",
     "date-fns": "^4.4.0",
     "firebase": "^13.1.0",
     "firebase-admin": "^14.5.0",
-    "framer-motion": "^14.7.1",
+    "framer-motion": "^14.9.0",
     "next": "^16.4.3",
     "next-themes": "^0.4.6",
     "react": "^19.3.1",
@@ -40,7 +40,7 @@
     "rehype-raw": "^7.0.0",
     "rehype-sanitize": "^6.0.0",
     "remark-gfm": "^4.0.1",
-    "stripe": "^23.0.1",
+    "stripe": "^23.1.0",
     "tailwind-merge": "^3.7.0",
     "zod": "^4.6.7",
     "zustand": "^5.0.16"
@@ -52,7 +52,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@typescript/native": "npm:typescript@^7.0.2",
-    "eslint": "^10.13.0",
+    "eslint": "^10.14.0",
     "eslint-config-next": "^16.4.3",
     "postcss": "^8.5.32",
     "tailwindcss": "^4.3.3",
@@ -63,12 +63,14 @@
   "overrides": {
     "uuid": "^11.1.1",
     "@tootallnate/once": ">=3.0.1",
-    "baseline-browser-mapping": "^2.11.0",
+    "baseline-browser-mapping": "^2.11.34",
+    "minimatch": "^11.0.4",
+    "glob": "^14.0.3",
     "@firebase/firestore": {
-      "@grpc/grpc-js": "^1.14.6"
+      "@grpc/grpc-js": "^1.14.7"
     },
     "@tailwindcss/typography": {
-      "postcss-selector-parser": "^7.1.6"
+      "postcss-selector-parser": "^7.1.7"
     },
     "jwks-rsa": {
       "jose": "5.10.0"

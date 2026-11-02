@@ -63,7 +63,7 @@ Paths are built in `src/firebase/paths.ts`.
 
 Next.js 16, React 19, TypeScript strict, Tailwind CSS 4, NextUI 2, Zustand 5, Firebase JS 13, firebase-admin 14, Vercel AI SDK 7, Stripe 23, Vitest 5. npm is the package manager (`.npmrc` sets `legacy-peer-deps=true`).
 
-CI is Node 22 and runs lint, typecheck, unit tests, React Doctor, and a production build, plus a separate malware IOC scan.
+CI is Node 24 and runs lint, typecheck, unit tests, React Doctor, and a production build, plus a separate malware IOC scan.
 
 ## Trust boundary
 

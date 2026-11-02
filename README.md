@@ -25,12 +25,12 @@ Versions are the ranges in `package.json`.
 | Styling | Tailwind CSS | ^4.3.3 |
 | State | Zustand | ^5.0.16 |
 | Auth and data | Firebase client, firebase-admin | ^13.1.0, ^14.5.0 |
-| AI | `ai`, OpenAI, Anthropic, Google, `@ai-sdk/rsc` | ai ^7.0.156 |
-| Payments | Stripe, React Stripe.js | stripe ^23.0.1 |
+| AI | `ai`, OpenAI, Anthropic, Google, `@ai-sdk/rsc` | ai ^7.0.159 |
+| Payments | Stripe, React Stripe.js | stripe ^23.1.0 |
 | Markdown | react-markdown, remark-gfm, rehype-sanitize, rehype-raw | — |
 | Tests | Vitest | ^5.0.5 |
 
-`firebase-admin` 14 uses `jwks-rsa` 4. `package.json` overrides that package to `jose` 5.10.0 so `require("firebase-admin/auth")` does not load the ESM-only `jose` 6 build.
+`firebase-admin` 14 uses `jwks-rsa` 4. `package.json` overrides that package to `jose` 5.10.0 so `require("firebase-admin/auth")` does not load the ESM-only `jose` 6 build. Overrides also pin `minimatch` to ^11.0.4 and `glob` to ^14.0.3 (advisory fixes) and `@grpc/grpc-js` to ^1.14.7 under `@firebase/firestore`.
 
 ## Project structure
 
@@ -57,7 +57,7 @@ firebase.json
 
 ### Prerequisites
 
-- Node.js 22, which is what CI uses
+- Node.js 24, at least 24.12 (`@firebase/firestore` and `@firebase/auth` declare `node >= 24.12.0`). CI uses Node 24.
 - npm
 - A Firebase project and a service account for server auth
 - Provider API keys if you want platform-credit inference
@@ -148,7 +148,7 @@ Open [http://localhost:3000](http://localhost:3000). Chat is at `/chat` after si
 
 Vitest covers routes and the proxy, server-action inputs, credit reservation and grants, the Stripe webhook, logout cookie expiry, token estimates, and the `jose` pin.
 
-CI on `dev` and `main` (`.github/workflows/ci.yml`) uses Node 22 and runs `npm ci --ignore-scripts`, lint, typecheck, unit tests, React Doctor, and the production build. Public Firebase and Stripe names come from Actions secrets when set. Client init skips when they are missing. `.github/workflows/malware-scan.yml` runs `scripts/malware-scan.sh`.
+CI on `dev` and `main` (`.github/workflows/ci.yml`) uses Node 24 and runs `npm ci --ignore-scripts`, lint, typecheck, unit tests, React Doctor, and the production build. Public Firebase and Stripe names come from Actions secrets when set. Client init skips when they are missing. `.github/workflows/malware-scan.yml` runs `scripts/malware-scan.sh`.
 
 ## Deployment
 
