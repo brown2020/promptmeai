@@ -17,8 +17,8 @@ Punchlist after the October 28, 2026 maintenance pass. Nothing here is scheduled
 - App Check is not enforced by this repo. It only initializes when `NEXT_PUBLIC_FIREBASE_APP_CHECK_SITE_KEY` is set, and enforcement is a console switch.
 - The Stripe webhook does nothing until `STRIPE_WEBHOOK_SECRET` is set. Grants then depend on the browser reaching `/payment-success`.
 - `@firebase/firestore` and `@firebase/auth` declare `node >= 24.12.0`. CI uses Node 24. `require("firebase-admin/auth")` loads on Node 24.22.
-- Typecheck (`tsc`) is TypeScript 7.0.2 (`@typescript/native`). Next 16.4.3 still loads `typescript/lib/typescript.js` and suggests `typescript@^6`. TypeScript 7 does not ship that file, so the `typescript` package stays on `@typescript/typescript6` 6.0.2.
-- `date-fns` 5 is only `5.0.0-alpha.0`. The app stays on 4.4.0, the latest stable. Next 16.5 and Firebase 13.2 are prereleases; the app stays on Next 16.4.3 and Firebase 13.1.0.
+- `typescript` is pinned to 6.0.3. TypeScript 7 has no compiler API, so Next cannot load it and `tsc` stays on 6.0.3. `@types/node` stays on 24.x (24.19.2) to match the Node 24 runtime.
+- `date-fns` 5 is only `5.0.0-alpha.0`. The app stays on 4.4.0, the latest stable. Next 16.5 is still canary; the app stays on the latest stable Next 16.4 release.
 
 ## Dependency audit
 

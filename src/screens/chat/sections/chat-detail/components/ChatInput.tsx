@@ -1,8 +1,9 @@
 "use client";
 
 import { cancelGeneration, continueConversation } from "@/actions/generateActions";
-import { ModalWarning } from "@/components/modals";
 import { MODEL_NAMES, ModelName } from "@/constants/modelNames";
+import ChatPromptBar from "./ChatPromptBar";
+import ChatUsageWarning from "./ChatUsageWarning";
 import { saveChat, updateChat } from "@/services/chatService";
 import { isObjectEmpty } from "@/utils/object";
 import { logger } from "@/utils/logger";
@@ -14,7 +15,6 @@ import { useChatSideBarStore } from "@/zustand/useChatSideBarStore";
 import { PromptCoreMessage, useChatStore } from "@/zustand/useChatStore";
 import useProfileStore, { UsageMode } from "@/zustand/useProfileStore";
 import { usePlatform } from "@/zustand/usePlatformStore";
-import { FaStopCircle } from "react-icons/fa";
 import { ModelMessage } from "ai";
 import { readStreamableValue } from "@ai-sdk/rsc";
 import { useRouter } from "next/navigation";
@@ -26,8 +26,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { PiPaperPlaneTilt } from "react-icons/pi";
-import { Spinner } from "@nextui-org/react";
 import toast from "react-hot-toast";
 import { auth } from "@/firebase/firebaseClient";
 
@@ -286,41 +284,16 @@ const ChatInput = () => {
 
   return (
     <Fragment>
-      <div className="self-end w-full max-w-3xl h-14 shrink-0 flex gap-4 justify-center items-center">
-        <div className="w-full bg-white dark:bg-gray-700 rounded-xl shadow-sm px-4 py-3 flex gap-3 items-center focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[#1A8F70]">
-          <label htmlFor="chat-prompt" className="sr-only">
-            Prompt
-          </label>
-          <input
-            id="chat-prompt"
-            name="prompt"
-            ref={inputRef}
-            className="w-full text-base bg-transparent dark:bg-transparent text-gray-600 dark:text-gray-300 outline-none"
-            placeholder="Type your question here…"
-            aria-label="Type your question"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && submitHandler()}
-          />
-          <button
-            type="button"
-            aria-label={isLoading ? "Stop generating" : "Send prompt"}
-            className="flex size-11 items-center justify-center rounded-lg cursor-pointer shrink-0 -mr-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1A8F70]"
-            onClick={() => (isLoading ? stopRequest() : submitHandler())}
-          >
-            <span aria-hidden className="flex items-center justify-center">
-              {isLoading && !isStopRequest ? (
-                <FaStopCircle size={24} />
-              ) : isStopRequest ? (
-                <Spinner size="sm" color="default" />
-              ) : (
-                <PiPaperPlaneTilt size={20} className="text-gray-400" />
-              )}
-            </span>
-          </button>
-        </div>
-      </div>
-      <ModalWarning
+      <ChatPromptBar
+        inputRef={inputRef}
+        input={input}
+        isLoading={isLoading}
+        isStopRequest={isStopRequest}
+        onInputChange={setInput}
+        onSubmit={submitHandler}
+        onStop={stopRequest}
+      />
+      <ChatUsageWarning
         isOpen={
           (!isDefaultData && showAlert) || isAlertAPIKeysNotWorking || isOutOfCredits
         }
@@ -331,7 +304,6 @@ const ChatInput = () => {
             ? alertCredits
             : alertAPIKeys
         }
-        confirmText="Go to settings page"
         onConfirm={() => router.push("/settings")}
       />
     </Fragment>

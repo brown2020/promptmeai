@@ -10,8 +10,7 @@ import type { Stripe } from "@stripe/stripe-js";
 import { loadStripe } from "@stripe/stripe-js/pure";
 import PaymentCheckout from "./sections/PaymentCheckout";
 import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { redirect, RedirectType } from "next/navigation";
 
 if (process.env.NEXT_PUBLIC_STRIPE_KEY === undefined) {
   throw new Error("NEXT_PUBLIC_STRIPE_KEY is not defined");
@@ -32,13 +31,13 @@ const PaymentAttemptScreen = () => (
 
 const PaymentAttemptForPlatform = () => {
   const { isRNWebView, isInitialized } = usePlatform();
-  const router = useRouter();
 
-  useEffect(() => {
-    if (isRNWebView) router.replace("/settings");
-  }, [isRNWebView, router]);
+  if (!isInitialized) return null;
+  // Same destination as before: the iOS wrapper cannot buy credits, so replace
+  // this route during render instead of after paint.
+  if (isRNWebView) redirect("/settings", RedirectType.replace);
 
-  return isInitialized && !isRNWebView ? <StripeCheckout /> : null;
+  return <StripeCheckout />;
 };
 
 const StripeCheckout = () => {

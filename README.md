@@ -19,16 +19,16 @@ Versions are the ranges in `package.json`.
 
 | Area | Choice | Version |
 | --- | --- | --- |
-| Framework | Next.js App Router | ^16.4.3 |
+| Framework | Next.js App Router | ^16.4.5 |
 | UI | React, NextUI | ^19.3.1, NextUI ^2.6.11 |
-| Language | TypeScript | 7.0.2 for `tsc`; Next loads TypeScript 6 (`typescript` package) |
-| Styling | Tailwind CSS | ^4.3.3 |
+| Language | TypeScript | 6.0.3 (`tsc` and Next). TypeScript 7 has no compiler API. |
+| Styling | Tailwind CSS | ^4.3.4 |
 | State | Zustand | ^5.0.16 |
-| Auth and data | Firebase client, firebase-admin | ^13.1.0, ^14.5.0 |
-| AI | `ai`, OpenAI, Anthropic, Google, `@ai-sdk/rsc` | ai ^7.0.159 |
+| Auth and data | Firebase client, firebase-admin | ^13.2.0, ^14.5.0 |
+| AI | `ai`, OpenAI, Anthropic, Google, `@ai-sdk/rsc` | ai ^7.0.162 |
 | Payments | Stripe, React Stripe.js | stripe ^23.1.0 |
 | Markdown | react-markdown, remark-gfm, rehype-sanitize, rehype-raw | — |
-| Tests | Vitest | ^5.0.5 |
+| Tests | Vitest | ^5.1.0 |
 
 `firebase-admin` 14 uses `jwks-rsa` 4. `package.json` overrides that package to `jose` 5.10.0 so `require("firebase-admin/auth")` does not load the ESM-only `jose` 6 build. Overrides also pin `minimatch` to ^11.0.4 and `glob` to ^14.0.3 (advisory fixes) and `@grpc/grpc-js` to ^1.14.7 under `@firebase/firestore`.
 
@@ -140,7 +140,7 @@ Open [http://localhost:3000](http://localhost:3000). Chat is at `/chat` after si
 | `npm run build` | Production build |
 | `npm start` | Serve the production build |
 | `npm run lint` | ESLint |
-| `npm run typecheck` | `tsc --noEmit` (TypeScript 7) |
+| `npm run typecheck` | `tsc --noEmit` (TypeScript 6.0.3) |
 | `npm test` | Vitest |
 | `npm run doctor` | React Doctor |
 
