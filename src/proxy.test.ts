@@ -11,10 +11,10 @@ function request(path: string, withCookie = false) {
 }
 
 describe("proxy route protection", () => {
-  it("redirects unauthenticated requests for protected routes to /", () => {
+  it("does not redirect /chat before the client can restore a signed-in user", () => {
     const res = proxy(request("/chat"));
-    expect(res.status).toBe(307);
-    expect(res.headers.get("location")).toBe("https://example.com/");
+    expect(res.status).not.toBe(307);
+    expect(res.headers.get("location")).toBeNull();
   });
 
   it("allows authenticated requests for protected routes", () => {

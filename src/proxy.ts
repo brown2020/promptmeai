@@ -1,33 +1,18 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { isPublicPath } from "@/utils/routes";
 
 /**
- * Server-side route protection (Next.js 16 Proxy, formerly Middleware).
+ * Next.js 16 Proxy (formerly Middleware).
  *
- * Gates protected routes by requiring the Firebase auth cookie that the client
- * maintains via `useAuthToken`. This runs before the page renders, so
- * unauthenticated users are redirected to "/" instead of briefly loading a
- * protected page and being bounced client-side.
+ * This used to redirect protected routes to "/" when the auth cookie was
+ * missing. That ran before the browser could restore Firebase Auth, so a
+ * signed-in user opening /chat directly was sent home: the cookie is written
+ * only after that restore, and it expires while the Firebase sign-in remains.
  *
- * This is a coarse presence check for routing/UX only. The authoritative
- * security boundary remains `verifyAuth()` in the server actions, which
- * cryptographically verifies the ID token with the Firebase Admin SDK before
- * any privileged work (AI generation, Stripe) is performed.
+ * `AuthGate` waits for that restore, keeps a signed-in user on the URL they
+ * opened, and sends a signed-out user to /login with the path in `next`.
+ * `verifyAuth()` is still the trust boundary for server actions.
  */
-export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  if (isPublicPath(pathname)) {
-    return NextResponse.next();
-  }
-
-  const cookieName = process.env.NEXT_PUBLIC_COOKIE_NAME || "authToken";
-  const hasAuthCookie = Boolean(request.cookies.get(cookieName)?.value);
-
-  if (!hasAuthCookie) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
-
+export function proxy(_request: NextRequest) {
   return NextResponse.next();
 }
 

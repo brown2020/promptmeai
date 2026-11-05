@@ -23,6 +23,7 @@ import googleLogo from "@/app/assets/google.svg";
 import { auth, hasClientConfig } from "@/firebase/firebaseClient";
 import { settleSessionCookie } from "@/firebase/sessionCookie";
 import { mapAuthError } from "@/utils/authErrors";
+import { returnPathFrom } from "@/utils/authRedirect";
 import { useAuthStore } from "@/zustand/useAuthStore";
 import { usePlatform } from "@/zustand/usePlatformStore";
 
@@ -193,7 +194,7 @@ export function AuthPageForm({ mode }: Props) {
       authPending: false,
     });
     storeAuthInfo(u.email || email);
-    router.replace("/chat");
+    router.replace(returnPathFrom(window.location.search));
   };
 
   const runAuth = async (action: () => Promise<void>) => {

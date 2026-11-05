@@ -11,7 +11,7 @@ Send one prompt to three models and compare the answers as they stream. Sign in,
 - Chat history with pin, search, and delete. Transcripts live on a nested document so the sidebar does not download them.
 - Stripe PaymentIntents for a catalog credit purchase (`/payment-attempt`, `/payment-success`). `POST /api/stripe/webhook` grants the same purchase when `STRIPE_WEBHOOK_SECRET` is set. Without that secret the webhook returns 503 and the success page still grants after it reloads the PaymentIntent.
 - Light, dark, and system themes, markdown responses, cookie consent, and privacy, terms, and support pages.
-- Route gate in `src/proxy.ts` (cookie presence only). Server actions call `verifyAuth()`, which checks the ID token with Firebase Admin.
+- Route gate waits until Firebase Auth has settled (`src/components/AuthGate.tsx`). A direct visit to `/chat` stays there when the user is signed in. Signed-out visitors go to `/login` and keep the return path in `next`. Server actions call `verifyAuth()`, which checks the ID token with Firebase Admin.
 
 ## Tech stack
 

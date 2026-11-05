@@ -36,7 +36,7 @@ Prompt.me AI is a Next.js App Router app. Most screens are client components. Se
 
 - Sign-in: Google popup, email/password, email link (`/loginfinish`).
 - `establishSession` verifies the ID token and stores it in an HttpOnly cookie. `POST /api/auth/logout` expires that cookie even when the token is already invalid.
-- The proxy redirects requests that have no auth cookie away from protected pages. It does not verify the token. `verifyAuth()` does.
+- The proxy does not redirect protected pages. A missing auth cookie is not treated as signed-out: the cookie is written only after the browser restores Firebase Auth, and it expires before that sign-in does. After auth settles, a signed-in visitor stays on the URL they opened, including a direct load of `/chat`. A signed-out visitor is sent to `/login?next=<original path>`. `verifyAuth()` still checks the token.
 - Chats are listed from `promptme_chats/{uid}/chat/{id}` (name, pin, time). The transcript is `.../body/transcript`.
 - Delete account removes the user's chats, profile, and Firebase user through the Admin SDK. Stripe's own records stay.
 

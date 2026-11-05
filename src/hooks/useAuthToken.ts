@@ -1,7 +1,11 @@
-import { useEffect, useCallback, useRef } from "react";
-import { getIdToken } from "firebase/auth";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { useEffect, useCallback, useRef, useSyncExternalStore } from "react";
+import { getIdToken, type User } from "firebase/auth";
 import { establishSession } from "@/actions/sessionActions";
+import {
+  getAuthSnapshot,
+  getServerAuthSnapshot,
+  subscribeAuth,
+} from "@/firebase/authSnapshot";
 import { clearSession } from "@/firebase/sessionCookie";
 import { useAuthStore } from "@/zustand/useAuthStore";
 import { auth } from "@/firebase/firebaseClient";
@@ -10,7 +14,11 @@ const REFRESH_INTERVAL = 50 * 60 * 1000; // 50 minutes
 const DEBOUNCE_MS = 1000;
 
 const useAuthToken = (cookieName = "authToken") => {
-  const [user, loading, error] = useAuthState(auth);
+  const snapshot = useSyncExternalStore(
+    subscribeAuth,
+    getAuthSnapshot,
+    getServerAuthSnapshot
+  );
   const setAuthDetails = useAuthStore((state) => state.setAuthDetails);
   const clearAuthDetails = useAuthStore((state) => state.clearAuthDetails);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -79,14 +87,35 @@ const useAuthToken = (cookieName = "authToken") => {
   }, [lastTokenRefresh, refreshAuthToken, scheduleTokenRefresh]);
 
   useEffect(() => {
-    if (loading) return;
+    // `currentUser` is null until persistence finishes. Clearing the cookie
+    // in that window makes the next /chat load look signed out.
+    if (!snapshot.ready) return;
 
     let isCancelled = false;
 
+    function publish(current: User) {
+      setAuthDetails({
+        uid: current.uid,
+        authEmail: current.email || "",
+        authDisplayName: current.displayName || "",
+        authPhotoUrl: current.photoURL || "",
+        authEmailVerified: current.emailVerified || false,
+        authReady: true,
+        authPending: false,
+      });
+      scheduleTokenRefresh();
+    }
+
     async function syncAuthState() {
-      if (!user?.uid) {
+      const current = auth.currentUser;
+      if (!current?.uid) {
         clearAuthDetails();
         await clearSession().catch(() => undefined);
+        const restored = auth.currentUser;
+        if (isCancelled || !restored?.uid) return;
+        if (!(await refreshAuthToken())) return;
+        if (isCancelled) return;
+        publish(restored);
         return;
       }
 
@@ -98,17 +127,7 @@ const useAuthToken = (cookieName = "authToken") => {
         return;
       }
 
-      setAuthDetails({
-        uid: user.uid,
-        authEmail: user.email || "",
-        authDisplayName: user.displayName || "",
-        authPhotoUrl: user.photoURL || "",
-        authEmailVerified: user.emailVerified || false,
-        authReady: true,
-        authPending: false,
-      });
-
-      scheduleTokenRefresh();
+      publish(current);
     }
 
     void syncAuthState();
@@ -117,8 +136,8 @@ const useAuthToken = (cookieName = "authToken") => {
       isCancelled = true;
     };
   }, [
-    user,
-    loading,
+    snapshot.ready,
+    snapshot.user,
     setAuthDetails,
     clearAuthDetails,
     cookieName,
@@ -126,7 +145,11 @@ const useAuthToken = (cookieName = "authToken") => {
     scheduleTokenRefresh,
   ]);
 
-  return { uid: user?.uid, loading, error };
+  return {
+    uid: snapshot.user?.uid,
+    loading: !snapshot.ready,
+    error: undefined,
+  };
 };
 
 export default useAuthToken;

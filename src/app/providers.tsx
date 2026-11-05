@@ -4,10 +4,11 @@ import { NextUIProvider } from "@nextui-org/react";
 import CookieConsent from "react-cookie-consent";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import useAuthToken from "@/hooks/useAuthToken";
-import { useSyncExternalStore } from "react";
+import { Suspense, useSyncExternalStore } from "react";
 import { useInitializeStores } from "@/zustand/useInitializeStores";
 import { usePlatform } from "@/zustand/usePlatformStore";
 import { Toaster } from "react-hot-toast";
+import AuthGate, { AuthChecking } from "@/components/AuthGate";
 import { hasClientConfig } from "@/firebase/firebaseClient";
 
 function AuthReadyShell({ children }: { children: React.ReactNode }) {
@@ -26,7 +27,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
   useInitializeStores();
 
   const body = hasClientConfig ? (
-    <AuthReadyShell>{children}</AuthReadyShell>
+    <AuthReadyShell>
+      <Suspense fallback={<AuthChecking />}>
+        <AuthGate>{children}</AuthGate>
+      </Suspense>
+    </AuthReadyShell>
   ) : (
     children
   );

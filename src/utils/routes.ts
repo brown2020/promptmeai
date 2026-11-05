@@ -1,8 +1,10 @@
 /**
  * Route-protection helpers.
  *
- * Page-level protection lives in `src/proxy.ts` (server-side). The real
- * trust boundary remains the server actions (`verifyAuth`) and Firestore rules.
+ * The client auth gate (`AuthGate`) waits until Firebase Auth has settled.
+ * Signed-in visitors stay on the URL they opened. Signed-out visitors go to
+ * `/login` with that URL in `next`. The proxy does not redirect on a missing
+ * cookie. The trust boundary remains `verifyAuth()` and the Firestore rules.
  */
 
 /**

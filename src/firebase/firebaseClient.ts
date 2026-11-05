@@ -43,6 +43,22 @@ let app: FirebaseApp | undefined;
 let db: Firestore;
 let auth: Auth;
 
+/**
+ * Resolves after browser persistence is set and the initial auth user is known.
+ * Listeners that treat `null` as signed-out must wait for this. On the server
+ * it is already resolved because there is no persisted user to restore.
+ */
+export let whenAuthReady: Promise<void> = Promise.resolve();
+
+async function settleAuthPersistence(clientAuth: Auth): Promise<void> {
+  try {
+    await setPersistence(clientAuth, browserLocalPersistence);
+    await clientAuth.authStateReady();
+  } catch {
+    console.warn("[auth] persistence-failed");
+  }
+}
+
 if (hasClientConfig) {
   app = getApps().length ? getApp() : initializeApp(firebaseConfig);
   db = getFirestore(app);
@@ -67,7 +83,7 @@ if (hasClientConfig) {
         // Already connected after a hot reload.
       }
     }
-    void setPersistence(auth, browserLocalPersistence);
+    whenAuthReady = settleAuthPersistence(auth);
     const appCheckSiteKey = process.env.NEXT_PUBLIC_FIREBASE_APP_CHECK_SITE_KEY?.trim();
     if (appCheckSiteKey) {
       try {
