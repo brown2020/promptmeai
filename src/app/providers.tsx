@@ -8,7 +8,13 @@ import { Suspense, useSyncExternalStore } from "react";
 import { useInitializeStores } from "@/zustand/useInitializeStores";
 import { usePlatform } from "@/zustand/usePlatformStore";
 import { Toaster } from "react-hot-toast";
+import AnalyticsRouteListener from "@/components/AnalyticsRouteListener";
 import AuthGate, { AuthChecking } from "@/components/AuthGate";
+import {
+  ANALYTICS_CONSENT_COOKIE,
+  ANALYTICS_CONSENT_VALUE,
+  notifyAnalyticsConsent,
+} from "@/firebase/analyticsConsent";
 import { hasClientConfig } from "@/firebase/firebaseClient";
 
 function AuthReadyShell({ children }: { children: React.ReactNode }) {
@@ -54,9 +60,22 @@ export function Providers({ children }: { children: React.ReactNode }) {
           }}
         />
         {isHydrated && body}
+        {isHydrated && (
+          <Suspense fallback={null}>
+            <AnalyticsRouteListener />
+          </Suspense>
+        )}
         {isHydrated && isWeb && (
           <aside aria-label="Cookie consent">
-            <CookieConsent buttonText="Accept cookies" ariaAcceptLabel="Accept cookies">
+            <CookieConsent
+              buttonText="Accept cookies"
+              ariaAcceptLabel="Accept cookies"
+              cookieName={ANALYTICS_CONSENT_COOKIE}
+              cookieValue={ANALYTICS_CONSENT_VALUE}
+              onAccept={() => {
+                notifyAnalyticsConsent();
+              }}
+            >
               This app uses cookies to enhance the user experience.
             </CookieConsent>
           </aside>

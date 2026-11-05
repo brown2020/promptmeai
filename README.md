@@ -10,7 +10,7 @@ Send one prompt to three models and compare the answers as they stream. Sign in,
 - Auth: Google popup, email/password, and email link (`/loginfinish`). The Firebase ID token is stored in an HttpOnly cookie. Email/password accounts get the starting credits after the address is verified. Account deletion removes chats, profile, and the sign-in; Stripe keeps its own payment records.
 - Chat history with pin, search, and delete. Transcripts live on a nested document so the sidebar does not download them.
 - Stripe PaymentIntents for a catalog credit purchase (`/payment-attempt`, `/payment-success`). `POST /api/stripe/webhook` grants the same purchase when `STRIPE_WEBHOOK_SECRET` is set. Without that secret the webhook returns 503 and the success page still grants after it reloads the PaymentIntent.
-- Light, dark, and system themes, markdown responses, cookie consent, and privacy, terms, and support pages.
+- Light, dark, and system themes, markdown responses, cookie consent, and privacy, terms, and support pages. Firebase Analytics starts only after that consent and logs `page_view` on client route changes.
 - Route gate waits until Firebase Auth has settled (`src/components/AuthGate.tsx`). A direct visit to `/chat` stays there when the user is signed in. Signed-out visitors go to `/login` and keep the return path in `next`. Server actions call `verifyAuth()`, which checks the ID token with Firebase Admin.
 
 ## Tech stack
@@ -86,7 +86,7 @@ Copy `.env.example` to `.env.local`. Never commit real values. Names only are li
 | `NEXT_PUBLIC_FIREBASE_STORAGEBUCKET` | Storage bucket |
 | `NEXT_PUBLIC_FIREBASE_MESSAGINGSENDERID` | Messaging sender id |
 | `NEXT_PUBLIC_FIREBASE_APPID` | App id |
-| `NEXT_PUBLIC_FIREBASE_MEASUREMENTID` | Analytics measurement id (optional) |
+| `NEXT_PUBLIC_FIREBASE_MEASUREMENTID` | GA4 measurement id. Analytics stays off until cookie consent. The live site uses `G-5FYY8YVDZ5`. |
 | `NEXT_PUBLIC_FIREBASE_APP_CHECK_SITE_KEY` | reCAPTCHA v3 site key (optional). Unset skips App Check. |
 | `NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_HOST` | Auth emulator host for local web client (optional) |
 | `NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST` | Firestore emulator host for local web client (optional) |
