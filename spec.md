@@ -45,7 +45,7 @@ Prompt.me AI is a Next.js App Router app. Most screens are client components. Se
 - Settings: usage mode, credit balance, API keys, payment history, sign-out, delete account.
 - Themes: light, dark, system.
 - Legal and support pages are public. So are `/`, auth pages, the Stripe webhook, and logout.
-- The existing cookie banner gates Firebase Analytics. Until the visitor accepts, nothing calls `getAnalytics`. After accept, `isSupported` then `getAnalytics` use `NEXT_PUBLIC_FIREBASE_MEASUREMENTID` (live site: `G-5FYY8YVDZ5`). Each client route change logs `page_view`.
+- The existing cookie banner gates Firebase Analytics. Until the visitor accepts, nothing calls `getAnalytics`. After accept, `isSupported` then `getAnalytics` use `NEXT_PUBLIC_FIREBASE_MEASUREMENTID` (live site: `G-5FYY8YVDZ5`). Each client route change logs `page_view`. The page CSP allows the gtag script from `https://www.googletagmanager.com` and collect connections to `https://www.google-analytics.com`, `https://region1.google-analytics.com`, `https://analytics.google.com`, and `https://www.googletagmanager.com`. `vercel.live` stays blocked.
 - A React Native webview hides Google sign-in, API-key entry, and credit purchase. `/payment-attempt` sends that webview to Settings.
 - App Check starts only when `NEXT_PUBLIC_FIREBASE_APP_CHECK_SITE_KEY` is set. Enforcement is a Firebase console setting, not something this repo turns on.
 
