@@ -72,6 +72,9 @@ describe("page content security policy", () => {
       true
     );
     expect(allows(policy, "script", "https://www.recaptcha.net/recaptcha/api.js")).toBe(true);
+    expect(allows(policy, "script", "https://apis.google.com/js/api.js?onload=__iframefcb123")).toBe(
+      true
+    );
     expect(allows(policy, "connect", "https://api.stripe.com/v1/payment_intents")).toBe(true);
     expect(allows(policy, "connect", "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword")).toBe(
       true
